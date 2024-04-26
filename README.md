@@ -8,7 +8,7 @@ Freedom for food people
   - Inheritor of Suffering: Aaron Snell
   - Socketroth: Kiyoshi Yang
   - Taste Tester/GTester: Benson Karki 💀
-  - ISAD: Nathan Yang
+  - ISAD: Nathan Yang :wave:
   - Flex: Matthew Mazone
 
 
