@@ -7,7 +7,7 @@ Freedom for food people
   *DJ Bridges: Zaniel Silverio
   *Inheritor of Suffering: Aaron Snell
   *Socketroth: Kiyoshi Yang
-  *Taste Tester/GTester: Benson Karki
+  *Taste Tester/GTester: Benson Karki 💀
   *ISAD: Nathan Yang
   *Flex: Matthew Mazone
 
