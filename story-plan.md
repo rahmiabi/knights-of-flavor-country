@@ -17,19 +17,19 @@
 
 ## Friendly NPCs
 + General Mackerelli
-++ Generic General and reacts to gameplay
+  + Generic General and reacts to gameplay
 + Businessman Kerney
-++ Where you get new guns and gear from
+  + Where you get new guns and gear from
 + Count Volodymyr
-++ The original ruler of Apple nation (tentative name)
+  + The original ruler of Apple nation (tentative name)
 
 ## Enemy NPCs
 + Evil Surin
-++ A puppet or smth created or a person that has taken over Apple Nation (tentative name)
-++ Being controlled or influenced by Kerney
+  + A puppet or smth created or a person that has taken over Apple Nation (tentative name)
+  + Being controlled or influenced by Kerney
 + Kerney: The mastermind of the war (Palpatine type beat)
-++ Wants to control the world
-++ After being defeated he goes on sabbatical
+  + Wants to control the world
+  + After being defeated he goes on sabbatical
 
 ## Playable char
 + tbd
