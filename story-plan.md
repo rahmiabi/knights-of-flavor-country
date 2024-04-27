@@ -4,9 +4,9 @@
 + Anime Helldivers 0ne where we fight Evil Surin's goons
 ## Gameplay ideas:
 + Puzzles that require teamwork
-++ Decode launch codes and another has to enter them (keep talking and nobody explodes type beat)
-++ Stratagem combos
-++ Time attacks together with other teammates in real time
+  + Decode launch codes and another has to enter them (keep talking and nobody explodes type beat)
+  + Stratagem combos
+  + Time attacks together with other teammates in real time
 
 ## Enemies: Different apple chips aka evil Surins goons
 + m1 chip (lowest)
