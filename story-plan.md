@@ -15,19 +15,40 @@
 + m4( final boss Evil Surin) general
 + True final boss - Kerney the true mastermind behind evil Surin's attack
 
-## Country Names
-+ Our country
-  + Azurion or Flavor Country - Leaning more towards Azurion
-+ Evil Surin Country
-  + Malustan - Play on the words stan and Malus which is the scientific name for the apple tree
-      + Was on the upward path but was in debt due to rebuilding.
-+ 3rd party country that doesnt fight
-  + Kernelia - smallest country
+## Countries
++ Azurion (The MCs country)
+  + Location
+    + think California
+    + Temperate climate likes 70-80f year round
+    + 
+  + Culture
+    + Think super earth
+    + Very patriotic 
+    
++ Malustan
+  + Location
+    + Northern - colder climate
+    + Largest country
+    + Large amounts of factories for producing bots
+  + Culture
+    + Think USSR
+    + Gloomy outlook on life since war has ruined them
+      
++ Kernelia - 3rd party
+  + Location
+    + Think Swiss
+    + Relatively hilly with not much for land
+    + smallest country
+  + Culture
+    + Western Europe
+    + Irish potato famine gloom
++ Borders
+  
 
-## Friendly NPCs
-+ Possible names for our country
-  + Flavor Country
-  + Azurion (ref to microsoft so might fit better)
+## Friendly Chars
++ MC
+  + Part of the Edge Operatives or Task Force Redmond
+  + Uses The Halo to fight Malustan bots
 + General Mackerelli
   + Generic General and reacts to gameplay
 + Businessman Kernie
@@ -37,7 +58,13 @@
 + Count Volodymyr
   + The original ruler of Malustan
 
-## Enemy NPCs
+## Enemy Chars
++ M1
+  + A
++ M2
++ M3
++ M4
+  
 + Evil Surin
   + A puppet actor installed by Kernie using a backdoor
   + Being controlled or influenced by Kernie
@@ -50,6 +77,13 @@
 + tbd
 
 ## Items
++ The HALO (MCs suit of armor)
+  + Why the mc is able todo what he does
+  + can stand for Hight Impact Linking Outfit
+    + Would make sense if we have multiple abilities
+  + Hyper Agile Lethal Outfit
+    + If we do a stupid and end up making a faster pace game
++ 
 
 ## Storyline
 
@@ -62,9 +96,8 @@
 ### drake version (get it bc its long)
 In 2122 tensions between Azuriona and Malustan are at a high. Lautenous a foreign diplomat from Kernelia is killed at the border of Azurion and Malustan and neither country wants to claim the kill, but both use it as a reason to attack each other. Which sparks the first war of ____.
 
-In 2140 Volodymr becomes the new leader of Malustan and ends the war with the treaty of Pearis bringing peace to both Malustan and Azurion.
+In 2140 Volodymr becomes the new leader of Malustan and ends the war with the Treaty of Pearis bringing peace to both Malustan and Azurion.
 
 In 2142 Kernie invests heavily in the VULCAN(Vanguard Ultra Lightweight Combat Armored Nanotech) program, which was a last-ditch effort to create a superweapon to end the stalemate between Malustan and Azurion. However, the program lost most of its funding due to the war being over.
 
-In 2145 Kernie sells
-The Halo is a Malustan super weapon that grants the user special abilities, in order to save Malustan from falling into debt.
+In 2145 Kernie sells The HALO 
