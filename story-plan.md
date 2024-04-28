@@ -20,7 +20,7 @@
   + Azurion or Flavor Country - Leaning more towards Azurion
 + Evil Surin Country
   + Malustan - Play on the words stan and Malus which is the scientific name for the apple tree
-+ 3rd party country
++ 3rd party country that doesnt fight
   + Kernelia
 
 ## Friendly NPCs
