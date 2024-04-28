@@ -1,14 +1,11 @@
-#
-
 CXX = g++
-#CXX = clang++
 
 EXE = knights-of-flavor-country
 IMGUI_DIR = ./lib/imgui
 SRC_DIR = ./src
-SOURCES = $(SRC_DIR)/Threaddy_Thasbear.cpp
+SOURCES = $(SRC_DIR)/main.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl2.cpp
+SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
