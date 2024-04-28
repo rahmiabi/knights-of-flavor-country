@@ -15,19 +15,31 @@
 + m4( final boss Evil Surin) general
 + True final boss - Kerney the true mastermind behind evil Surin's attack
 
+## Country Names
++ Our country
+  + Azurion or Flavor Country - Leaning more towards Azurion
++ Evil Surin Country
+  + Malustan - Play on the words stan and Malus which is the scientific name for the apple tree
++ 3rd party country
+  + Kernelia
+
 ## Friendly NPCs
++ Possible names for our country
+  + Flavor Country
+  + Azurion (ref to microsoft so might fit better)
 + General Mackerelli
   + Generic General and reacts to gameplay
-+ Businessman Kerney
++ Businessman Kernie
   + Where you get new guns and gear from
+  + From Kernelia
 + Count Volodymyr
-  + The original ruler of Apple nation (tentative name)
+  + The original ruler of Malustan
 
 ## Enemy NPCs
 + Evil Surin
-  + A puppet actor installed by Kerney using a backdoor
-  + Being controlled or influenced by Kerney
-+  Evil Kerney (Full Form): The mastermind of the war (Palpatine type beat)
+  + A puppet actor installed by Kernie using a backdoor
+  + Being controlled or influenced by Kernie
++  Evil Kernie (Full Form): The mastermind of the war (Palpatine type beat)
   + Wants to control the world
   + After being defeated he goes on sabbatical
 
@@ -37,7 +49,7 @@
 ## Storyline
 
 ### tldr
-+ Earth was peaceful until the Apple nation attacked. Their leader, Evil Surin, unleashed his Apple-engineered goons with m4 ultra chips the first 2 nm chip leading the charges.
++ Earth was peaceful until Malustan attacked. Their leader, Evil Surin, unleashed his Apple-engineered goons with m4 ultra chips the first 2 nm chip leading the charges.
 + We have to take out his lower-level goons, and after taking out his lower-level goons (m1-m2) you get the chance to take out an m3.
 + After taking out his 4 m3s you then get the chance to take evil surin.
 + However after Evil Surin is taken out, the goons keep attacking and it is then revealed that Evil Surin was actually a puppet created by Kerney the true mastermind behind the attack
