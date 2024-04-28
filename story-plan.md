@@ -25,9 +25,9 @@
 
 ## Enemy NPCs
 + Evil Surin
-  + A puppet or smth created or a person that has taken over Apple Nation (tentative name)
+  + A puppet actor installed by Kerney using a backdoor
   + Being controlled or influenced by Kerney
-+ Kerney: The mastermind of the war (Palpatine type beat)
++  Evil Kerney (Full Form): The mastermind of the war (Palpatine type beat)
   + Wants to control the world
   + After being defeated he goes on sabbatical
 
