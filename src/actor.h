@@ -11,6 +11,8 @@
 #include <memory>
 #include <unordered_map>
 
+class ActorManager;
+
 /**
  * The most basic game object
  */
@@ -27,6 +29,8 @@ protected:
      * AI tick function. Called each frame
      */
     virtual void update(float delta) {}
+
+    friend class ActorManager;
 
 public:
     virtual ~Actor() = default;
@@ -95,6 +99,11 @@ public:
      * Remove an actor from the global list.
      */
     static void remove(const std::string& name);
+
+    /**
+     * Call each of the Actor's update() function
+     */
+    static void update(float delta);
 
     /**
      * Check for any Actors that should have been deleted that haven't been.

@@ -189,6 +189,9 @@ int main(int, char**)
         ImGui::GetForegroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
+        // TODO: call when we have delta time
+        // ActorManager::update();
+
         Vec2 velocity = {0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
         int A= glfwGetKey(window, GLFW_KEY_A);
