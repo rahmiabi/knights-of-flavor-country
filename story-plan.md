@@ -47,10 +47,14 @@
 
 ## Friendly Chars
 + MC
-  + Part of the Edge Operatives or Task Force Redmond
+  + An Edge operator in Task Force Redmond
+    + Edge operators use experimental equipment
+    + Task Force Redmond is Azurion's special ops
   + Uses The Halo to fight Malustan bots
 + General Mackerelli
   + Generic General and reacts to gameplay
++ Task Force Redmond
+  + Friendly NPCs TBD
 + Businessman Kernie
   + Where you get new guns and gear from
   + From Kernelia
@@ -60,9 +64,11 @@
 
 ## Enemy Chars
 + M1
-  + A
+  + Have to be controlled by a central M2 unit
 + M2
+  + Communicates with the M1s and takes commands from M3
 + M3
+  + Field commanders that take orders directly from M4 aka Evil Surin
 + M4
   
 + Evil Surin
