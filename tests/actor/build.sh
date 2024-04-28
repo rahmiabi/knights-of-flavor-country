@@ -1,0 +1,1 @@
+g++ -std=c++20 ../../src/actor.cpp ../../src/enemy.cpp ../../src/npc.cpp main.cpp

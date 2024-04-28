@@ -23,6 +23,8 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#include "actor.h"
+
 using namespace std;
 
 struct Vec2{
@@ -288,6 +290,9 @@ int main(int, char**)
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
+
+        // Make sure this is commented out in the final build
+        //ActorManager::checkForDanglingActors();
     }
 
     // Cleanup
