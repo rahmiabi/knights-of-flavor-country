@@ -20,8 +20,9 @@
   + Azurion or Flavor Country - Leaning more towards Azurion
 + Evil Surin Country
   + Malustan - Play on the words stan and Malus which is the scientific name for the apple tree
+      + Was on the upward path but was in debt due to rebuilding.
 + 3rd party country that doesnt fight
-  + Kernelia
+  + Kernelia - smallest country
 
 ## Friendly NPCs
 + Possible names for our country
@@ -32,6 +33,7 @@
 + Businessman Kernie
   + Where you get new guns and gear from
   + From Kernelia
+  + Owns Virtudyne a military contractor 
 + Count Volodymyr
   + The original ruler of Malustan
 
@@ -43,8 +45,11 @@
   + Wants to control the world
   + After being defeated he goes on sabbatical
 
+
 ## Playable char
 + tbd
+
+## Items
 
 ## Storyline
 
@@ -55,3 +60,11 @@
 + However after Evil Surin is taken out, the goons keep attacking and it is then revealed that Evil Surin was actually a puppet created by Kerney the true mastermind behind the attack
 
 ### drake version (get it bc its long)
+In 2122 tensions between Azuriona and Malustan are at a high. Lautenous a foreign diplomat from Kernelia is killed at the border of Azurion and Malustan and neither country wants to claim the kill, but both use it as a reason to attack each other. Which sparks the first war of ____.
+
+In 2140 Volodymr becomes the new leader of Malustan and ends the war with the treaty of Pearis bringing peace to both Malustan and Azurion.
+
+In 2142 Kernie invests heavily in the VULCAN(Vanguard Ultra Lightweight Combat Armored Nanotech) program, which was a last-ditch effort to create a superweapon to end the stalemate between Malustan and Azurion. However, the program lost most of its funding due to the war being over.
+
+In 2145 Kernie sells
+The Halo is a Malustan super weapon that grants the user special abilities, in order to save Malustan from falling into debt.
