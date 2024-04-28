@@ -35,6 +35,12 @@ void ActorManager::remove(const std::string& name) {
     sActors.erase(name);
 }
 
+void ActorManager::update(float delta) {
+    for (auto& [key, value] : sActors) {
+        value->update(delta);
+    }
+}
+
 void ActorManager::checkForDanglingActors() {
     for (auto& [key, value] : sActors) {
         if (value.use_count() == 1) {
