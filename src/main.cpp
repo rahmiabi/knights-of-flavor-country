@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdio.h>
+#include <cmath>
+#include <vector>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -7,7 +9,6 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../lib/stb_image.h"
-
 
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -24,12 +25,25 @@
 
 using namespace std;
 
+struct Vec2{
+    float x, y;
+
+    void normalize(){
+        if (!x && !y) return;
+        int mag = sqrt(x * x + y * y);
+        x /= mag;
+        y /= mag;
+    }
+};
+
+struct Projectile{
+    Vec2 pos, vel;
+};
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos){
-    cout << xpos << " " << ypos << endl;    
 }
 
 // Main code
@@ -121,6 +135,7 @@ int main(int, char**)
     images[0].pixels = pixels;
 
     glfwSetWindowIcon(window, 1, images);
+    vector<Projectile> projectiles;
 
 // uhh idk what this does i just do copy paste haha
     GLuint image_texture;
@@ -137,7 +152,9 @@ int main(int, char**)
 #endif
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
+    
 // Main loop
+    double characterX = 1280 / 2, characterY = 720 / 2;
     while (!glfwWindowShouldClose(window))
     {
         ImGui::SetMouseCursor(ImGuiMouseCursor_None);
@@ -160,9 +177,53 @@ int main(int, char**)
         ImGui::GetForegroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
+        Vec2 velocity = {0, 0};
+        int W= glfwGetKey(window, GLFW_KEY_W);
+        int A= glfwGetKey(window, GLFW_KEY_A);
+        int S= glfwGetKey(window, GLFW_KEY_S);
+        int D= glfwGetKey(window, GLFW_KEY_D);
+        int SHIFT= glfwGetKey(window, GLFW_KEY_Q);
+        int F = glfwGetKey(window, GLFW_KEY_F);
+
+        if (W == GLFW_PRESS){
+            velocity.y -= 50;
+        }
+        if (A == GLFW_PRESS){
+            velocity.x -= 50;
+        }
+        if (S == GLFW_PRESS){
+            velocity.y += 50;
+        }
+        if (D == GLFW_PRESS){
+            velocity.x += 50;
+        }
+        velocity.normalize();
+        characterX += velocity.x * 2;
+        characterY += velocity.y * 2;
+        Vec2 direction = {xPos - characterX, yPos - characterY};
+        direction.normalize();
+        if (F == GLFW_PRESS){
+            Projectile proj = {{characterX, characterY}, {direction.x * 25, direction.y * 25}};
+            projectiles.push_back(Projectile(proj));
+        }
+        scale = .05;
+        for (Projectile& a: projectiles){
+            a.pos.x += a.vel.x;
+            a.pos.y += a.vel.y;
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + a.pos.x - width * scale / 2, height * scale + a.pos.y - height * scale /2) , 
+                                             ImVec2(a.pos.x - width * scale / 2, a.pos.y - height * scale / 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+        }
+        if (SHIFT == GLFW_PRESS){
+            characterX += direction.x * 10; 
+            characterY += direction.y * 10; 
+        }
+        scale = .1;
+        cout << direction.x << " " << direction.y << endl;
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + characterX - width * scale / 2, height * scale + characterY - height * scale /2) , 
+                                        ImVec2(characterX - width * scale / 2, characterY - height * scale / 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        // if (show_demo_window)
+        //    ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
@@ -205,10 +266,6 @@ int main(int, char**)
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-0.5f, -0.5f);
-        glVertex2f(0.0f, 0.5f);
-        glVertex2f(0.5f, -0.5f);
         glEnd();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
