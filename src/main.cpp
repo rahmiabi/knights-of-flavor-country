@@ -34,11 +34,21 @@ struct Vec2{
         x /= mag;
         y /= mag;
     }
+    float getMag() const {
+       return sqrt(x * x + y * y);
+    }
 };
 
 struct Projectile{
     Vec2 pos, vel;
 };
+
+void raycast(const Vec2& direction, Vec2& ray, const Vec2& initialPos){
+    if (ray.getMag() > 1000 || ray.x  + initialPos.x > 1000 || ray.x + initialPos.x < 100) return;
+    ray.x += direction.x;
+    ray.y += direction.y;
+    raycast(direction, ray, initialPos);
+}
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -87,10 +97,9 @@ int main(int, char**)
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO(); (void) io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    io.MouseDrawCursor = false;
 
     if (glfwRawMouseMotionSupported())
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -103,6 +112,7 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.;
     // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
@@ -198,10 +208,12 @@ int main(int, char**)
             velocity.x += 50;
         }
         velocity.normalize();
-        characterX += velocity.x * 2;
-        characterY += velocity.y * 2;
+        characterX += velocity.x * 6;
+        characterY += velocity.y * 6;
+
         Vec2 direction = {xPos - characterX, yPos - characterY};
         direction.normalize();
+
         if (F == GLFW_PRESS){
             Projectile proj = {{characterX, characterY}, {direction.x * 25, direction.y * 25}};
             projectiles.push_back(Projectile(proj));
@@ -218,7 +230,13 @@ int main(int, char**)
             characterY += direction.y * 10; 
         }
         scale = .1;
-        cout << direction.x << " " << direction.y << endl;
+        for (float i = -3.14/4; i <= 3.14/4; i += .01){
+            Vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
+            Vec2 ray = {0, 0};
+            Vec2 initial = {characterX, characterY};
+            raycast(rotatedDir, ray, initial);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x, initial.y + i), ImVec2(initial.x + ray.x, initial.y + ray.y + i) , IM_COL32(255, 255, 255, 255), 0.3);
+        }
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + characterX - width * scale / 2, height * scale + characterY - height * scale /2) , 
                                         ImVec2(characterX - width * scale / 2, characterY - height * scale / 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
