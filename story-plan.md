@@ -93,6 +93,20 @@
 
 ## Storyline
 
+### Level list
++ 1) Azurion city under attack
+  + Looks like the city from Halo Reach or smth
++ 2) Outskirts of Azurion city more of a countryside
+  + More wide-open
++ 3) Malustan factories
+  + Closer quarters
+  + Bombed out
++ 4) Malustan Capitol
+  + Where the evil surin fight happens
+  + happens in doors
+  + roof caves in and kills him and reveals hes a puppet
+  + Then part 2 of the fight is against kernie
+
 ### tldr
 + Earth was peaceful until Malustan attacked. Their leader, Evil Surin, unleashed his Apple-engineered goons with m4 ultra chips the first 2 nm chip leading the charges.
 + We have to take out his lower-level goons, and after taking out his lower-level goons (m1-m2) you get the chance to take out an m3.
