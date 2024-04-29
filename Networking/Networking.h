@@ -1,11 +1,11 @@
 //Gonna try and do socket stuff
-
 #ifndef NETWORKING_H
 #define NETWORKING_H
 
-
 #include <boost/asio/ip/tcp.hpp>
 #include <cstring>
+#include <string>
+#include <cstdlib>
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -21,6 +21,7 @@ class ManageConnection {
 	boost::asio::ip::tcp::resolver resolver;
 
 public:
+
 	//Constructor
 	ManageConnection();
 	//Destructor
@@ -32,7 +33,7 @@ public:
 	void ShuttingDown();
 
 	//Creates a connection at specified IP and port 
-	bool Connecting(const std::string& ip, unsigned short port);
+	bool Connecting(const std::string& ip, const std::string& port);
 	//Destroys connection
 	void Disconnecting();
 
@@ -40,6 +41,7 @@ public:
 	bool Send(const std::string & data);
 	//Recieves data
 	std::string Recieve();
+
 };
 
 #endif // NETWORKING_H
