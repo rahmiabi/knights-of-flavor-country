@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <cmath>
 #include <vector>
+#include <random>
+#include <chrono>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -42,14 +44,26 @@ struct Vec2{
 };
 
 struct Projectile{
-    Vec2 pos, vel;
+    Vec2 pos, vel, end;
+    bool render = true;
 };
 
-void raycast(const Vec2& direction, Vec2& ray, const Vec2& initialPos){
-    if (ray.getMag() > 1000 || ray.x  + initialPos.x > 1000 || ray.x + initialPos.x < 100) return;
+struct Square{
+    Vec2 start, end;
+};
+
+struct Player {
+    Square area;
+    Vec2 pos;
+};  
+void raycast(const Vec2& direction, Vec2& ray, const Vec2& initialPos, const vector<Square>& space){
+    if (ray.getMag() > 500) return;
+    for (const Square& s: space)
+       if (((ray.x + initialPos.x > s.start.x && ray.x + initialPos.x < s.end.x) && 
+           (ray.y + initialPos.y > s.start.y && ray.y + initialPos.y < s.end.y))) return;
     ray.x += direction.x;
     ray.y += direction.y;
-    raycast(direction, ray, initialPos);
+    raycast(direction, ray, initialPos, space);
 }
 static void glfw_error_callback(int error, const char* description)
 {
@@ -164,11 +178,31 @@ int main(int, char**)
 #endif
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
+    vector<Square> space;
+
+    space.push_back(Square{Vec2{500, 500}, Vec2{600, 600}});
+    space.push_back(Square{Vec2{0, 0}, Vec2{250, 250}});
+    space.push_back(Square{Vec2{80, 80}, Vec2{90, 90}});
+    space.push_back(Square{Vec2{0, 700}, Vec2{1000, 1000}});
     
 // Main loop
     double characterX = 1280 / 2, characterY = 720 / 2;
+    float timer = 50;
+    double deltaTime = 0;
+    double fireRate = 100;
+    int mag = 32;
+    auto start = std::chrono::system_clock::now(); 
+    auto end = start;
     while (!glfwWindowShouldClose(window))
     {
+        end = start;
+        start = std::chrono::system_clock::now(); 
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(window, &windowWidth, &windowHeight);
+        timer = timer + deltaTime;
+        timer = (timer > fireRate)? fireRate : timer;
+        deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
+        static float f = 0.1f;
         ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 
         // Poll and handle events (inputs, window resize, etc.)
@@ -189,8 +223,6 @@ int main(int, char**)
         ImGui::GetForegroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
-        // TODO: call when we have delta time
-        // ActorManager::update();
 
         Vec2 velocity = {0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
@@ -199,6 +231,7 @@ int main(int, char**)
         int D= glfwGetKey(window, GLFW_KEY_D);
         int SHIFT= glfwGetKey(window, GLFW_KEY_Q);
         int F = glfwGetKey(window, GLFW_KEY_F);
+        int R = glfwGetKey(window, GLFW_KEY_R);
 
         if (W == GLFW_PRESS){
             velocity.y -= 50;
@@ -212,45 +245,87 @@ int main(int, char**)
         if (D == GLFW_PRESS){
             velocity.x += 50;
         }
+        if (R == GLFW_PRESS){
+            cout << "Reloading" << endl;
+            mag = 32;
+        }
         velocity.normalize();
-        characterX += velocity.x * 6;
-        characterY += velocity.y * 6;
 
-        Vec2 direction = {xPos - characterX, yPos - characterY};
+        bool moveX = true;
+        bool moveY = true;
+        float woffset = width * scale / 2;
+        float hoffset = height * scale / 2;
+        for (const Square& s: space) {
+            if (((characterX + velocity.x / 3 * deltaTime + woffset > s.start.x && characterX + velocity.x / 3 * deltaTime - woffset < s.end.x) && 
+                (characterY + hoffset> s.start.y && characterY - hoffset < s.end.y))){
+                   moveX = false;
+            }
+            if (((characterX + woffset> s.start.x && characterX - woffset < s.end.x) && 
+                (characterY + velocity.y / 3 * deltaTime + hoffset> s.start.y && characterY + velocity.y / 3 * deltaTime - hoffset < s.end.y))){
+                   moveY = false;
+            }
+        }
+
+        if (moveX){
+            characterX += velocity.x / 3 * deltaTime;
+        }
+        if (moveY){
+            characterY += velocity.y / 3* deltaTime;
+        }
+        
+        Vec2 Camera = {characterX - windowWidth / 2, characterY - windowHeight / 2};
+        for (const Square& x: space){
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(x.start.x - Camera.x, x.start.y - Camera.y) , 
+                                                ImVec2(x.end.x - Camera.x, x.end.y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        }
+
+        Vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
         direction.normalize();
 
-        if (F == GLFW_PRESS){
-            Projectile proj = {{characterX, characterY}, {direction.x * 25, direction.y * 25}};
-            projectiles.push_back(Projectile(proj));
+        if (F == GLFW_PRESS && timer >= fireRate && mag){
+            Vec2 initial = {characterX, characterY};
+            Vec2 end = {0.0};
+            Vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
+            dir.normalize();
+            raycast(dir, end, initial, space);
+            cout << end.x << " " << end.y << endl;
+            end.x += initial.x;
+            end.y += initial.y;
+            Projectile proj = {{characterX, characterY}, dir, end, true};
+            proj.vel.normalize();
+            projectiles.push_back(proj);
+            mag--;
+            cout << "Ammo: " << mag << " / 32" << endl;
+            timer = 0.0;
         }
         scale = .05;
         for (Projectile& a: projectiles){
-            a.pos.x += a.vel.x;
-            a.pos.y += a.vel.y;
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + a.pos.x - width * scale / 2, height * scale + a.pos.y - height * scale /2) , 
-                                             ImVec2(a.pos.x - width * scale / 2, a.pos.y - height * scale / 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-        }
-        if (SHIFT == GLFW_PRESS){
-            characterX += direction.x * 10; 
-            characterY += direction.y * 10; 
+            if (!a.render) continue;
+            for (int i = 0; i < 50 * deltaTime / 6; i++){
+                if (sqrt(pow(a.pos.x - a.end.x, 2) + pow(a.pos.y - a.end.y, 2)) <= 25) {a.render = false; break;}
+                a.pos.x += a.vel.x;
+                a.pos.y += a.vel.y;
+            }
+            if (a.render)
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
+                                                    ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         }
         scale = .1;
-        for (float i = -3.14/4; i <= 3.14/4; i += .01){
+        for (float i = -3.14/5; i <= 3.14/5; i += .005){
             Vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
             Vec2 ray = {0, 0};
             Vec2 initial = {characterX, characterY};
-            raycast(rotatedDir, ray, initial);
-            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x, initial.y + i), ImVec2(initial.x + ray.x, initial.y + ray.y + i) , IM_COL32(255, 255, 255, 255), 0.3);
+            raycast(rotatedDir, ray, initial, space);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
         }
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + characterX - width * scale / 2, height * scale + characterY - height * scale /2) , 
-                                        ImVec2(characterX - width * scale / 2, characterY - height * scale / 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
+                                        ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y ) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
         //    ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
-            static float f = 0.0f;
             static int counter = 0;
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
@@ -259,7 +334,7 @@ int main(int, char**)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("float", &f, 0.001f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
