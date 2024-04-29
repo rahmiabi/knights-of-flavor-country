@@ -7,7 +7,7 @@ Freedom for food people
   - DJ Bridges: Zaniel Silverio
   - Inheritor of Suffering: Aaron Snell
   - Socketroth: Kiyoshi Yang
-  - Taste Tester/GTester: Benson Karki 💀
+  - Taste Tester/GTester: Benson Karki
   - ISAD: Nathan Yang :wave:
   - Flex: Matthew Mazone
 
@@ -19,6 +19,6 @@ Freedom for food people
 [secret](https://youtu.be/Z3J_MCbwaJ0?si=_qsZjARRNZ0IOaqa)
 
 erm whatdasigma
-OILED UP MENCARELLI
+OILED UP MENCARELLI ON LIVE
 
 my commit-aaron
