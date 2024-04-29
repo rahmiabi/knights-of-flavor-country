@@ -16,3 +16,11 @@
 - Custom physics engine development begins
 
 ## 4/28/24
+- Progress on inventory
+- Progress on classes
+- Raycasting
+- Camera lock
+- Improvements to projectiles
+- Art for characters/weapons begun
+
+## 4/29/24
