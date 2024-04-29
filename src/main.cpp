@@ -4,7 +4,6 @@
 #include <vector>
 #include <random>
 #include <chrono>
-
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -13,9 +12,7 @@
 #include "../lib/stb_image.h"
 
 #define GL_SILENCE_DEPRECATION
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
+#include <GL/glew.h>
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
@@ -28,6 +25,40 @@
 #include "actor.h"
 
 using namespace std;
+
+/* 
+STOLEN CODEE !!!
+*/
+static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) 
+{ 
+    return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); 
+}
+static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a) 
+{ 
+    return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
+}
+void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, ImDrawList* draw_list)
+{
+    float cos_a = cosf(angle);
+    float sin_a = sinf(angle);
+    ImVec2 pos[4] =
+    {
+        center + ImRotate(ImVec2(-size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a),
+        center + ImRotate(ImVec2(+size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a),
+        center + ImRotate(ImVec2(+size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a),
+        center + ImRotate(ImVec2(-size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a)
+    };
+    ImVec2 uvs[4] = 
+    { 
+        ImVec2(0.0f, 0.0f), 
+        ImVec2(1.0f, 0.0f), 
+        ImVec2(1.0f, 1.0f), 
+        ImVec2(0.0f, 1.0f) 
+    };
+
+    draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
+}
+
 
 struct Vec2{
     float x, y;
@@ -56,14 +87,14 @@ struct Player {
     Square area;
     Vec2 pos;
 };  
-void raycast(const Vec2& direction, Vec2& ray, const Vec2& initialPos, const vector<Square>& space){
-    if (ray.getMag() > 500) return;
+void raycast(const Vec2& direction, Vec2& ray, const Vec2& initialPos, const vector<Square>& space, int maxMag){
+    if (ray.getMag() > maxMag) return;
     for (const Square& s: space)
        if (((ray.x + initialPos.x > s.start.x && ray.x + initialPos.x < s.end.x) && 
            (ray.y + initialPos.y > s.start.y && ray.y + initialPos.y < s.end.y))) return;
     ray.x += direction.x;
     ray.y += direction.y;
-    raycast(direction, ray, initialPos, space);
+    raycast(direction, ray, initialPos, space, maxMag);
 }
 static void glfw_error_callback(int error, const char* description)
 {
@@ -150,33 +181,42 @@ int main(int, char**)
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    glewInit();
 
     // Set Window Icon
     int width, height, channels;
     unsigned char* pixels = stbi_load("./assets/images/noelle.jpg", &width, &height, &channels, 4);
 
-    GLFWimage images[1];
+    GLFWimage images[2];
     images[0].width = width;
     images[0].height = height;
     images[0].pixels = pixels;
 
+    int width1, height1, channels1;
+    unsigned char* pixels1 = stbi_load("./assets/images/gun.png", &width1, &height1, &channels1, 4);
+    images[1].width = width1;
+    images[1].height = height1;
+    images[1].pixels = pixels1;
     glfwSetWindowIcon(window, 1, images);
     vector<Projectile> projectiles;
-
 // uhh idk what this does i just do copy paste haha
-    GLuint image_texture;
-    glGenTextures(1, &image_texture);
-    glBindTexture(GL_TEXTURE_2D, image_texture);
+    GLuint image_texture1, image_texture2;
+    glGenTextures(1, &image_texture1);
+    glGenTextures(1, &image_texture2);
+    glEnable(GL_TEXTURE_2D);
 
+    glBindTexture(GL_TEXTURE_2D, image_texture2);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width1, height1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels1);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, image_texture1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
     // Setup filtering parameters for display
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload pixels into texture
-#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-#endif
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
     vector<Square> space;
 
@@ -220,7 +260,7 @@ int main(int, char**)
         double xPos, yPos;
         glfwGetCursorPos(window, &xPos, &yPos);
         double scale = 0.1;
-        ImGui::GetForegroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
+        ImGui::GetForegroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
 
@@ -230,7 +270,7 @@ int main(int, char**)
         int S= glfwGetKey(window, GLFW_KEY_S);
         int D= glfwGetKey(window, GLFW_KEY_D);
         int SHIFT= glfwGetKey(window, GLFW_KEY_Q);
-        int F = glfwGetKey(window, GLFW_KEY_F);
+        int F = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         int R = glfwGetKey(window, GLFW_KEY_R);
 
         if (W == GLFW_PRESS){
@@ -275,7 +315,7 @@ int main(int, char**)
         
         Vec2 Camera = {characterX - windowWidth / 2, characterY - windowHeight / 2};
         for (const Square& x: space){
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(x.start.x - Camera.x, x.start.y - Camera.y) , 
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x.start.x - Camera.x, x.start.y - Camera.y) , 
                                                 ImVec2(x.end.x - Camera.x, x.end.y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         }
 
@@ -287,7 +327,7 @@ int main(int, char**)
             Vec2 end = {0.0};
             Vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
             dir.normalize();
-            raycast(dir, end, initial, space);
+            raycast(dir, end, initial, space, 1000);
             cout << end.x << " " << end.y << endl;
             end.x += initial.x;
             end.y += initial.y;
@@ -307,7 +347,7 @@ int main(int, char**)
                 a.pos.y += a.vel.y;
             }
             if (a.render)
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
                                                     ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         }
         scale = .1;
@@ -315,15 +355,24 @@ int main(int, char**)
             Vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
             Vec2 ray = {0, 0};
             Vec2 initial = {characterX, characterY};
-            raycast(rotatedDir, ray, initial, space);
+            raycast(rotatedDir, ray, initial, space, 250);
             ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
         }
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
                                         ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y ) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
         //    ImGui::ShowDemoWindow(&show_demo_window);
+        static float angle = 0.0f;
+        angle += deltaTime / 1000  * 1.0f;
+        ImDrawList* list = ImGui::GetBackgroundDrawList();
 
+        int flip = 1;
+        float angul = atan(direction.y/direction.x);
+        cout << direction.x << " " << direction.y << endl;
+        if (direction.x <= 0) {angul += 3.14; flip = -1;}
+        ImageRotated((void*) image_texture2, ImVec2(width * scale + characterX - width * scale - Camera.x + direction.x * 70, height * scale + characterY - height * scale - Camera.y + direction.y * 70), ImVec2(width * scale, flip * height * scale), angul, list); 
+        ImageRotated((void*) image_texture1, ImVec2(1500 - Camera.x, 900 - Camera.y), ImVec2(200, 200.0f), angle, list); 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static int counter = 0;
