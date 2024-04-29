@@ -105,7 +105,7 @@
     + Medium-range assault rifle
   + 2.16 Linker - "weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon...for twelve seconds."
     + It's an LMG
-  + Z45 - Used by Azurion Forces deep in enemy lines due to its fast firing being perfect for ambushes.
+  + Z-Zip - Used by Azurion Forces deep in enemy lines due to its fast firing being perfect for ambushes.
     + Close range and fast-firing
     
 + Items (found in the world)
@@ -113,7 +113,11 @@
     + Heals
   + W95 - Expiremental drug created to boost health
     + Boosts max hp for a limited time
-  + 
+  + Speed boost
+  + Def boost
+  + Vision boost?
+  + CT.R Compound - Expiremental Drug that resembles toothpaste and is often mistaken as such
+    + Revives a downed teammate
       
 + Abilities or stratagems?
   + WinDef Shield - mounts on back
