@@ -358,6 +358,7 @@ int main(int, char**)
             raycast(rotatedDir, ray, initial, space, 250);
             ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
         }
+        ImGui::GetBackgroundDrawList()->AddText(ImVec2(50, 50), IM_COL32_WHITE, "Hello World");
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
                                         ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y ) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
