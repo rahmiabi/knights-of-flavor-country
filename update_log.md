@@ -8,3 +8,11 @@
 
 ## 4/27/24
 - Continued brainstorming and story planning
+- Begun to learn/use ImGui
+- Begun composition of the game's soundtrack
+- Working character movement
+- Custom cursor
+- Working(?) projectiles
+- Custom physics engine development begins
+
+## 4/28/24
