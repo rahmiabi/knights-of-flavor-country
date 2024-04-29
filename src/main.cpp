@@ -22,7 +22,10 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#include <glm/glm.hpp>
 #include "actor.h"
+#include "square.h"
+#include "projectile.h"
 
 using namespace std;
 
@@ -59,39 +62,14 @@ void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, I
     draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
 }
 
-
-struct Vec2{
-    float x, y;
-
-    void normalize(){
-        if (!x && !y) return;
-        int mag = sqrt(x * x + y * y);
-        x /= mag;
-        y /= mag;
-    }
-    float getMag() const {
-       return sqrt(x * x + y * y);
-    }
-};
-
-struct Projectile{
-    Vec2 pos, vel, end;
-    bool render = true;
-};
-
-struct Square{
-    Vec2 start, end;
-};
-
-struct Player {
-    Square area;
-    Vec2 pos;
-};  
-void raycast(const Vec2& direction, Vec2& ray, const Vec2& initialPos, const vector<Square>& space, int maxMag){
-    if (ray.getMag() > maxMag) return;
-    for (const Square& s: space)
+void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<Square>& space, int maxMag){
+    if (glm::length(ray) > maxMag) return;
+    for (const Square& s: space) {
        if (((ray.x + initialPos.x > s.start.x && ray.x + initialPos.x < s.end.x) && 
-           (ray.y + initialPos.y > s.start.y && ray.y + initialPos.y < s.end.y))) return;
+           (ray.y + initialPos.y > s.start.y && ray.y + initialPos.y < s.end.y))) {
+            return;
+        }
+    }
     ray.x += direction.x;
     ray.y += direction.y;
     raycast(direction, ray, initialPos, space, maxMag);
@@ -220,10 +198,10 @@ int main(int, char**)
 
     vector<Square> space;
 
-    space.push_back(Square{Vec2{500, 500}, Vec2{600, 600}});
-    space.push_back(Square{Vec2{0, 0}, Vec2{250, 250}});
-    space.push_back(Square{Vec2{80, 80}, Vec2{90, 90}});
-    space.push_back(Square{Vec2{0, 700}, Vec2{1000, 1000}});
+    space.push_back(Square{glm::vec2{500, 500}, glm::vec2{600, 600}});
+    space.push_back(Square{glm::vec2{0, 0}, glm::vec2{250, 250}});
+    space.push_back(Square{glm::vec2{80, 80}, glm::vec2{90, 90}});
+    space.push_back(Square{glm::vec2{0, 700}, glm::vec2{1000, 1000}});
     
 // Main loop
     double characterX = 1280 / 2, characterY = 720 / 2;
@@ -264,7 +242,7 @@ int main(int, char**)
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
 
-        Vec2 velocity = {0, 0};
+        glm::vec2 velocity = {0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
         int A= glfwGetKey(window, GLFW_KEY_A);
         int S= glfwGetKey(window, GLFW_KEY_S);
@@ -289,7 +267,7 @@ int main(int, char**)
             cout << "Reloading" << endl;
             mag = 32;
         }
-        velocity.normalize();
+        velocity = glm::normalize(velocity);
 
         bool moveX = true;
         bool moveY = true;
@@ -313,26 +291,26 @@ int main(int, char**)
             characterY += velocity.y / 3* deltaTime;
         }
         
-        Vec2 Camera = {characterX - windowWidth / 2, characterY - windowHeight / 2};
+        glm::vec2 Camera = {characterX - windowWidth / 2, characterY - windowHeight / 2};
         for (const Square& x: space){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x.start.x - Camera.x, x.start.y - Camera.y) , 
                                                 ImVec2(x.end.x - Camera.x, x.end.y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         }
 
-        Vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
-        direction.normalize();
+        glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
+        direction = glm::normalize(direction);
 
         if (F == GLFW_PRESS && timer >= fireRate && mag){
-            Vec2 initial = {characterX, characterY};
-            Vec2 end = {0.0};
-            Vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
-            dir.normalize();
+            glm::vec2 initial = {characterX, characterY};
+            glm::vec2 end {0.0};
+            glm::vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
+            dir = glm::normalize(dir);
             raycast(dir, end, initial, space, 1000);
             cout << end.x << " " << end.y << endl;
             end.x += initial.x;
             end.y += initial.y;
             Projectile proj = {{characterX, characterY}, dir, end, true};
-            proj.vel.normalize();
+            proj.vel = glm::normalize(proj.vel);
             projectiles.push_back(proj);
             mag--;
             cout << "Ammo: " << mag << " / 32" << endl;
@@ -352,12 +330,13 @@ int main(int, char**)
         }
         scale = .1;
         for (float i = -3.14/5; i <= 3.14/5; i += .005){
-            Vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
-            Vec2 ray = {0, 0};
-            Vec2 initial = {characterX, characterY};
+            glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
+            glm::vec2 ray = {0, 0};
+            glm::vec2 initial = {characterX, characterY};
             raycast(rotatedDir, ray, initial, space, 250);
             ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
         }
+        ImGui::GetBackgroundDrawList()->AddText(ImVec2(50, 50), IM_COL32_WHITE, "Hello World");
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
                                         ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y ) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -404,6 +383,8 @@ int main(int, char**)
                 show_another_window = false;
             ImGui::End();
         }
+
+        ActorManager::update(deltaTime);
 
         // Rendering
         ImGui::Render();
