@@ -22,5 +22,10 @@
 - Camera lock
 - Improvements to projectiles
 - Art for characters/weapons begun
+- Begun work on networking
 
 ## 4/29/24
+- Work on inventory/weapon classes/actor classes continues
+- Networking continued
+- Design for weapons started
+- **INCOMPLETE**
