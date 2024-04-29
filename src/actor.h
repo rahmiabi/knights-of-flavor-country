@@ -10,6 +10,7 @@
 #include <concepts>
 #include <memory>
 #include <unordered_map>
+#include "glm/vec2.hpp"
 
 class ActorManager;
 
@@ -19,11 +20,10 @@ class ActorManager;
 class Actor {
 private:
     std::string name;
-    int64_t x;
-    int64_t y;
+    glm::vec2 pos;
 
 protected:
-    Actor(const std::string name = "Actor", int64_t x = 0, int64_t y = 0);
+    Actor(const std::string name = "Actor", const glm::vec2& pos = {});
     
     /**
      * AI tick function. Called each frame
@@ -44,25 +44,32 @@ public:
         this->name = name;
     }
 
-    inline int64_t getX() const {
-        return this->x;
+    inline float getX() const {
+        return this->pos.x;
     }
 
-    inline void setX(int64_t x) {
-        this->x = x;
+    inline void setX(float x) {
+        this->pos.x = x;
     }
 
-    inline int64_t getY() const {
-        return this->y;
+    inline float getY() const {
+        return this->pos.y;
     }
 
-    inline void setY(int64_t y) {
-        this->y = y;
+    inline void setY(float y) {
+        this->pos.y = y;
     }
 
-    inline void setPosition(int64_t x, int64_t y) {
-        this->x = x;
-        this->y = y;
+    inline glm::vec2& getPosition() {
+        return this->pos;
+    }
+
+    inline const glm::vec2& getPosition() const {
+        return this->pos;
+    }
+
+    inline void setPosition(const glm::vec2& pos) {
+        this->pos = pos;
     }
 };
 
