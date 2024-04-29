@@ -22,6 +22,7 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#define GLM_SWIZZLE_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include "actor.h"
 #include "square.h"
@@ -79,6 +80,13 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos){
+}
+
+void normalize(glm::vec2 &thing){
+	if(thing.x == 0 && thing.y == 0) return;
+	float mag = sqrt(pow(thing.x, 2) + pow(thing.y,2));
+	thing.x /= mag;
+	thing.y /= mag;
 }
 
 // Main code
@@ -242,7 +250,7 @@ int main(int, char**)
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
 
-        glm::vec2 velocity = {0, 0};
+        glm::vec2 velocity{0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
         int A= glfwGetKey(window, GLFW_KEY_A);
         int S= glfwGetKey(window, GLFW_KEY_S);
@@ -267,12 +275,14 @@ int main(int, char**)
             cout << "Reloading" << endl;
             mag = 32;
         }
-        velocity = glm::normalize(velocity);
+        normalize(velocity);
 
         bool moveX = true;
         bool moveY = true;
         float woffset = width * scale / 2;
         float hoffset = height * scale / 2;
+
+	// collision checking
         for (const Square& s: space) {
             if (((characterX + velocity.x / 3 * deltaTime + woffset > s.start.x && characterX + velocity.x / 3 * deltaTime - woffset < s.end.x) && 
                 (characterY + hoffset> s.start.y && characterY - hoffset < s.end.y))){
@@ -283,6 +293,7 @@ int main(int, char**)
                    moveY = false;
             }
         }
+	cout << velocity.x << endl;
 
         if (moveX){
             characterX += velocity.x / 3 * deltaTime;
@@ -298,19 +309,20 @@ int main(int, char**)
         }
 
         glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
-        direction = glm::normalize(direction);
+        normalize(direction);
 
         if (F == GLFW_PRESS && timer >= fireRate && mag){
             glm::vec2 initial = {characterX, characterY};
             glm::vec2 end {0.0};
             glm::vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
-            dir = glm::normalize(dir);
+	    if(dir.x && dir.y)
+            normalize(dir);
             raycast(dir, end, initial, space, 1000);
             cout << end.x << " " << end.y << endl;
             end.x += initial.x;
             end.y += initial.y;
             Projectile proj = {{characterX, characterY}, dir, end, true};
-            proj.vel = glm::normalize(proj.vel);
+            normalize(proj.vel);
             projectiles.push_back(proj);
             mag--;
             cout << "Ammo: " << mag << " / 32" << endl;
@@ -332,7 +344,7 @@ int main(int, char**)
         for (float i = -3.14/5; i <= 3.14/5; i += .005){
             glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
             glm::vec2 ray = {0, 0};
-            glm::vec2 initial = {characterX, characterY};
+            glm::vec2 initial(characterX, characterY);
             raycast(rotatedDir, ray, initial, space, 250);
             ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
         }
@@ -345,6 +357,7 @@ int main(int, char**)
         static float angle = 0.0f;
         angle += deltaTime / 1000  * 1.0f;
         ImDrawList* list = ImGui::GetBackgroundDrawList();
+	cout << velocity.x << endl;
 
         int flip = 1;
         float angul = atan(direction.y/direction.x);
