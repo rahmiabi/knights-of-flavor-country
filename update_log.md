@@ -7,4 +7,4 @@
 > ![alt text](images/mackarelli_deepfake.gif)
 
 ## 4/27/24
-- Yes
+- Continued brainstorming and story planning
