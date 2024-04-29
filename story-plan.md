@@ -89,7 +89,47 @@
     + Would make sense if we have multiple abilities
   + Hyper Agile Lethal Outfit
     + If we do a stupid and end up making a faster pace game
-+ 
+      
++ Weapons
+  + Edge Blade - A weapon forged in the flames of the Old Traf City as it burned to ash that is passed down from Edge Operative to Edge Operative
+    + Looks like a katana and creates an edge logo when swiped
+      
+  + Bing Bang - A hodgepodge of explosives created by farmers in a desperate attempt to defend the countryside
+    + Large Blast radius but unpredictable fuse
+  + EXCELerator Grenade - Standard issue Azurion Grenade
+    + Medium blast radius with a predictable fuse time
+      
+  + LR-11 Explorer - A slow-firing and high-damage weapon built for Special Forces
+    + Long range DMR
+  + Surface Strike Rifle - Medium pace firing with medium damage, standard issue for Azurion Forces
+    + Medium-range assault rifle
+  + 2.16 Linker - "weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon...for twelve seconds."
+    + It's an LMG
+  + Z45 - Used by Azurion Forces deep in enemy lines due to its fast firing being perfect for ambushes.
+    + Close range and fast-firing
+    
++ Items (found in the world)
+  + CSM (Combat Supply Meds) - generic meds
+    + Heals
+  + W95 - Expiremental drug created to boost health
+    + Boosts max hp for a limited time
+  + 
+      
++ Abilities or stratagems?
+  + WinDef Shield - mounts on back
+    + Backpack shield that generates a small circle around the user, and allows for (at most) 3 people to be protected if they group up close enough
+  + HTL (Holo Tactical lens) - looks like the irl hololens
+    + Aim bot for a limited amount of time
+  + BOSD (Boundless Orbital Sunder Device) - mounts on back and extends above the user, or just a call in and fire appears around the user
+    + Creates a large blast around the user
+  + CAD Laser - mounts on chest
+    + Fires a powerful laser in the direction the user is facing
+  + HTL (Holo Tactical lens) - looks like the irl hololens
+    + Aim bot for a limited amount of time
+      
+  + DX Drone Strike - char pulls out a Microsoft surface
+    + Calls in a drone strike on the selected location that targets the largest unit first
+  + 
 
 ## Storyline
 
