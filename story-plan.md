@@ -113,9 +113,9 @@
     + Heals
   + W95 - Expiremental drug created to boost health
     + Boosts max hp for a limited time
-  + Speed boost
-  + Def boost
-  + Vision boost?
+  + V-Hype Boost
+  + Aegis
+  + Type-C Vision Enhancers
   + CT.R Compound - Expiremental Drug that resembles toothpaste and is often mistaken as such
     + Revives a downed teammate
       
@@ -128,9 +128,7 @@
     + Creates a large blast around the user
   + CAD Laser - mounts on chest
     + Fires a powerful laser in the direction the user is facing
-  + HTL (Holo Tactical lens) - looks like the irl hololens
-    + Aim bot for a limited amount of time
-      
+  
   + DX Drone Strike - char pulls out a Microsoft surface
     + Calls in a drone strike on the selected location that targets the largest unit first
   + 
@@ -165,3 +163,20 @@ In 2140 Volodymr becomes the new leader of Malustan and ends the war with the Tr
 In 2142 Kernie invests heavily in the VULCAN(Vanguard Ultra Lightweight Combat Armored Nanotech) program, which was a last-ditch effort to create a superweapon to end the stalemate between Malustan and Azurion. However, the program lost most of its funding due to the war being over.
 
 In 2145 Kernie sells The HALO 
+
+
+
+
+
+
+## Story expansion ideas
+  + Azurion joins forces with Actonia and Blizzarious (Activision Blizzard) and later Bethlehem (Bethesda)
+
+## MANDATORY REFERENCES  
++ Hatsune Miku
++ Noelle from genshin impact
++ Gendo ikari
++ Kerney being overqualified for sony
++ That one gun png jack drew
+
+
