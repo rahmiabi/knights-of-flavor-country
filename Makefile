@@ -2,6 +2,7 @@ CXX = g++
 
 EXE = knights-of-flavor-country
 IMGUI_DIR = ./lib/imgui
+LIB_DIR = ./lib/
 SRC_DIR = ./src
 SOURCES = $(SRC_DIR)/main.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
@@ -9,7 +10,7 @@ SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
-CXXFLAGS = -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
+CXXFLAGS = -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(LIB_DIR)
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
 
@@ -19,7 +20,11 @@ LIBS =
 
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
+<<<<<<< HEAD
 	LIBS += -lGL -lGLEW `pkg-config --static --libs glfw3`
+=======
+	LIBS += -lGL `pkg-config --static --libs glfw3` -lGLEW
+>>>>>>> 170e8b3e055a340744dfca03d75d3546de8440c6
 
 	CXXFLAGS += `pkg-config --cflags glfw3`
 	CFLAGS = $(CXXFLAGS)
