@@ -1,20 +1,5 @@
 # Task Force Redmond: Edging to freedom one day at a time...
 
-## Story ideas:
-+ Helldivers 1 clone where we fight Evil Surin's goons
-## Gameplay ideas:
-+ Puzzles that require teamwork
-  + Decode launch codes and another has to enter them (keep talking and nobody explodes type beat)
-  + Stratagem combos
-  + Time attacks together with other teammates in real time
-
-## Enemies: Different apple chips aka evil Surins goons
-+ m1 chip (lowest)
-+ m2 chip (mini-boss)
-+ m3 (boss) field commander officer or smth
-+ m4( final boss Evil Surin) general
-+ True final boss - Kerney the true mastermind behind evil Surin's attack
-
 ## Countries
 + Azurion (The MCs country)
   + Location
@@ -63,12 +48,56 @@
 
 ## Enemy Chars
 + M1
-  + Have to be controlled by a central M2 unit
+  + lore
+    + Have to be controlled by a central M2 unit
+  + Gameplay
+    + Slow and swarmy, think zombies
+  + Design
+    + Honestly any generic "evil" robot works, but for ref here are some i think would look good (Helldivers 2 bots and terminator robots for ref)
+      ![](https://images.immediate.co.uk/production/volatile/sites/3/2024/02/comissar-helldivers-2-56caf5a.png?quality=90&fit=700,466) ![](https://upload.wikimedia.org/wikipedia/en/0/02/T-800_endoskeleton.png)
+    
 + M2
-  + Communicates with the M1s and takes commands from M3
+  + Lore
+    + Communicates with the M1s and takes commands from M3
+  + Gameplay
+    + Larger and more beefier than an M1 and does more damage
+    + could be different types like helldivers 2 (ie rocket pod vers, meele/flame vers, and autocannon vers)
+    + spawns less often
+  + Design
+    + Large and imposing like the hulks from helldivers 2
+      1[](https://static.wikia.nocookie.net/helldivers_gamepedia/images/e/e4/Helldivers-2-Automatons-Hulk.png/revision/latest?cb=20240419130609)
+      
 + M3
-  + Field commanders that take orders directly from M4 aka Evil Surin
+  + Lore
+    + Field commanders that take orders directly from M4 aka Evil Surin
+  + Gameplay
+    + Final boss of a level (think risk of rain 2 teleporter events)
+      + Maybe option to spawn more just like ROR2?
+    + Level 1 - city
+      + Mix of meele and range attacks 
+    + Level 2 - countryside
+      + Range focused attacks and meeles that push you away
+    + Level 3 - factory
+      + Ranged attacks that stun and allow it to easily use its high dmg meele attacks without you being able to run (unless freed by friends)
+  + Design
+    + Would prefer that each is diffent from each other
+    + Level 1 - city
+      + Maybe a mid range fighter best suited for fighting along the city streets
+      + Could look more like an enhanced super soldier or smth since it fights on the frontlines
+    + Level 2 - countryside
+      + Since this bot planned the attack from afar in the countryside, maybe they appear to be more of a war general rather than a fighter
+      + Im kinda thinking svarog from Honkai star rail and most of his attacks would be perfect to
+        ![](https://static.wikia.nocookie.net/houkai-star-rail/images/d/d5/Enemy_Svarog.png/revision/latest?cb=20230501074730)
+    + Level 3 - Factory
+      + Due to the level being less open then the rest maybe this m3 is more meele focused and has a bunch of swords on it
+      + Maybe a spider since it traps its prey and then goes for the kill
+        
 + M4
+  + Combination of all previous M3 mini bosses rolled into one full one
+    
++ Kernie final boss
+  + To make fun of kernie distain for bullet hell games, i think his attacks should mimic bullet hell games like imagine if the screen looked like this during gameplay
+    ![](https://static.wikia.nocookie.net/touhou/images/a/a0/SAextra001.jpg/revision/latest?cb=20110209052933)
   
 + Evil Surin
   + A puppet actor installed by Kernie using a backdoor
@@ -89,7 +118,7 @@
   + Hyper Agile Lethal Outfit
     + If we do a stupid and end up making a faster pace game
   + Design wise it should look similar to the helldives armor/halo odst armor
-    + ref images 
+    + ref images (halo ODST armor and helldivers armor for ref)
 ![](https://static.wikia.nocookie.net/halo/images/7/74/ODST_Helljumper.png/revision/latest?cb=20191112114813) 
 ![](https://oyster.ignimgs.com/mediawiki/apis.ign.com/helldivers-2/6/64/Helldivers2_Armor_%286%29.png?width=640)
       
@@ -99,37 +128,39 @@
       
   + Bing Bang - A hodgepodge of explosives created by farmers in a desperate attempt to defend the countryside
     + Large Blast radius but unpredictable fuse
-    + ref image   
+    + visually looks like a collection of explosives attacked to a stick
+    + ref image (Anti tank grenade from battlefield 1 for ref)
 ![](https://static.wikia.nocookie.net/battlefield/images/a/af/M24_Anti-Tank_Grenade_IRL.jpg/revision/latest?cb=20160507055003)
   + EXCELerator Grenade - Standard issue Azurion Grenade
     + Medium blast radius with a predictable fuse time
-    + ref image
+    + shaped like a baseball
+    + ref image (Impact nade from rainbow six: siege for ref)
        ![](https://static.wikia.nocookie.net/rainbowsix/images/f/f5/R6S_Impact_Grenade.png/revision/latest?cb=20220525145223)
   + LR-11 Explorer - A slow-firing and high-damage weapon built for Special Forces
     + Long range DMR
-    + ref image
+    + ref image (Halo dmr for ref)
  ![](https://media.sketchfab.com/models/e5443864a77547759aed7ca5d70e5e96/thumbnails/208b6dd918404f8b8ae9e215e1eabb51/13fedf96073d4b4597689fc707000725.jpeg)
   + Surface Strike Rifle - Medium pace firing with medium damage, standard issue for Azurion Forces
     + Medium-range assault rifle
-    + ref image
+    + ref image (SIG Sauer XM5 for ref)
  ![](https://upload.wikimedia.org/wikipedia/commons/c/c4/SIG_Sauer_XM5.png)
   + 2.16 Linker - "weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon...for twelve seconds."
     + It's an LMG
-    + ref image 
+    + ref image (SIG Sauer XM250 for ref)
 ![](https://images04.military.com/sites/default/files/styles/full/public/2020-01/Sig%20Machine%20Gun%20Embed.jpg?itok=UwYKZOz8)
   + Z-Zip - Used by Azurion Forces deep in enemy lines due to its fast firing being perfect for ambushes.
     + Close range and fast-firing
-    + ref image 
+    + ref image (fmg9 for ref)
 ![](https://upload.wikimedia.org/wikipedia/commons/6/67/Magpul_FMG9.png)
     
 + Items (found in the world)
   + CSM (Combat Supply Meds) - generic meds
     + Heals
-    + ref image, more vague since it isnt as visible 
+    + ref image, more vague since it isnt as visible (Health pack from halo reach for ref)
 ![](https://static.wikia.nocookie.net/halo/images/0/02/HReach-HealthPack.png/revision/latest?cb=20131027135641)
   + W95 - Expiremental drug created to boost health
     + Boosts max hp for a limited time
-    + ref image 
+    + ref image (Stim from black ops 4 for ref)
 ![](https://static.wikia.nocookie.net/callofduty/images/a/a8/Stim_Shot_HQ_BO4.png/revision/latest?cb=20190501004207)
   + V-Hype Boost
   + Aegis
@@ -140,13 +171,13 @@
 + Abilities or stratagems?
   + WinDef Shield - mounts on back
     + Backpack shield that generates a small circle around the user, and allows for (at most) 3 people to be protected if they group up close enough
-    + ref image, this goes for both this and the BOSD 
+    + ref image, this goes for both this and the BOSD (A vietnam era field radio used by the US for ref)
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/KY38Manpack.jpg/220px-KY38Manpack.jpg)
   + BOSD (Boundless Orbital Sunder Device) - mounts on back and extends above the user, or just a call in and fire appears around the user
     + Creates a large blast around the user
   + HTL (Holo Tactical lens) - looks like the irl hololens
     + Aim bot for a limited amount of time
-    + ref image 
+    + ref image (some military version of a hololens for ref)
 ![](https://cdn.arstechnica.net/wp-content/uploads/2021/03/IVAS-MS.png)
   + CAD Laser - mounts on chest
     + Fires a powerful laser in the direction the user is facing
@@ -162,7 +193,7 @@
 ### Level list
 + 1) Azurion city under attack
   + Looks like new alexandria from reach
-  + ref image 
+  + ref image (New Alexandria for ref)
 ![](https://static.wikia.nocookie.net/halo/images/3/3c/New_Alexandria_3.jpg/revision/latest?cb=20110224134513)
 + 2) Outskirts of Azurion city more of a countryside
   + More wide-open
