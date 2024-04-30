@@ -8,9 +8,9 @@
 
 std::unordered_map<std::string, std::shared_ptr<Actor>> ActorManager::sActors;
 
-Actor::Actor(const std::string name, const glm::vec2& pos) {
+Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
     this->name = name;
-    this->pos = pos;
+    this->body = body;
 }
 
 void ActorManager::remove(const std::string& name) {

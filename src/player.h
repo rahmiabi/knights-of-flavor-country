@@ -12,36 +12,39 @@
 #include <GL/gl.h> // Will drag system OpenGL headers
 
 #include "attack_traits.h"
+#include <memory>
 
 class Player final : public Actor, AttackTraits {
 private:
     double scale = 0.1;
     GLuint texture;
-    glm::vec2 textureDimensions;
-    Rectangle rect/*um*/; 
+    // stores pos
     
 public:
     Player() = default;
     ~Player() = default;
 
     Player(glm::vec2 position, glm::vec2 size, auto& newTexture){
-        rect = Rectangle(position, size);
+        body = std::shared_ptr<PhysicsBody>(new Rectangle(position, glm::vec2(size.x * scale, size.y * scale)));
         texture = newTexture;
-        textureDimensions = size;
     }
 
     glm::vec2 pos() const {
-        return rect.pos();
+        return body->pos();
     }
     glm::vec2 size() const {
-        return glm::vec2(rect.size().x * scale, rect.size().y * scale);
+        return glm::vec2(body->size().x, body->size().y);
+    }
+
+    const PhysicsBody& getRect() const {
+      	return *body.get();
     }
 
     void operator+=(glm::vec2 other){
-        rect += other;
+        *body += other;
     }
     void render(ImDrawList* list, glm::vec2 Camera){
-        list->AddImage((void*) texture, ImVec2(textureDimensions.x * scale + this->pos().x - textureDimensions.y * scale / 2 - Camera.x, textureDimensions.y * scale + this->pos().y - textureDimensions.y * scale /2 - Camera.y) , 
-                                        ImVec2(this->pos().x - textureDimensions.x * scale / 2 - Camera.x, this->pos().y - textureDimensions.y * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+        list->AddImage((void*) texture, ImVec2(body->size().x + this->pos().x - body->size().y / 2 - Camera.x, body->size().y + this->pos().y - body->size().y /2 - Camera.y) , 
+                                        ImVec2(this->pos().x - body->size().x / 2 - Camera.x, this->pos().y - body->size().y / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
     }
 };

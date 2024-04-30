@@ -11,6 +11,7 @@
 #include <memory>
 #include <unordered_map>
 #include "glm/vec2.hpp"
+#include "body.h"
 
 class ActorManager;
 
@@ -18,14 +19,9 @@ class ActorManager;
  * The most basic game object
  */
 class Actor {
-private:
-    std::string name;
-    glm::vec2 pos;
-    
-
 protected:
-    Actor(const std::string name = "Actor", const glm::vec2& pos = {});
-    
+    std::string name;
+    std::shared_ptr<PhysicsBody> body;
     /**
      * AI tick function. Called each frame
      */
@@ -34,6 +30,8 @@ protected:
     friend class ActorManager;
 
 public:
+    Actor() = default;
+    Actor(std::string name, std::shared_ptr<PhysicsBody> body);
     virtual ~Actor() = default;
 
 
@@ -45,32 +43,26 @@ public:
         this->name = name;
     }
 
-    inline float getX() const {
-        return this->pos.x;
+    inline glm::vec2 getPos() const {
+        return this->body->pos();
     }
 
-    inline void setX(float x) {
-        this->pos.x = x;
-    }
+//    inline void setX(float x) {
+//        this->pos.x = x;
+//    }
+//
+//
+//    inline void setY(float y) {
+//        this->pos.y = y;
+//    }
 
-    inline float getY() const {
-        return this->pos.y;
-    }
 
-    inline void setY(float y) {
-        this->pos.y = y;
-    }
-
-    inline glm::vec2& getPosition() {
-        return this->pos;
-    }
-
-    inline const glm::vec2& getPosition() const {
-        return this->pos;
-    }
+//    inline const glm::vec2& getPosition() const {
+//        return this->pos;
+//    }
 
     inline void setPosition(const glm::vec2& pos) {
-        this->pos = pos;
+        this->body->setPos(pos);
     }
 };
 

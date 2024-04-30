@@ -74,6 +74,15 @@ bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const glm::ve
     }
     return false;
 }
+bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const PhysicsBody& body){
+	cout << body.start().x << endl;
+    for (auto& s: space){
+       if (s->isColliding(body)){
+                return true;
+        }
+    }
+    return false;
+}
 // raycasting probly doesnt need to be recursive but oh well
 glm::vec2 size0(0,0);
 void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<shared_ptr<PhysicsBody>>& space, int maxMag){
@@ -290,16 +299,16 @@ int main(int, char**)
         int R = glfwGetKey(window, GLFW_KEY_R);
 
         if (W == GLFW_PRESS){
-            velocity.y -= 50;
+            velocity.y -= 100;
         }
         if (A == GLFW_PRESS){
-            velocity.x -= 50;
+            velocity.x -= 100;
         }
         if (S == GLFW_PRESS){
-            velocity.y += 50;
+            velocity.y += 100;
         }
         if (D == GLFW_PRESS){
-            velocity.x += 50;
+            velocity.x += 100;
         }
 //        if (R == GLFW_PRESS && rtimer == reloadTime){
 //            cout << "Reloading" << endl;
@@ -313,26 +322,21 @@ int main(int, char**)
         }
         normalize(velocity);
 
-        bool moveX = true;
-        bool moveY = true;
-
-	    // collision checkin
-        if (glm::length(velocity) && checkCollisions(space, glm::vec2(player.pos().x + velocity.x / 3 * deltaTime, player.pos().y), glm::vec2(player.size().x / 2, player.size().y / 2))){
-               moveX = false;
-               cout << "a" << endl;
-        }
-        if (glm::length(velocity) && checkCollisions(space, glm::vec2(player.pos().x, player.pos().y + velocity.y /3 * deltaTime), glm::vec2(player.size().x / 2, player.size().y /2))){
-                moveY = false;
+	  // collision checkin
+	  // eventually put this in player update
+        player += glm::vec2(velocity.x / 3 * deltaTime, 0);
+        if (glm::length(velocity) && checkCollisions(space, player.getRect())){
+        	player += glm::vec2(-1 * velocity.x / 3 * deltaTime, 0);
         }
 
-        if (moveX){
-            player += glm::vec2(velocity.x / 3 * deltaTime, 0);
+        player += glm::vec2(0, velocity.y / 3 * deltaTime);
+        if (glm::length(velocity) && checkCollisions(space, player.getRect())){
+        	player += glm::vec2(0, -1 * velocity.y / 3 * deltaTime);
         }
-        if (moveY){
-            player += glm::vec2(0, velocity.y / 3* deltaTime);
-        }
+
         
         glm::vec2 Camera = {player.pos().x - windowWidth / 2, player.pos().y - windowHeight / 2};
+	// draws squaes
         for (const shared_ptr<PhysicsBody>& x: space){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x->start().x - Camera.x, x->start().y - Camera.y) , 
                                                 ImVec2(x->end().x - Camera.x, x->end().y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
