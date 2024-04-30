@@ -137,6 +137,7 @@ int main(int, char**)
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0); // Enable vsync
+    srand(time(0));
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -235,6 +236,7 @@ int main(int, char**)
     Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
     while (!glfwWindowShouldClose(window))
     {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_None);
         end = start;
         start = std::chrono::system_clock::now(); 
         int windowWidth, windowHeight;
@@ -243,7 +245,6 @@ int main(int, char**)
         timer = (timer > fireRate)? fireRate : timer;
         deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
         static float f = 0.1f;
-        ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -302,8 +303,6 @@ int main(int, char**)
                 moveY = false;
         }
 
-	    cout << velocity.x << endl;
-
         if (moveX){
             player += glm::vec2(velocity.x / 3 * deltaTime, 0);
         }
@@ -320,14 +319,17 @@ int main(int, char**)
         glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
         normalize(direction);
 
+        // SPAWN PROJECTILES
         if (F == GLFW_PRESS && timer >= fireRate && mag){
             glm::vec2 initial = player.pos();
             glm::vec2 end {0.0};
-            glm::vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
+            float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
+            cout << angle << endl;
+            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
+            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
 	    if(dir.x && dir.y)
             normalize(dir);
             raycast(dir, end, initial, space, 1000);
-            cout << end.x << " " << end.y << endl;
             end.x += initial.x;
             end.y += initial.y;
             Projectile proj = {player.pos(), dir, end, true};
@@ -338,6 +340,8 @@ int main(int, char**)
             timer = 0.0;
         }
         scale = .05;
+
+        // DO PROJECTILE THINGS
         for (Projectile& a: projectiles){
             if (!a.render) continue;
             for (int i = 0; i < 50 * deltaTime / 6; i++){

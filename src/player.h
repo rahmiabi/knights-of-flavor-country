@@ -8,7 +8,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include <iostream>
 #include <GL/glew.h>
 #include <GL/gl.h> // Will drag system OpenGL headers
 
@@ -38,7 +37,6 @@ public:
     }
 
     void operator+=(glm::vec2 other){
-        std::cout << other.x << " " << other.y << "\n";
         rect += other;
     }
     void render(ImDrawList* list, glm::vec2 Camera){
