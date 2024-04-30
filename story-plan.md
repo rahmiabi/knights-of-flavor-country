@@ -152,6 +152,15 @@
     + Close range and fast-firing
     + ref image (fmg9 for ref)
 ![](https://upload.wikimedia.org/wikipedia/commons/6/67/Magpul_FMG9.png)
+
+  + Sniper
+    + bolt action with high dmg low fire rate
+    + MW2 intervention for ref
+      ![](https://static.wikia.nocookie.net/callofduty/images/f/f8/TF-141_Menu_Icon_IW.png/revision/latest?cb=20170101133321)
+  + shotgun
+    + Aoe and reloads a shell at a time
+    + ref image (m90 from halo  for ref) 
+![](https://static.wikia.nocookie.net/thedemonapostles-rpg-collections/images/d/df/M90_Close_Assault_Weapon_System.png/revision/latest?cb=20190819065500)
     
 + Items (found in the world)
   + CSM (Combat Supply Meds) - generic meds
