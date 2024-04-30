@@ -88,6 +88,8 @@
     + Would make sense if we have multiple abilities
   + Hyper Agile Lethal Outfit
     + If we do a stupid and end up making a faster pace game
+  + Design wise it should look similar to the helldives armor/halo odst armor
+    + ref images ![](https://static.wikia.nocookie.net/halo/images/7/74/ODST_Helljumper.png/revision/latest?cb=20191112114813) ![](https://oyster.ignimgs.com/mediawiki/apis.ign.com/helldivers-2/6/64/Helldivers2_Armor_%286%29.png?width=640)
       
 + Weapons
   + Edge Blade - A weapon forged in the flames of the Old Traf City as it burned to ash that is passed down from Edge Operative to Edge Operative
