@@ -6,11 +6,12 @@
 #pragma once
 
 #include "npc.h"
+#include "attack_traits.h"
 
 /**
  * Base class for all enemies
  */
-class Enemy : public Npc {
+class Enemy : public Npc, AttackTraits {
 protected:
     Enemy(const std::string& name, int64_t x, int64_t y);
 

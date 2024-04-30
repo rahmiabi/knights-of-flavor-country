@@ -11,8 +11,9 @@
 #include <GL/glew.h>
 #include <GL/gl.h> // Will drag system OpenGL headers
 
+#include "attack_traits.h"
 
-class Player final : public Actor {
+class Player final : public Actor, AttackTraits {
 private:
     double scale = 0.1;
     GLuint texture;
