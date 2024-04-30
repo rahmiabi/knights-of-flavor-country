@@ -86,7 +86,7 @@
       + Could look more like an enhanced super soldier or smth since it fights on the frontlines
     + Level 2 - countryside
       + Since this bot planned the attack from afar in the countryside, maybe they appear to be more of a war general rather than a fighter
-      + Im kinda thinking svarog from Honkai star rail and most of his attacks would be perfect to
+      + Im kinda thinking svarog from Honkai star rail and most of his attacks would be perfect too
         ![](https://static.wikia.nocookie.net/houkai-star-rail/images/d/d5/Enemy_Svarog.png/revision/latest?cb=20230501074730)
     + Level 3 - Factory
       + Due to the level being less open then the rest maybe this m3 is more meele focused and has a bunch of swords on it
@@ -143,7 +143,7 @@
   + Surface Strike Rifle - Medium pace firing with medium damage, standard issue for Azurion Forces
     + Medium-range assault rifle
     + ref image (SIG Sauer XM5 for ref)
- ![](https://upload.wikimedia.org/wikipedia/commons/c/c4/SIG_Sauer_XM5.png)
+ ![]([https://upload.wikimedia.org/wikipedia/commons/c/c4/SIG_Sauer_XM5.png](https://api.army.mil/e2/c/images/2022/04/20/885c5b1e/original.jpg))
   + 2.16 Linker - "weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon...for twelve seconds."
     + It's an LMG
     + ref image (SIG Sauer XM250 for ref)
