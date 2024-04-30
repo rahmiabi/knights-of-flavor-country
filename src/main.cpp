@@ -100,6 +100,9 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
+void drawNodes(){
+}
+
 // normalizes vector
 void normalize(glm::vec2 &thing){
 	if(thing.x == 0 && thing.y == 0) return;
