@@ -4,6 +4,8 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <memory>
+#include <string>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -25,13 +27,14 @@
 #define GLM_SWIZZLE_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include "actor.h"
-#include "square.h"
+#include "body.h"
 #include "projectile.h"
+#include "player.h"
 
 using namespace std;
 
 /* 
-STOLEN CODEE !!!
+STOLEN CODEE !!! i dont know how matrices work :c
 */
 static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) 
 { 
@@ -62,32 +65,40 @@ void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, I
 
     draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
 }
-
-void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<Square>& space, int maxMag){
-    if (glm::length(ray) > maxMag) return;
-    for (const Square& s: space) {
-       if (((ray.x + initialPos.x > s.start.x && ray.x + initialPos.x < s.end.x) && 
-           (ray.y + initialPos.y > s.start.y && ray.y + initialPos.y < s.end.y))) {
-            return;
+// returns true if point is colliding with wall
+bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2 point, const glm::vec2 size){
+    for (auto& s: space){
+       if (s->isColliding(point, size)){
+                return true;
         }
     }
-    ray.x += direction.x;
-    ray.y += direction.y;
-    raycast(direction, ray, initialPos, space, maxMag);
+    return false;
+}
+// raycasting probly doesnt need to be recursive but oh well
+glm::vec2 size0(0,0);
+void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<shared_ptr<PhysicsBody>>& space, int maxMag){
+    while (true){
+        if (checkCollisions(space, initialPos + ray, size0)) {
+            return;
+        }
+        if (glm::length(ray) > maxMag) return;
+        ray.x += direction.x;
+        ray.y += direction.y;
+    }
 }
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos){
-}
 
+// normalizes vector
 void normalize(glm::vec2 &thing){
 	if(thing.x == 0 && thing.y == 0) return;
 	float mag = sqrt(pow(thing.x, 2) + pow(thing.y,2));
 	thing.x /= mag;
 	thing.y /= mag;
 }
+
 
 // Main code
 int main(int, char**)
@@ -125,7 +136,7 @@ int main(int, char**)
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(0); // Enable vsync
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -137,7 +148,6 @@ int main(int, char**)
     if (glfwRawMouseMotionSupported())
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
-    glfwSetCursorPosCallback(window, cursor_position_callback);
     // Setup Dear ImGui style
     //ImGui::StyleColorsDark();
     ImGui::StyleColorsLight();
@@ -157,6 +167,8 @@ int main(int, char**)
     // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
     //io.Fonts->AddFontDefault();
     //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+    ImFont* font1 = io.Fonts->AddFontFromFileTTF("./assets/fonts/roboto.ttf", 10.0f);
+    ImFont* font2 = io.Fonts->AddFontFromFileTTF("./assets/fonts/roboto.ttf", 40.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
@@ -179,7 +191,7 @@ int main(int, char**)
     images[0].pixels = pixels;
 
     int width1, height1, channels1;
-    unsigned char* pixels1 = stbi_load("./assets/images/gun.png", &width1, &height1, &channels1, 4);
+    unsigned char* pixels1 = stbi_load("./assets/images/run.png", &width1, &height1, &channels1, 4);
     images[1].width = width1;
     images[1].height = height1;
     images[1].pixels = pixels1;
@@ -204,21 +216,23 @@ int main(int, char**)
 
     // Upload pixels into texture
 
-    vector<Square> space;
+    vector<shared_ptr<PhysicsBody>> space;
 
-    space.push_back(Square{glm::vec2{500, 500}, glm::vec2{600, 600}});
-    space.push_back(Square{glm::vec2{0, 0}, glm::vec2{250, 250}});
-    space.push_back(Square{glm::vec2{80, 80}, glm::vec2{90, 90}});
-    space.push_back(Square{glm::vec2{0, 700}, glm::vec2{1000, 1000}});
+    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{500, 500}, glm::vec2{100, 100})));
+    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{800, 532}, glm::vec2{250, 250})));
+    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{430, 80}, glm::vec2{90, 90})));
+    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{590, 700}, glm::vec2{100, 100})));
+    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
     
 // Main loop
-    double characterX = 1280 / 2, characterY = 720 / 2;
     float timer = 50;
     double deltaTime = 0;
     double fireRate = 100;
     int mag = 32;
     auto start = std::chrono::system_clock::now(); 
     auto end = start;
+
+    Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
     while (!glfwWindowShouldClose(window))
     {
         end = start;
@@ -255,7 +269,6 @@ int main(int, char**)
         int A= glfwGetKey(window, GLFW_KEY_A);
         int S= glfwGetKey(window, GLFW_KEY_S);
         int D= glfwGetKey(window, GLFW_KEY_D);
-        int SHIFT= glfwGetKey(window, GLFW_KEY_Q);
         int F = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         int R = glfwGetKey(window, GLFW_KEY_R);
 
@@ -279,40 +292,36 @@ int main(int, char**)
 
         bool moveX = true;
         bool moveY = true;
-        float woffset = width * scale / 2;
-        float hoffset = height * scale / 2;
 
-	// collision checking
-        for (const Square& s: space) {
-            if (((characterX + velocity.x / 3 * deltaTime + woffset > s.start.x && characterX + velocity.x / 3 * deltaTime - woffset < s.end.x) && 
-                (characterY + hoffset> s.start.y && characterY - hoffset < s.end.y))){
-                   moveX = false;
-            }
-            if (((characterX + woffset> s.start.x && characterX - woffset < s.end.x) && 
-                (characterY + velocity.y / 3 * deltaTime + hoffset> s.start.y && characterY + velocity.y / 3 * deltaTime - hoffset < s.end.y))){
-                   moveY = false;
-            }
+	    // collision checkin
+        if (glm::length(velocity) && checkCollisions(space, glm::vec2(player.pos().x + velocity.x / 3 * deltaTime, player.pos().y), glm::vec2(player.size().x / 2, player.size().y / 2))){
+               moveX = false;
+               cout << "a" << endl;
         }
-	cout << velocity.x << endl;
+        if (glm::length(velocity) && checkCollisions(space, glm::vec2(player.pos().x, player.pos().y + velocity.y /3 * deltaTime), glm::vec2(player.size().x / 2, player.size().y /2))){
+                moveY = false;
+        }
+
+	    cout << velocity.x << endl;
 
         if (moveX){
-            characterX += velocity.x / 3 * deltaTime;
+            player += glm::vec2(velocity.x / 3 * deltaTime, 0);
         }
         if (moveY){
-            characterY += velocity.y / 3* deltaTime;
+            player += glm::vec2(0, velocity.y / 3* deltaTime);
         }
         
-        glm::vec2 Camera = {characterX - windowWidth / 2, characterY - windowHeight / 2};
-        for (const Square& x: space){
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x.start.x - Camera.x, x.start.y - Camera.y) , 
-                                                ImVec2(x.end.x - Camera.x, x.end.y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        glm::vec2 Camera = {player.pos().x - windowWidth / 2, player.pos().y - windowHeight / 2};
+        for (const shared_ptr<PhysicsBody>& x: space){
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x->start().x - Camera.x, x->start().y - Camera.y) , 
+                                                ImVec2(x->end().x - Camera.x, x->end().y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         }
 
         glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
         normalize(direction);
 
         if (F == GLFW_PRESS && timer >= fireRate && mag){
-            glm::vec2 initial = {characterX, characterY};
+            glm::vec2 initial = player.pos();
             glm::vec2 end {0.0};
             glm::vec2 dir = {direction.x * 100.0 / (rand() % 20 + 80), direction.y * 100.0 / (rand() % 20 + 90)};
 	    if(dir.x && dir.y)
@@ -321,7 +330,7 @@ int main(int, char**)
             cout << end.x << " " << end.y << endl;
             end.x += initial.x;
             end.y += initial.y;
-            Projectile proj = {{characterX, characterY}, dir, end, true};
+            Projectile proj = {player.pos(), dir, end, true};
             normalize(proj.vel);
             projectiles.push_back(proj);
             mag--;
@@ -341,31 +350,35 @@ int main(int, char**)
                                                     ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         }
         scale = .1;
-        for (float i = -3.14/5; i <= 3.14/5; i += .005){
-            glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
-            glm::vec2 ray = {0, 0};
-            glm::vec2 initial(characterX, characterY);
-            raycast(rotatedDir, ray, initial, space, 250);
-            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
-        }
-        ImGui::GetBackgroundDrawList()->AddText(ImVec2(50, 50), IM_COL32_WHITE, "Hello World");
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
-                                        ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y ) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+//        for (float i = -3.14/5; i <= 3.14/5; i += .005){
+//            glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
+//            glm::vec2 ray = {0, 0};
+//            glm::vec2 initial(characterX, characterY);
+//            raycast(rotatedDir, ray, initial, space, 250);
+//            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
+//        }
+        ImGui::PushFont(font2);
+        string skib = to_string(mag) + "/32";
+        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x, windowHeight - ImGui::CalcTextSize(skib.c_str()).y), IM_COL32_WHITE, (skib).c_str());
+        //ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
+        //                                ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+        player.render(ImGui::GetBackgroundDrawList(), Camera);
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
         //    ImGui::ShowDemoWindow(&show_demo_window);
         static float angle = 0.0f;
         angle += deltaTime / 1000  * 1.0f;
         ImDrawList* list = ImGui::GetBackgroundDrawList();
-	cout << velocity.x << endl;
+        ImGui::PopFont();
 
         int flip = 1;
         float angul = atan(direction.y/direction.x);
-        cout << direction.x << " " << direction.y << endl;
-        if (direction.x <= 0) {angul += 3.14; flip = -1;}
-        ImageRotated((void*) image_texture2, ImVec2(width * scale + characterX - width * scale - Camera.x + direction.x * 70, height * scale + characterY - height * scale - Camera.y + direction.y * 70), ImVec2(width * scale, flip * height * scale), angul, list); 
+        if (direction.x <= 0) {angul += 3.14 - 3.14 / 2; flip = -1;}
+        else angul += 3.14/2;
+        ImageRotated((void*) image_texture2, ImVec2(width * scale + player.pos().x - width * scale - Camera.x + direction.x * 70, height * scale + player.pos().y - height * scale - Camera.y + direction.y * 70), ImVec2(width * .08, flip * height * .08), angul, list); 
         ImageRotated((void*) image_texture1, ImVec2(1500 - Camera.x, 900 - Camera.y), ImVec2(200, 200.0f), angle, list); 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+        ImGui::PushFont(font1);
         {
             static int counter = 0;
 
@@ -396,6 +409,7 @@ int main(int, char**)
                 show_another_window = false;
             ImGui::End();
         }
+        ImGui::PopFont();
 
         ActorManager::update(deltaTime);
 

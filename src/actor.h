@@ -21,6 +21,7 @@ class Actor {
 private:
     std::string name;
     glm::vec2 pos;
+    
 
 protected:
     Actor(const std::string name = "Actor", const glm::vec2& pos = {});
@@ -87,7 +88,7 @@ public:
  *  ActorManager::remove("actor name");
  */
 class ActorManager {
-public:
+private:
     static std::unordered_map<std::string, std::shared_ptr<Actor>> sActors;
 
 public:
