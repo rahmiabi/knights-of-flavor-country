@@ -1,5 +1,5 @@
-# knights-of-flavor-country
-Freedom for food people
+# Task Force Redmond
+Edging to freedom one day at a time...
 
   - Scrum Lord/Project Manager: Rahmi Abi-Rached
   - JJK Curse Lord: Julian Laxamana
