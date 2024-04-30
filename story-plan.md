@@ -1,7 +1,7 @@
-# GoonDivers 0ne
+# Task Force Redmond: Edging to freedom one day at a time...
 
 ## Story ideas:
-+ Anime Helldivers 0ne where we fight Evil Surin's goons
++ Helldivers 1 clone where we fight Evil Surin's goons
 ## Gameplay ideas:
 + Puzzles that require teamwork
   + Decode launch codes and another has to enter them (keep talking and nobody explodes type beat)
@@ -204,5 +204,6 @@ In 2145 Kernie sells The HALO
 + Gendo ikari
 + Kerney being overqualified for sony
 + That one gun png jack drew
++ Drake's Long Sword
 
 
