@@ -3,9 +3,9 @@
 /**
  * Locations within the game
  */
-enum class Location {
-    AZURION,
-    MALUSTAN,
-    KERNELIA,
-    BORDERS
+enum class location {
+    azurion,
+    malustan,
+    kernelia,
+    borders
 };

@@ -196,12 +196,19 @@ int main(int, char**)
     images[1].width = width1;
     images[1].height = height1;
     images[1].pixels = pixels1;
+    
+    int width2, height2, channels2;
+    unsigned char* pixels2 = stbi_load("./assets/images/edge.png", &width2, &height2, &channels2, 4);
+    images[1].width = width2;
+    images[1].height = height2;
+    images[1].pixels = pixels2;
     glfwSetWindowIcon(window, 1, images);
     vector<Projectile> projectiles;
 // uhh idk what this does i just do copy paste haha
-    GLuint image_texture1, image_texture2;
+    GLuint image_texture1, image_texture2, image_texture3;
     glGenTextures(1, &image_texture1);
     glGenTextures(1, &image_texture2);
+    glGenTextures(1, &image_texture3);
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, image_texture2);
@@ -211,6 +218,10 @@ int main(int, char**)
     glBindTexture(GL_TEXTURE_2D, image_texture1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, image_texture3);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels2);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
     // Setup filtering parameters for display
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -227,12 +238,15 @@ int main(int, char**)
     
 // Main loop
     float timer = 50;
+    float rtimer = 1000;
     double deltaTime = 0;
     double fireRate = 100;
-    int mag = 32;
+    double reloadTime = 250;
+    int mag = 1;
     auto start = std::chrono::system_clock::now(); 
     auto end = start;
 
+    float angler = 3.14/4;
     Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
     while (!glfwWindowShouldClose(window))
     {
@@ -242,7 +256,9 @@ int main(int, char**)
         int windowWidth, windowHeight;
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
         timer = timer + deltaTime;
+        rtimer = rtimer + deltaTime;
         timer = (timer > fireRate)? fireRate : timer;
+        rtimer = (rtimer > reloadTime)? reloadTime : rtimer;
         deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
         static float f = 0.1f;
 
@@ -285,9 +301,15 @@ int main(int, char**)
         if (D == GLFW_PRESS){
             velocity.x += 50;
         }
-        if (R == GLFW_PRESS){
-            cout << "Reloading" << endl;
-            mag = 32;
+//        if (R == GLFW_PRESS && rtimer == reloadTime){
+//            cout << "Reloading" << endl;
+//            rtimer = 0;
+//            mag = 32;
+//        }
+         if (rtimer == reloadTime && !mag){
+            //cout << "Reloading" << endl;
+            rtimer = 0;
+            mag = 1;
         }
         normalize(velocity);
 
@@ -320,24 +342,28 @@ int main(int, char**)
         normalize(direction);
 
         // SPAWN PROJECTILES
-        if (F == GLFW_PRESS && timer >= fireRate && mag){
-            glm::vec2 initial = player.pos();
-            glm::vec2 end {0.0};
-            float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
-            cout << angle << endl;
-            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
-            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
-	    if(dir.x && dir.y)
-            normalize(dir);
-            raycast(dir, end, initial, space, 1000);
-            end.x += initial.x;
-            end.y += initial.y;
-            Projectile proj = {player.pos(), dir, end, true};
-            normalize(proj.vel);
-            projectiles.push_back(proj);
+        if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
+            // for projectiles;
+//            glm::vec2 initial = player.pos();
+//            glm::vec2 end {0.0};
+//            float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
+//            cout << angle << endl;
+//            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
+//            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
+//	        if(dir.x && dir.y)
+//            normalize(dir);
+//            raycast(dir, end, initial, space, 1000);
+//            end.x += initial.x;
+//            end.y += initial.y;
+//            Projectile proj = {player.pos(), dir, end, true};
+//            normalize(proj.vel);
+//            projectiles.push_back(proj);
+//            mag--;
+//            cout << "Ammo: " << mag << " / 32" << endl;
+//            timer = 0.0;
+
+            // for melee
             mag--;
-            cout << "Ammo: " << mag << " / 32" << endl;
-            timer = 0.0;
         }
         scale = .05;
 
@@ -363,7 +389,16 @@ int main(int, char**)
 //        }
         ImGui::PushFont(font2);
         string skib = to_string(mag) + "/32";
-        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x, windowHeight - ImGui::CalcTextSize(skib.c_str()).y), IM_COL32_WHITE, (skib).c_str());
+        ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 100));
+        ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 255));
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture3, ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , 
+                                                ImVec2(windowWidth - 10, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
+
+        if (rtimer < reloadTime){
+            angler = 3.14/4 - 3.14/2 * rtimer/reloadTime;
+            ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * rtimer / reloadTime, windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
+        }
         //ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
         //                                ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         player.render(ImGui::GetBackgroundDrawList(), Camera);
@@ -376,10 +411,16 @@ int main(int, char**)
         ImGui::PopFont();
 
         int flip = 1;
-        float angul = atan(direction.y/direction.x);
-        if (direction.x <= 0) {angul += 3.14 - 3.14 / 2; flip = -1;}
+        glm::vec2 rotatedDir;
+        if (rtimer < reloadTime)
+            rotatedDir = {direction.x * cos(angler) - direction.y * sin(angler), direction.x * sin(angler) + direction.y * cos(angler)};
+        else
+            rotatedDir = direction;
+        float angul = atan(rotatedDir.y/rotatedDir.x);
+        float flippy = 1;
+        if (rotatedDir.x < 0) {angul += 3.14/2 /*- 3.14 / 2*/; flip = -1; flippy = -1;}
         else angul += 3.14/2;
-        ImageRotated((void*) image_texture2, ImVec2(width * scale + player.pos().x - width * scale - Camera.x + direction.x * 70, height * scale + player.pos().y - height * scale - Camera.y + direction.y * 70), ImVec2(width * .08, flip * height * .08), angul, list); 
+        ImageRotated((void*) image_texture2, ImVec2(width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80, height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100), ImVec2(width * flippy * .125, flip * height * .125), angul, list); 
         ImageRotated((void*) image_texture1, ImVec2(1500 - Camera.x, 900 - Camera.y), ImVec2(200, 200.0f), angle, list); 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
