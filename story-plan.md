@@ -143,7 +143,7 @@
   + Surface Strike Rifle - Medium pace firing with medium damage, standard issue for Azurion Forces
     + Medium-range assault rifle
     + ref image (SIG Sauer XM5 for ref)
- ![]([https://upload.wikimedia.org/wikipedia/commons/c/c4/SIG_Sauer_XM5.png](https://api.army.mil/e2/c/images/2022/04/20/885c5b1e/original.jpg))
+ ![](https://api.army.mil/e2/c/images/2022/04/20/885c5b1e/original.jpg)
   + 2.16 Linker - "weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon...for twelve seconds."
     + It's an LMG
     + ref image (SIG Sauer XM250 for ref)
