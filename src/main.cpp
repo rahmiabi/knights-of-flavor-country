@@ -5,6 +5,9 @@
 #include <random>
 #include <chrono>
 #include <memory>
+#include <limits>
+#include <unordered_set>
+#include <queue>
 #include <string>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -75,7 +78,6 @@ bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const glm::ve
     return false;
 }
 bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const PhysicsBody& body){
-	cout << body.start().x << endl;
     for (auto& s: space){
        if (s->isColliding(body)){
                 return true;
@@ -100,7 +102,66 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-void drawNodes(){
+void aStar(ImDrawList* list, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& Camera, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const float& maxSize){
+    struct Node {
+        glm::vec2 position;
+        float gCost, hCost, fCost;
+        shared_ptr<Node> parent = nullptr;
+        string toString() const{
+            return to_string(round(position.x * 10)) + " " + to_string(round(position.y * 10));
+        }
+    };
+    shared_ptr<Node> start = shared_ptr<Node>(new Node(pos, 0, 0, 0));
+    auto cmp = [](shared_ptr<Node> left, shared_ptr<Node> right){
+        return tie(left->fCost, left->hCost, left->gCost) > tie(right->fCost, right->hCost, right->gCost);
+    };
+    priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, decltype(cmp)> open;
+    unordered_set<string> openSet;
+    unordered_set<string> closed;
+
+    open.push(start);
+    openSet.insert(start->toString());
+    float shortestDistance = numeric_limits<float>::max();
+    shared_ptr<Node> lastNode;
+    while (open.size()){
+        shared_ptr<Node> current = open.top();
+        open.pop();
+        openSet.erase(current->toString());
+        closed.insert(current->toString());
+
+        if (glm::length(current->position - finalPos) <= step * 1.1) {lastNode = current;break;}
+
+        static auto checkPos = [&start, &current, &shortestDistance, &open, &closed, &openSet, &step](shared_ptr<Node>& newNode, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& finalPos){
+            if (checkCollisions(space, newNode->position, size0) || closed.count(newNode->toString())) return;
+            
+            // erm what da sigma
+
+            float cost = current->gCost + glm::length(newNode->position - current->position);
+            if (!openSet.count(newNode->toString())){
+                newNode->gCost = cost;
+                newNode->hCost = glm::length(newNode->position - finalPos);
+                newNode->fCost = newNode->gCost + newNode->hCost;
+                newNode->parent = current;
+                openSet.insert(newNode->toString());
+                open.push(newNode);
+            }
+        };
+
+        
+        for (int i = -1; i <= 1; i++){
+            for (int j = -1; j <= 1; j++){
+                if (!i && !j) continue;
+                shared_ptr<Node> temp = shared_ptr<Node>(new Node(current->position + glm::vec2(i * step, j * step), 0, 0, 0));
+                checkPos(temp, space, finalPos);
+            }
+        }
+    }
+    int count = 0;
+    for (shared_ptr<Node> tmp = lastNode; tmp; tmp = tmp->parent){
+        count++;
+
+        list->AddRectFilled(ImVec2(tmp->position.x - Camera.x + step / 2, tmp->position.y - Camera.y + step / 2) , ImVec2(tmp->position.x - Camera.x - step / 2, tmp->position.y - Camera.y - step / 2), IM_COL32(255, 255, 255, 100));
+    }
 }
 
 // normalizes vector
@@ -345,8 +406,10 @@ int main(int, char**)
                                                 ImVec2(x->end().x - Camera.x, x->end().y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         }
 
+
         glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
         normalize(direction);
+        aStar(ImGui::GetForegroundDrawList(), space, Camera, player.pos(), glm::vec2(player.pos().x + xPos - windowWidth / 2, player.pos().y + yPos - windowHeight / 2), 50.0f, 10.0f);
 
         // SPAWN PROJECTILES
         if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
