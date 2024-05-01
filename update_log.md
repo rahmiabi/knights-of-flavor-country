@@ -28,4 +28,18 @@
 - Work on inventory/weapon classes/actor classes continues
 - Networking continued
 - Design for weapons started
-- **INCOMPLETE**
+- Cross-client chat system work begun
+- HUD wip
+
+## 4/30/24
+- Weapon "animation" started
+- Changed the game name
+- Begun map design
+- Big progress on inventory system
+- Path finding
+
+## 5/1/24
+- Json parser
+- Begun work on command console
+- Planned how processing will be handled
+- **5/1/24 INCOMPLETE**
