@@ -19,8 +19,8 @@ void acceptConnection() {
     auto clientSocket = make_shared<tcp::socket>(acceptor_.get_executor());
     acceptor_.async_accept(*clientSocket, [this, clientSocket](const boost::system::error_code& ec) {
         if (!ec) {
-            cout << "New client connected: " << clientSocket->remote_endpoint() << endl;
             clients_.push_back(clientSocket);
+            cout << "New client connected: " << clientSocket->remote_endpoint() << endl;
             startReading(clientSocket);
         }
         acceptConnection();
@@ -48,27 +48,21 @@ void removeClient(shared_ptr<tcp::socket> clientSocket) {
 	
 void startReading(shared_ptr<tcp::socket> clientSocket) {
 	auto self = clientSocket;
-		boost::asio::async_read_until(*clientSocket, receiveBuffer_, '\n', [this, self](boost::system::error_code ec, size_t length) {
+		boost::asio::async_read_until(*clientSocket, receiveBuffer_, '\n', [this, self](const boost::system::error_code ec, size_t length) {
 			if (!ec) {
 				istream is(&receiveBuffer_);
 				string message;
 				getline(is, message);
 
-				cout << "Reveived from client: " << message << endl;
+				cout << "Reveived from client " << self->remote_endpoint() << ": " << message << endl;
 
 				broadcastMessage(message, self);
 				
 				receiveBuffer_.consume(length);
 				startReading(self);
-
-/*
-				broadcastMessage(message, self);
-				receiveBuffer_.consume(length);
-
-				startReading(self);*/
-	} else {
-		removeClient(self);
-	}
+			} else {
+				removeClient(self);
+			}
 		});
 	}
 

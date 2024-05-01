@@ -1,51 +1,76 @@
 #pragma once
 
 #include <string>
+#include "item.h"
+#include "csv_file.h"
 
 enum class WeaponType {
     MELEE,
     GUN
 };
 
-class Weapon {
+class ItemRegistry;
+class Weapon final : public Item {
 private:
-    std::string name;
-    int speed;
+    uint32_t fireRate;
+    uint32_t reloadSpeed;
+    uint32_t ammo;
+    uint32_t size;
     WeaponType type;
-    int accuracy;
+    uint32_t accuracy;
+    uint32_t textureId;
+
+    Weapon();
+
+    static Weapon fromCsvEntry(const CsvEntry& entry);
+
+    friend class ItemRegistry;
 
 public:
-    Weapon(const std::string& name, int speed, WeaponType type, int accuracy);
+    // Weapon(const Weapon&) = default;
 
-    inline const std::string& getName() const {
-        return this->name;
+    // Character can only have one of a weapon
+    inline uint32_t getMaxAmount() override {
+        return 1;
     }
 
-    inline void setName(const std::string& name) {
-        this->name = name;
+    inline int getFireRate() const {
+        return this->fireRate;
     }
 
-    inline int getSpeed() const {
-        return this->speed;
+    inline int getReloadSpeed() const {
+        return this->reloadSpeed;
     }
 
-    inline void setSpeed(int speed) {
-        this->speed = speed;
+    inline int getAmmo() const {
+        return this->ammo;
+    }
+
+    inline void setAmmo(int value) {
+        this->ammo = value;
+    }
+
+    inline void incAmmo(int value = 1) {
+        this->ammo += value;
+    }
+
+    inline void decAmmo(int value = 1) {
+        this->ammo -= value;
+    }
+
+    inline int getSize() const {
+        return this->size;
     }
 
     inline WeaponType getType() const {
         return this->type;
     }
 
-    inline void setType(WeaponType type) {
-        this->type = type;
-    }
-
     inline int getAccuracy() const {
         return this->accuracy;
     }
 
-    inline void setAccuracy(int accuracy) {
-        this->accuracy = accuracy;
+    inline int getTextureId() const {
+        return this->textureId;
     }
 };

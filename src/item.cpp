@@ -3,18 +3,7 @@
 #include <stdexcept>
 #include <map>
 
-static std::map<ItemId, Item> gItemMap;
-
-Item::Item(const std::string& name) {
+Item::Item(const std::string& name, const std::string& description) {
     this->name = name;
-}
-
-void ItemRegistry::init() {
-    // TODO registers item
-}
-
-const Item& ItemRegistry::getItem(ItemId id) {
-    if (!gItemMap.contains(id)) {
-        throw std::runtime_error("ItemRegistry::getItem item doesn't exist");
-    }
+    this->description = description;
 }

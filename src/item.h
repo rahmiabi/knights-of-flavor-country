@@ -1,31 +1,39 @@
+/**
+ * @purpose Boost item class definition
+ * @author flakey5
+ */
+
 #pragma once
 
 #include <stddef.h>
 #include <string>
 
-using ItemId = size_t;
-
 class Item {
 protected:
     std::string name;
+    std::string description;
+    /**
+     * Amount that exist
+     */
+    uint32_t amount;
 
-    Item(const std::string& name);
+    Item(const std::string& name, const std::string& description);
 
 public:
     virtual ~Item() = default;
-    
-    std::string& getName() {
-        return this->name;
+
+    /**
+     * @returns the max amount that a player is allowed to have of this item
+     */
+    virtual uint32_t getMaxAmount() {
+        return 256;
     }
 
     const std::string& getName() const {
         return this->name;
     }
-};
 
-class ItemRegistry {
-public:
-    static void init();
-
-    static const Item& getItem(ItemId id);
+    const std::string& getDescription() const {
+        return this->description;
+    }
 };
