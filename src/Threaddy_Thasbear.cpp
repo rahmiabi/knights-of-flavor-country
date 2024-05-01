@@ -33,7 +33,7 @@ int main() {
 	// Some code doing actual threading
 
 	// Joining all threads
-	for (int i = 0; i < vec.size(); i++) { vec.at(i).join();}
+	for (int i = 0; i < vec.size(); i++) {vec.at(i).join();}
 
 
 }
