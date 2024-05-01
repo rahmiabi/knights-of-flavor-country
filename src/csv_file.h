@@ -8,6 +8,7 @@
 #include <cassert>
 #include <vector>
 #include <string>
+#include <cstdint>
 #include <unordered_map>
 
 using CsvIndexMap = std::unordered_map<std::string, size_t>;

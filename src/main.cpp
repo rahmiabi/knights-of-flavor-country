@@ -103,6 +103,7 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 void aStar(ImDrawList* list, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& Camera, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const float& maxSize){
+    if (checkCollisions(space, finalPos, glm::vec2(step / 2, step / 2))) return;
     struct Node {
         glm::vec2 position;
         float gCost, hCost, fCost;
@@ -321,6 +322,10 @@ int main(int, char**)
 
     float angler = 3.14/4;
     Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
+    char clear[250] = "";
+    char inputText[250] = "";
+    string log = "";
+    bool pressed = true;
     while (!glfwWindowShouldClose(window))
     {
         ImGui::SetMouseCursor(ImGuiMouseCursor_None);
@@ -524,9 +529,36 @@ int main(int, char**)
                 show_another_window = false;
             ImGui::End();
         }
+
+        // Chat Window
+        // TODO - Kiyoshi
+        {
+            ImGui::SetNextWindowSize(ImVec2(windowWidth * 0.35, windowHeight * 0.35));
+            ImGui::SetNextWindowPos(ImVec2(10, windowHeight - windowHeight * 0.35 - 30));
+            ImGui::SetNextWindowBgAlpha(0.35f);
+            ImGui::Begin("Chat Window", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::SetCursorPos(ImVec2(5, 0));
+            ImGui::Text(log.c_str());
+
+            int enter = glfwGetKey(window, GLFW_KEY_ENTER);
+            ImGui::SetCursorPos(ImVec2(0, windowHeight * 0.35));
+            ImGui::PushItemWidth(windowWidth * 0.35 - 70);
+            ImGui::InputText("Message", inputText, IM_ARRAYSIZE(inputText));
+            if (enter == GLFW_PRESS){
+                if (pressed){
+                    log += string(inputText) + '\n';
+                    for (int i = 0; i < 250; i++){
+                        inputText[i] = '\0';
+                    }
+                }
+                pressed = false;
+            } else pressed = true;
+            ImGui::End();
+        }
         ImGui::PopFont();
 
         ActorManager::update(deltaTime);
+
 
         // Rendering
         ImGui::Render();
@@ -535,7 +567,6 @@ int main(int, char**)
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-
         glEnd();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
