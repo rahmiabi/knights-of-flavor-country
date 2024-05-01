@@ -111,3 +111,32 @@ public:
      */
     static void checkForDanglingActors();
 };
+
+// ZA WARUDO, im sorry
+struct World{
+  // Static Bodies, aka things that wont move (walls and stuff like that)
+  vector<shared_ptr<PhysicsBody>> staticBodies; 
+  // Rigid Bodies, aka things that might move (players)
+  vector<shared_ptr<PhysicsBody>> rigidBodies; 
+  // ActorManager
+  // returns true if point is colliding with wall
+  bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2 point, const glm::vec2 size){
+    for (auto& s: space){
+      if (s->isColliding(point, size)){
+        return true;
+      }
+    }
+    return false;
+  }
+  // returns true if body is colliding with wall
+  bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const PhysicsBody& body){
+    for (auto& s: space){
+      if (s->isColliding(body)){
+        return true;
+      }
+    }
+    return false;
+  } 
+  ActorManager actors;
+};
+
