@@ -14,6 +14,8 @@ using CsvIndexMap = std::unordered_map<std::string, size_t>;
 
 class CsvFile;
 
+#define ASSERT_COLUMN(entry, name) if (!entry.hasColumn(name)) throw std::runtime_error("entry " name " missing from " #entry " (" __FILE__ ")");
+
 /**
  * A specific line in a .csv file
  */
@@ -41,6 +43,8 @@ public:
     inline const std::string& operator[](const std::string& column) const {
         return this->getValueAtColumn(column);
     }
+
+    uint32_t getU32(const std::string& column) const;
 };
 
 class CsvFile {

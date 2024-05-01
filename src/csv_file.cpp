@@ -40,6 +40,12 @@ const std::string& CsvEntry::getValueAtColumn(const std::string& column) const {
     return this->tokens[index];
 }
 
+uint32_t CsvEntry::getU32(const std::string& column) const {
+    const std::string& value = this->getValueAtColumn(column);
+    // not _exactly_ safe, but it should be fine
+    return std::stoul(value);
+}
+
 CsvFile::CsvFile(const std::string& fileName) {
     std::ifstream in(fileName);
     if (!in.is_open()) {
