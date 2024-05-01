@@ -19,53 +19,53 @@ class MCNpc final : public Npc {
 private:
     MCNpc(int64_t x, int64_t y);
 
-    void update(float delta) override;
 
     friend class ActorManager;
 
 public:
+    void update(float delta) override;
 };
 
 class MackerelliNpc final : public Npc {
 private:
     MackerelliNpc(int64_t x, int64_t y);
 
-    void update(float delta) override;
 
     friend class ActorManager;
 
 public:
+    void update(float delta) override;
 };
 
 class RedmondNpc final : public Npc {
 private:
     RedmondNpc(int64_t x, int64_t y);
 
-    void update(float delta) override;
 
     friend class ActorManager;
 
 public:
+    void update(float delta) override;
 };
 
 class KerneyNpc final : public Npc {
 private:
     KerneyNpc(int64_t x, int64_t y);
 
-    void update(float delta) override;
 
     friend class ActorManager;
 
 public:
+    void update(float delta) override;
 };
 
 class CountVolodymyrNpc final : public Npc {
 private:
     CountVolodymyrNpc(int64_t x, int64_t y);
 
-    void update(float delta) override;
 
     friend class ActorManager;
 
 public:
+    void update(float delta) override;
 };

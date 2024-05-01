@@ -557,8 +557,10 @@ int main(int, char**)
         }
         ImGui::PopFont();
 
-        ActorManager::update(deltaTime);
-
+        // TODO: uncomment when world object is available
+        // for (auto& actor : world.actors) {
+        //     actor.update(deltaTime);
+        // }
 
         // Rendering
         ImGui::Render();

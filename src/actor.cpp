@@ -6,15 +6,13 @@
 #include "actor.h"
 #include <cstdio>
 
-std::unordered_map<std::string, std::shared_ptr<Actor>> ActorManager::sActors;
-
 Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
     this->name = name;
     this->body = body;
 }
 
-void ActorManager::remove(const std::string& name) {
-    if (!sActors.contains(name)) {
+void World::removeActor(const std::string& name) {
+    if (!this->actors.contains(name)) {
         printf(
             "ActorManager::remove: tried removing non-existent actor %s, ignoring\n",
             name.c_str()
@@ -22,7 +20,7 @@ void ActorManager::remove(const std::string& name) {
         return;
     }
     
-    auto& ptr = sActors[name]; // ref so we don't increase ref count on ptr
+    auto& ptr = this->actors[name]; // ref so we don't increase ref count on ptr
     if (ptr.use_count() > 2) {
         printf(
             "ActorManager::remove: actor %s has >2 refs (actual=%ld), possible memory leak\n",
@@ -31,17 +29,11 @@ void ActorManager::remove(const std::string& name) {
         );
     }
 
-    sActors.erase(name);
+    this->actors.erase(name);
 }
 
-void ActorManager::update(float delta) {
-    for (auto& [key, value] : sActors) {
-        value->update(delta);
-    }
-}
-
-void ActorManager::checkForDanglingActors() {
-    for (auto& [key, value] : sActors) {
+void World::checkForDanglingActors() {
+    for (auto& [key, value] : this->actors) {
         if (value.use_count() == 1) {
             printf("FOUND DANGLING ACTOR: %s\n", key.c_str());
         }

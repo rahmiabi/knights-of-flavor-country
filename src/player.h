@@ -29,6 +29,10 @@ public:
         texture = newTexture;
     }
 
+    void update(float delta) override {
+
+    }
+
     glm::vec2 pos() const {
         return body->pos();
     }
