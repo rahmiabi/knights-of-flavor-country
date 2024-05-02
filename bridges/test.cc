@@ -12,7 +12,7 @@ int main() {
 	bridges.setTitle("Testing Audio");
 	bridges.setDescription("Blah blah blah");
 
-	ifstream ins("BETTER!1stTUNE.wav");
+	ifstream ins("BETTER!1stTUNE.wav"); //Main menu music, IF IT WORKED
 	if (!ins) { throw "UH OH"; }
 	else { ins.close(); }
 

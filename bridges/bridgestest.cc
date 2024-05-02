@@ -93,7 +93,9 @@ int main() {
 	*/
 
 	AudioClip ac = AudioClip("testaudio.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
-	cout << "Clip made\n";
+	cout << "Clip made\n"; //Never reaches this point
+
+	//Anything after this comment was me trying to put it on a ColorGrid, but it never got to this point so don't worry about it
 	long long sampleCount = ac.getSampleCount();
 	vector<long long> sampy(sampleCount);
 	sampy.reserve(sampleCount);
