@@ -156,7 +156,7 @@ int main(int, char**)
     // 
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
-    auto endpoints = resolver.resolve("2.tcp.us-cal-1.ngrok.io","16315");
+    auto endpoints = resolver.resolve("localhost","6969");
     ChatClient client(io_context, endpoints);
     client.startChat();
     // Load Fonts
@@ -264,15 +264,15 @@ ifstream ins2("assets/mapfile/maptest.csv");
 
     float angler = 3.14/4;
     static float f = 0.1f;
-    Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
+    Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
     world.players.push_back(shared_ptr<Player>(&player));
     shared_ptr<World> worldptr = shared_ptr<World>(&world);
-    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000,1000), glm::vec2(width * .5, height * .5))));
+    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
     char clear[250] = "";
     char inputText[250] = "";
     string log = "";
     bool pressed = true;
-    thread t1(Enemy::update, &enemy, worldptr);
+    thread t1(&Enemy::update, &enemy, worldptr);
     t1.detach();
     while (!glfwWindowShouldClose(window))
     {
@@ -409,6 +409,13 @@ ifstream ins2("assets/mapfile/maptest.csv");
 //            raycast(rotatedDir, ray, initial, space, 250);
 //            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
 //        }
+//
+//      draw path
+        if (true) {
+            for (int i = 0; i < enemy.path.size() - 1; i++){
+              ImGui::GetBackgroundDrawList()->AddLine(ImVec2(enemy.path[i].x * -1 - Camera.x, enemy.path[i].y * -1 - Camera.y), ImVec2(enemy.path[i +1].x * -1 - Camera.x, enemy.path[i + 1].y * -1 - Camera.y) , IM_COL32(255, 255, 255, 255), 4);
+            }
+        }      
         ImGui::PushFont(font2);
         string skib = to_string(mag) + "/32";
         ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 100));

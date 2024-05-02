@@ -16,17 +16,19 @@
  * Base class for all enemies
  */
 class Enemy : public Npc, AttackTraits {
+private:
+    glm::vec2 direction{0,0};
 protected:
-    std::deque<glm::vec2> path;
     //how long in ms should enemy pathfind
     float pathRefresh;
 public:
     float delta = 0;
+    std::vector<glm::vec2> path = {glm::vec2{0,0}, glm::vec2{0,0}};
     Enemy(const std::string& name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
     virtual ~Enemy() = default;
 
     void update(const std::shared_ptr<World> world);
-    std::deque<glm::vec2> aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size);
+    std::vector<glm::vec2> aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size);
 };
 
 class M1ChipEnemy final : public Enemy {

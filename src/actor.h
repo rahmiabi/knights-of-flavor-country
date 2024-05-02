@@ -13,8 +13,8 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "body.h"
-#define RAPIDJSON_HAS_STDSTRING
-#include "rapidjson/document.h"
+#define RAPIDJSON_HAS_STDSTRING true
+#include "../lib/rapidjson/include/rapidjson/document.h"
 
 struct World;
 
