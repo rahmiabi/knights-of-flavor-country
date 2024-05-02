@@ -101,5 +101,5 @@ struct World{
       }
       return false;
     } 
-};
+} world;
 
