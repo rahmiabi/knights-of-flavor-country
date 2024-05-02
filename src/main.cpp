@@ -33,12 +33,13 @@
 
 #define GLM_SWIZZLE_FORCE_SWIZZLE
 #include <glm/glm.hpp>
+#include "vecmath.h"
 #include "actor.h"
 #include "npc.h"
+#include "player.h"
 #include "enemy.h"
 #include "body.h"
 #include "projectile.h"
-#include "player.h"
 #include "client.h"
 using namespace std;
 
@@ -93,13 +94,6 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-// normalizes vector
-void normalize(glm::vec2 &thing){
-	if(thing.x == 0 && thing.y == 0) return;
-	float mag = sqrt(pow(thing.x, 2) + pow(thing.y,2));
-	thing.x /= mag;
-	thing.y /= mag;
-}
 
 // Main code
 int main(int, char**)
@@ -253,14 +247,19 @@ int main(int, char**)
 
     float angler = 3.14/4;
     static float f = 0.1f;
-    cout << width * 0.01 << endl;
-    Player player(glm::vec2(0, 0), glm::vec2(width *  0.5, height), image_texture1);
+    Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
+    world.players.push_back(shared_ptr<Player>(&player));
+    shared_ptr<World> worldptr = shared_ptr<World>(&world);
+    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000,1000), glm::vec2(width * .5, height * .5))));
     char clear[250] = "";
     char inputText[250] = "";
     string log = "";
     bool pressed = true;
+    thread t1(Enemy::update, &enemy, worldptr);
+    t1.detach();
     while (!glfwWindowShouldClose(window))
     {
+        //enemy.update(worldptr);
         ImGui::SetMouseCursor(ImGuiMouseCursor_None);
         end = start;
         start = std::chrono::system_clock::now(); 
@@ -401,6 +400,8 @@ int main(int, char**)
                                                 ImVec2(windowWidth - 10, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
 
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(enemy.getBody().start().x - Camera.x, enemy.getBody().start().y - Camera.y) , 
+                                        ImVec2(enemy.getBody().end().x - Camera.x, enemy.getBody().end().y - Camera.y) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         if (rtimer < reloadTime){
             angler = 3.14/4 - 3.14/2 * rtimer/reloadTime;
             ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * rtimer / reloadTime, windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
@@ -500,6 +501,7 @@ int main(int, char**)
         // for (auto& actor : world.actors) {
         //     actor.update(deltaTime);
         // }
+        //cout << enemy.getPos().x << " " << enemy.getPos().y << endl;
 
         // Rendering
         ImGui::Render();

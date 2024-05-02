@@ -44,6 +44,10 @@ public:
         this->name = name;
     }
 
+    inline const PhysicsBody& getBody() const {
+      return *body;
+    }
+
     inline glm::vec2 getPos() const {
         return this->body->pos();
     }
@@ -51,8 +55,11 @@ public:
     inline void setPosition(const glm::vec2& pos) {
         this->body->setPos(pos);
     }
+    void operator+=(glm::vec2 other){
+        *body += other;
+    }
 };
-
+class Player; 
 // ZA WARUDO, im sorry
 struct World{
     // Static Bodies, aka things that wont move (walls and stuff like that)
@@ -61,6 +68,7 @@ struct World{
     std::vector<std::shared_ptr<PhysicsBody>> rigidBodies; 
     // ActorManager
     std::unordered_map<std::string, std::shared_ptr<Actor>> actors;
+    std::vector<std::shared_ptr<Player>> players;
     
     /**
      * Create a new Actor.
@@ -101,5 +109,7 @@ struct World{
       }
       return false;
     } 
+
+    std::string toJSON(){}
 };
 

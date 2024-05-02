@@ -2,6 +2,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <cmath>
 
 // normalizes vector
 void normalize(glm::vec2 &thing){
