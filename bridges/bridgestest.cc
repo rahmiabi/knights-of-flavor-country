@@ -1,5 +1,6 @@
 #include "Bridges.h"
 #include "AudioClip.h"
+#include "ColorGrid.h"
 #include "GraphAdjList.h"
 #include <iostream>
 
@@ -70,9 +71,32 @@ int main() {
 	cout << "WHY ARE YOU NOT WORKING?\n";
 	Bridges bridges = Bridges(5, "gugu", "1058853664803");
 	bridges.setTitle("Task Force OST");
-	AudioClip mainOST = AudioClip("compressed_theme.wav"); //In the actual game, we'll probably be changing the song every time an event occurs
 	cout << "Oo oo aa aa\n";
 
-	bridges.setDataStructure(mainOST);
+	Color color(255, 255, 255);
+	ColorGrid cg = ColorGrid(1080, 1920, color);
+
+	AudioClip ac = AudioClip("testaudio.wav");
+
+	long long sampleCount = ac.getSampleCount();
+	vector<int> sampy(sampleCount);
+	for (int i = 0; i < ac.getSampleCount(); i++) {
+		sampy.at(i) = ac.getSample(0, i);
+	}
+
+	long long sum = 0;
+	for (int i = 0; i < sampleCount; i++) {
+		sum += sampy[i];
+	}
+
+	double avg = static_cast<double>(sum)/sampleCount;
+	for (int i = 0; i < cg.getWidth(); i++) {
+		int height = (int)((avg+1) / 2.0 * cg.getHeight());
+		for (int j = 0; j < height; j++) {
+			cg.set(i, j, Color(0, 0, 0));
+		}
+	}
+
+	bridges.setDataStructure(&cg);
 	bridges.visualize();
 }
