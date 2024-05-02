@@ -10,6 +10,8 @@
 #include <unordered_set>
 #include <queue>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 //#include <boost/asio/read_until.hpp>
 
@@ -154,8 +156,7 @@ int main(int, char**)
     // 
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
-    auto endpoints = resolver.resolve("localhost", "6969");
-
+    auto endpoints = resolver.resolve("2.tcp.us-cal-1.ngrok.io","16315");
     ChatClient client(io_context, endpoints);
     client.startChat();
     // Load Fonts
@@ -229,11 +230,27 @@ int main(int, char**)
 
     // Upload pixels into texture
 
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{500, 500}, glm::vec2{100, 500})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{800, 532}, glm::vec2{250, 250})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{430, 80}, glm::vec2{90, 90})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{590, 700}, glm::vec2{100, 10})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
+ifstream ins2("assets/mapfile/maptest.csv");
+      string test;
+       getline(ins2,test);
+       
+       while (ins2) {
+       getline(ins2,test);
+       istringstream iss(test);
+       string type;
+       string tempp;
+       getline(iss,type,',');
+       getline(iss,tempp,',');
+       if(tempp== "") break;
+       int tempx = stoi(tempp);
+       getline(iss,tempp,',');
+       int tempy= stoi(tempp);
+       getline(iss,tempp,',');
+       int sizex = stoi(tempp);
+       getline(iss,tempp,',');
+       int sizey = stoi(tempp);
+       world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{tempx, tempy}, glm::vec2{sizex, sizey})));
+}
     
 // Main loop
     float timer = 50;
