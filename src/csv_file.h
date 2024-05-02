@@ -46,6 +46,9 @@ public:
     }
 
     uint32_t getU32(const std::string& column) const;
+
+    int getI32(const std::string& column) const;
+    float getF32(const std::string& column) const;
 };
 
 class CsvFile {

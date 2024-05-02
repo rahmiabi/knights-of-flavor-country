@@ -46,6 +46,16 @@ uint32_t CsvEntry::getU32(const std::string& column) const {
     return std::stoul(value);
 }
 
+int CsvEntry::getI32(const std::string& column) const {
+    const std::string& value = this->getValueAtColumn(column);
+    return std::stoi(value);
+}
+
+float CsvEntry::getF32(const std::string& column) const {
+    const std::string& value = this->getValueAtColumn(column);
+    return std::stof(value);
+}
+
 CsvFile::CsvFile(const std::string& fileName) {
     std::ifstream in(fileName);
     if (!in.is_open()) {
