@@ -351,11 +351,11 @@ ifstream ins2("assets/mapfile/maptest.csv");
         }
 
         
-        glm::vec2 Camera = {player.pos().x - windowWidth / 2, player.pos().y - windowHeight / 2};
+        glm::vec2 Camera = player.pos();
 	// draws squaes
         for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x->start().x - Camera.x, x->start().y - Camera.y) , 
-                                                ImVec2(x->end().x - Camera.x, x->end().y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((x->start().x - Camera.x) * f + windowWidth / 2, (x->start().y - Camera.y) * f + windowHeight / 2),
+                                                ImVec2((x->end().x - Camera.x) * f + windowWidth / 2, (x->end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         }
 
 
@@ -389,17 +389,17 @@ ifstream ins2("assets/mapfile/maptest.csv");
         scale = .05;
 
         // DO PROJECTILE THINGS
-        for (Projectile& a: projectiles){
-            if (!a.render) continue;
-            for (int i = 0; i < 50 * deltaTime / 6; i++){
-                if (sqrt(pow(a.pos.x - a.end.x, 2) + pow(a.pos.y - a.end.y, 2)) <= 25) {a.render = false; break;}
-                a.pos.x += a.vel.x;
-                a.pos.y += a.vel.y;
-            }
-            if (a.render)
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
-                                                    ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-        }
+//        for (Projectile& a: projectiles){
+//            if (!a.render) continue;
+//            for (int i = 0; i < 50 * deltaTime / 6; i++){
+//                if (sqrt(pow(a.pos.x - a.end.x, 2) + pow(a.pos.y - a.end.y, 2)) <= 25) {a.render = false; break;}
+//                a.pos.x += a.vel.x;
+//                a.pos.y += a.vel.y;
+//            }
+//            if (a.render)
+//            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
+//                                                    ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+//        }
         scale = .1;
 
 //        for (float i = -3.14/5; i <= 3.14/5; i += .005){
@@ -413,7 +413,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
 //      draw path
         if (true) {
             for (int i = 0; i < enemy.path.size() - 1; i++){
-              ImGui::GetBackgroundDrawList()->AddLine(ImVec2(enemy.path[i].x * -1 - Camera.x, enemy.path[i].y * -1 - Camera.y), ImVec2(enemy.path[i +1].x * -1 - Camera.x, enemy.path[i + 1].y * -1 - Camera.y) , IM_COL32(255, 255, 255, 255), 4);
+              //ImGui::GetBackgroundDrawList()->AddLine(ImVec2(enemy.path[i].x * -1 - Camera.x, enemy.path[i].y * -1 - Camera.y), ImVec2(enemy.path[i +1].x * -1 - Camera.x, enemy.path[i + 1].y * -1 - Camera.y) , IM_COL32(255, 255, 255, 255), 4);
             }
         }      
         ImGui::PushFont(font2);
@@ -424,15 +424,15 @@ ifstream ins2("assets/mapfile/maptest.csv");
                                                 ImVec2(windowWidth - 10, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
 
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(enemy.getBody().start().x - Camera.x, enemy.getBody().start().y - Camera.y) , 
-                                        ImVec2(enemy.getBody().end().x - Camera.x, enemy.getBody().end().y - Camera.y) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
+                                        ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         if (rtimer < reloadTime){
             angler = 3.14/4 - 3.14/2 * rtimer/reloadTime;
             ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * rtimer / reloadTime, windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
         }
         //ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
         //                                ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-        player.render(ImGui::GetBackgroundDrawList(), Camera);
+        player.render(ImGui::GetBackgroundDrawList(), Camera, f, windowWidth, windowHeight);
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
         //    ImGui::ShowDemoWindow(&show_demo_window);
@@ -451,8 +451,8 @@ ifstream ins2("assets/mapfile/maptest.csv");
         float flippy = 1;
         if (rotatedDir.x < 0) {angul += 3.14/2 /*- 3.14 / 2*/; flip = -1; flippy = -1;}
         else angul += 3.14/2;
-        ImageRotated((void*) image_texture2, ImVec2(width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80, height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100), ImVec2(width * flippy * .125, flip * height * .125), angul, list); 
-        ImageRotated((void*) image_texture1, ImVec2(1500 - Camera.x, 900 - Camera.y), ImVec2(200, 200.0f), angle, list); 
+        ImageRotated((void*) image_texture2, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
+        ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
         {

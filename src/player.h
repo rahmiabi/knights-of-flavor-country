@@ -44,8 +44,8 @@ public:
       	return *body.get();
     }
 
-    void render(ImDrawList* list, glm::vec2 Camera){
-        list->AddImage((void*) texture, ImVec2(body->start().x - Camera.x, body->start().y - Camera.y) , 
-                                        ImVec2(body->end().x - Camera.x, body->end().y - Camera.y) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+    void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight){
+        list->AddImage((void*) texture, ImVec2((body->start().x - Camera.x) * scale + windowWidth / 2, (body->start().y - Camera.y) * scale + windowHeight / 2) , 
+                                        ImVec2((body->end().x - Camera.x) * scale + windowWidth / 2, (body->end().y - Camera.y) * scale + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
     }
 };
