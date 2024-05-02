@@ -152,12 +152,17 @@
     + Close range and fast-firing
     + ref image (fmg9 for ref)
 ![](https://upload.wikimedia.org/wikipedia/commons/6/67/Magpul_FMG9.png)
-
-  + Sniper
+  + X-Flex
+    + Bullets bounces off walls
+    + Crossbow like. Cant shoot fast, but able to bounce
+    + ref image (Its some random crossbow with a mag in it)
+  ![](https://m.media-amazon.com/images/I/51gJSPr8BmL._AC_UF1000,1000_QL80_.jpg)
+  
+  + OverDrive Rifle
     + bolt action with high dmg low fire rate
     + MW2 intervention for ref
       ![](https://static.wikia.nocookie.net/callofduty/images/f/f8/TF-141_Menu_Icon_IW.png/revision/latest?cb=20170101133321)
-  + shotgun
+  + Shotgun (still have no ideal
     + Aoe and reloads a shell at a time
     + ref image (m90 from halo  for ref) 
 ![](https://static.wikia.nocookie.net/thedemonapostles-rpg-collections/images/d/df/M90_Close_Assault_Weapon_System.png/revision/latest?cb=20190819065500)
