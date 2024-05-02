@@ -56,8 +56,12 @@ class Rect final : public PhysicsBody  {
     }
 
     bool isColliding(const PhysicsBody& body) const override {
-          if (((body.end().x > this->start().x && body.start().x < this->end().x) && 
-              (body.end().y > this->start().y && body.start().y < this->end().y))) 
+//          if (((body.end().x > this->start().x && body.start().x < this->end().x) && 
+//              (body.end().y > this->start().y && body.start().y < this->end().y))) 
+//                return true;
+
+        if (((body.end().x > this->start().x && body.start().x < this->end().x) && 
+            (body.end().y > this->start().y && body.start().y < this->end().y))) 
                 return true;
           else return false;
     }

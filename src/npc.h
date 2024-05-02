@@ -8,64 +8,52 @@
 #include "actor.h"
 
 class Npc : public Actor {
-protected:
-    Npc(const std::string& name, int64_t x, int64_t y);
 
 public:
+    Npc() = default;
+    Npc(std::string name, std::shared_ptr<PhysicsBody> body) : Actor(name, body){}
     virtual ~Npc() = default;
 };
 
 class MCNpc final : public Npc {
 private:
-    MCNpc(int64_t x, int64_t y);
-
-
-    friend class ActorManager;
 
 public:
+    MCNpc() = default;
+    MCNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
     void update(float delta) override;
 };
 
 class MackerelliNpc final : public Npc {
 private:
-    MackerelliNpc(int64_t x, int64_t y);
-
-
-    friend class ActorManager;
 
 public:
+    MackerelliNpc() = default;
+    MackerelliNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
     void update(float delta) override;
 };
 
 class RedmondNpc final : public Npc {
 private:
-    RedmondNpc(int64_t x, int64_t y);
-
-
-    friend class ActorManager;
-
 public:
+    RedmondNpc() = default;
+    RedmondNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
     void update(float delta) override;
 };
 
 class KerneyNpc final : public Npc {
 private:
-    KerneyNpc(int64_t x, int64_t y);
-
-
-    friend class ActorManager;
 
 public:
+    KerneyNpc() = default;
+    KerneyNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
     void update(float delta) override;
 };
 
 class CountVolodymyrNpc final : public Npc {
 private:
-    CountVolodymyrNpc(int64_t x, int64_t y);
-
-
-    friend class ActorManager;
-
 public:
+    CountVolodymyrNpc() = default;
+    CountVolodymyrNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
     void update(float delta) override;
 };

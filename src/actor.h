@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include "glm/vec2.hpp"
+#include <glm/glm.hpp>
 #include "body.h"
 
 struct World;
@@ -84,7 +84,7 @@ struct World{
     void checkForDanglingActors();
 
     // returns true if point is colliding with wall
-    bool checkCollisions(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2 point, const glm::vec2 size){
+    static bool checkCollisions(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2 point, const glm::vec2 size){
       for (auto& s: space){
         if (s->isColliding(point, size)){
           return true;
@@ -93,7 +93,7 @@ struct World{
       return false;
     }
     // returns true if body is colliding with wall
-    bool checkCollisions(const std::vector<std::shared_ptr<PhysicsBody>>& space, const PhysicsBody& body){
+    static bool checkCollisions(const std::vector<std::shared_ptr<PhysicsBody>>& space, const PhysicsBody& body){
       for (auto& s: space){
         if (s->isColliding(body)){
           return true;
@@ -101,5 +101,5 @@ struct World{
       }
       return false;
     } 
-} ;
+};
 

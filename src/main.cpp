@@ -34,11 +34,12 @@
 #define GLM_SWIZZLE_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include "actor.h"
+#include "npc.h"
+#include "enemy.h"
 #include "body.h"
 #include "projectile.h"
 #include "player.h"
 #include "client.h"
-
 using namespace std;
 
 World world;
@@ -90,70 +91,6 @@ void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initia
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
-void aStar(ImDrawList* list, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& Camera, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const float& maxSize){
-    if (world.checkCollisions(space, finalPos, glm::vec2(step / 2, step / 2))) return;
-    struct Node {
-        glm::vec2 position;
-        float gCost, hCost, fCost;
-        shared_ptr<Node> parent = nullptr;
-        string toString() const{
-            return to_string(round(position.x * 10)) + " " + to_string(round(position.y * 10));
-        }
-    };
-    shared_ptr<Node> start = shared_ptr<Node>(new Node(pos, 0, 0, 0));
-    auto cmp = [](shared_ptr<Node> left, shared_ptr<Node> right){
-        return tie(left->fCost, left->hCost, left->gCost) > tie(right->fCost, right->hCost, right->gCost);
-    };
-    priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, decltype(cmp)> open;
-    unordered_set<string> openSet;
-    unordered_set<string> closed;
-
-    open.push(start);
-    openSet.insert(start->toString());
-    float shortestDistance = numeric_limits<float>::max();
-    shared_ptr<Node> lastNode;
-    while (open.size()){
-        shared_ptr<Node> current = open.top();
-        open.pop();
-        openSet.erase(current->toString());
-        closed.insert(current->toString());
-
-        if (glm::length(current->position - finalPos) <= step * 1.1) {lastNode = current;break;}
-
-        static auto checkPos = [&start, &current, &shortestDistance, &open, &closed, &openSet, &step](shared_ptr<Node>& newNode, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& finalPos)
-        {
-            if (world.checkCollisions((world.staticBodies), newNode->position, size0) || closed.count(newNode->toString())) return;
-            
-            // erm what da sigma
-
-            float cost = current->gCost + glm::length(newNode->position - current->position);
-            if (!openSet.count(newNode->toString())){
-                newNode->gCost = cost;
-                newNode->hCost = glm::length(newNode->position - finalPos);
-                newNode->fCost = newNode->gCost + newNode->hCost;
-                newNode->parent = current;
-                openSet.insert(newNode->toString());
-                open.push(newNode);
-            }
-        };
-
-        
-        for (int i = -1; i <= 1; i++){
-            for (int j = -1; j <= 1; j++){
-                if (!i && !j) continue;
-                shared_ptr<Node> temp = shared_ptr<Node>(new Node(current->position + glm::vec2(i * step, j * step), 0, 0, 0));
-                checkPos(temp, world.staticBodies, finalPos);
-            }
-        }
-    }
-    int count = 0;
-    for (shared_ptr<Node> tmp = lastNode; tmp; tmp = tmp->parent){
-        count++;
-
-        list->AddRectFilled(ImVec2(tmp->position.x - Camera.x + step / 2, tmp->position.y - Camera.y + step / 2) , ImVec2(tmp->position.x - Camera.x - step / 2, tmp->position.y - Camera.y - step / 2), IM_COL32(255, 255, 255, 100));
-    }
 }
 
 // normalizes vector
@@ -298,10 +235,10 @@ int main(int, char**)
 
     // Upload pixels into texture
 
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{500, 500}, glm::vec2{100, 100})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{500, 500}, glm::vec2{100, 500})));
     world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{800, 532}, glm::vec2{250, 250})));
     world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{430, 80}, glm::vec2{90, 90})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{590, 700}, glm::vec2{100, 100})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{590, 700}, glm::vec2{100, 10})));
     world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
     
 // Main loop
@@ -315,7 +252,9 @@ int main(int, char**)
     auto end = start;
 
     float angler = 3.14/4;
-    Player player(glm::vec2(0, 0), glm::vec2(width, height), image_texture1);
+    static float f = 0.1f;
+    cout << width * 0.01 << endl;
+    Player player(glm::vec2(0, 0), glm::vec2(width *  0.5, height), image_texture1);
     char clear[250] = "";
     char inputText[250] = "";
     string log = "";
@@ -332,7 +271,6 @@ int main(int, char**)
         timer = (timer > fireRate)? fireRate : timer;
         rtimer = (rtimer > reloadTime)? reloadTime : rtimer;
         deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
-        static float f = 0.1f;
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -407,7 +345,6 @@ int main(int, char**)
 
         glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
         normalize(direction);
-        aStar(ImGui::GetForegroundDrawList(), world.staticBodies, Camera, player.pos(), glm::vec2(player.pos().x + xPos - windowWidth / 2, player.pos().y + yPos - windowHeight / 2), 50.0f, 10.0f);
 
         // SPAWN PROJECTILES
         if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){

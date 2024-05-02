@@ -16,7 +16,7 @@
 
 class Player final : public Actor, AttackTraits {
 private:
-    double scale = 0.1;
+    double scale = 0.5;
     GLuint texture;
     // stores pos
     
@@ -48,7 +48,7 @@ public:
         *body += other;
     }
     void render(ImDrawList* list, glm::vec2 Camera){
-        list->AddImage((void*) texture, ImVec2(body->size().x + this->pos().x - body->size().y / 2 - Camera.x, body->size().y + this->pos().y - body->size().y /2 - Camera.y) , 
-                                        ImVec2(this->pos().x - body->size().x / 2 - Camera.x, this->pos().y - body->size().y / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+        list->AddImage((void*) texture, ImVec2(body->start().x - Camera.x, body->start().y - Camera.y) , 
+                                        ImVec2(body->end().x - Camera.x, body->end().y - Camera.y) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
     }
 };
