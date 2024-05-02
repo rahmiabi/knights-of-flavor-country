@@ -1,0 +1,10 @@
+shape,xpos,ypos,xsize,ysize
+rectangle,150,0,100,300
+rectangle,000,-200,400,100
+rectangle,000,200,400,100
+rectangledown,-150,700,100,900
+rectangleup,-150,-1250,100,2000
+citysquare,-1200,300,1000,1000
+citysquare,-1200,-1250,1000,1000
+lowlevel,-1000,1200,1800,100
+lowlevel,-1600,-2200,3000,100
