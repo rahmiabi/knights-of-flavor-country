@@ -1,8 +1,9 @@
+#pragma once
+#include <boost/asio.hpp>
 #include <boost/asio/read_until.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <boost/asio.hpp>
 #include <deque>
 using namespace std;
 using boost::asio::ip::tcp;
@@ -11,8 +12,6 @@ class ChatClient {
     tcp::socket socket_;
     boost::asio::io_context io_context_;
     bool inChatMode_ = false;
-    string userInput_;
-	deque<string> messageBuffer_;
 
 //Makes it to have 7 max msg on screen
 	void addMessageToBuffer(const string& message) {
@@ -24,6 +23,7 @@ class ChatClient {
 	}
 
 public:
+	deque<string> messageBuffer_;
     ChatClient(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints)
         : socket_(io_context) {
         boost::asio::connect(socket_, endpoints);
@@ -54,5 +54,8 @@ public:
             cerr << "Exception: " << e.what() << endl;
         }
     }
+	void write(string& thing){
+        boost::asio::write(socket_, boost::asio::buffer(thing + "\n"));
+	}
 };
 

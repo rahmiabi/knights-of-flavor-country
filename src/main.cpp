@@ -11,8 +11,7 @@
 #include <queue>
 #include <string>
 
-#include <boost/asio/read_until.hpp>
-#include <boost/asio.hpp>
+//#include <boost/asio/read_until.hpp>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -38,9 +37,11 @@
 #include "body.h"
 #include "projectile.h"
 #include "player.h"
+#include "client.h"
 
 using namespace std;
 
+World world;
 /* 
 STOLEN CODEE !!! i dont know how matrices work :c
 */
@@ -163,7 +164,6 @@ void normalize(glm::vec2 &thing){
 	thing.y /= mag;
 }
 
-
 // Main code
 int main(int, char**)
 {
@@ -220,7 +220,13 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+    // 
+    boost::asio::io_context io_context;
+    tcp::resolver resolver(io_context);
+    auto endpoints = resolver.resolve("localhost", "6969");
 
+    ChatClient client(io_context, endpoints);
+    client.startChat();
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.;
     // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
@@ -292,11 +298,11 @@ int main(int, char**)
 
     // Upload pixels into texture
 
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{500, 500}, glm::vec2{100, 100})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{800, 532}, glm::vec2{250, 250})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{430, 80}, glm::vec2{90, 90})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{590, 700}, glm::vec2{100, 100})));
-    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{500, 500}, glm::vec2{100, 100})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{800, 532}, glm::vec2{250, 250})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{430, 80}, glm::vec2{90, 90})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{590, 700}, glm::vec2{100, 100})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
     
 // Main loop
     float timer = 50;
@@ -535,12 +541,18 @@ int main(int, char**)
             if (enter == GLFW_PRESS){
                 if (pressed){
                     log += string(inputText) + '\n';
+                    string inp(inputText);
+                    client.write(inp);
                     for (int i = 0; i < 250; i++){
                         inputText[i] = '\0';
                     }
                 }
                 pressed = false;
             } else pressed = true;
+            if (client.messageBuffer_.size()){
+                log += client.messageBuffer_.front() + '\n';
+                client.messageBuffer_.pop_front();
+            }
               //log += client.messageBuffer_.front();
               //client.messageBuffer_.pop_front();
             ImGui::End();

@@ -36,13 +36,13 @@ class PhysicsBody {
 };
 
 // Rectangule Static Body Class
-class Rectangle final : public PhysicsBody  {
+class Rect final : public PhysicsBody  {
     Shape shape = Shape::RECTANGLE;
 
     public:
     // CSTORS
-    Rectangle() = default;
-    Rectangle(glm::vec2 s, glm::vec2 size){
+    Rect() = default;
+    Rect(glm::vec2 s, glm::vec2 size){
         startVec = s;
         sizeVec = size;
     }

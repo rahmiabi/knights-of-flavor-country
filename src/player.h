@@ -25,7 +25,7 @@ public:
     ~Player() = default;
 
     Player(glm::vec2 position, glm::vec2 size, auto& newTexture){
-        body = std::shared_ptr<PhysicsBody>(new Rectangle(position, glm::vec2(size.x * scale, size.y * scale)));
+        body = std::shared_ptr<PhysicsBody>(new Rect(position, glm::vec2(size.x * scale, size.y * scale)));
         texture = newTexture;
     }
 
