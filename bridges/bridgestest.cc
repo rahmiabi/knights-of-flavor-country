@@ -70,8 +70,10 @@ AudioClip mixFadeClips(const AudioClip& ac1, const AudioClip& ac2) {
 
 
 int main() {
+	//Possible Issues:
+	//1. There's a problem with AudioClip opening these files?
 	cout << "WHY ARE YOU NOT WORKING?\n";
-	Bridges bridges = Bridges(5, "gugu", "1058853664803");
+	Bridges bridges = Bridges(5, "gugu", "741219807521");
 	bridges.setTitle("Task Force OST");
 	cout << "Oo oo aa aa\n";
 
@@ -92,26 +94,19 @@ int main() {
 
 	AudioClip ac = AudioClip("testaudio.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
 	cout << "Clip made\n";
-
 	long long sampleCount = ac.getSampleCount();
-	vector<int> sampy(sampleCount);
-	for (int i = 0; i < ac.getSampleCount(); i++) {
+	vector<long long> sampy(sampleCount);
+	sampy.reserve(sampleCount);
+	for (int i = 0; i < sampleCount; i++) {
 		sampy.at(i) = ac.getSample(0, i);
 	}
+
 
 	long long sum = 0;
 	for (int i = 0; i < sampleCount; i++) {
 		sum += sampy[i];
 	}
 
-	double avg = static_cast<double>(sum) / sampleCount;
-	for (int i = 0; i < cg.getWidth(); i++) {
-		int height = (int)((avg + 1) / 2.0 * cg.getHeight());
-		for (int j = 0; j < height; j++) {
-			cg.set(i, j, Color(0, 0, 0));
-		}
-	}
-
-	bridges.setDataStructure(&cg);
+	bridges.setDataStructure(ac);
 	bridges.visualize();
 }
