@@ -39,7 +39,7 @@ endif
 
 ifeq ($(OS), Windows_NT)
 	ECHO_MESSAGE = "MinGW"
-	LIBS += -lglfw3 -lgdi32 -lopengl32 -limm32 -lglew32
+	LIBS += -lglfw3 -lgdi32 -lopengl32 -limm32 -lglew32 -L/mingw64/lib/libboost_system -lws2_32 -lwsock32
 
 	CXXFLAGS += `pkg-config --cflags glfw3`
 	CFLAGS = $(CXXFLAGS)
