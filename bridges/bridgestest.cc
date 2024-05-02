@@ -3,6 +3,7 @@
 #include "ColorGrid.h"
 #include "GraphAdjList.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace bridges;
@@ -32,7 +33,7 @@ AudioClip mixClips(const AudioClip& ac1, const AudioClip& ac2) {
 }
 
 AudioClip mixFadeClips(const AudioClip& ac1, const AudioClip ac2, int fadeDuration, int duration) {
-	if (ac1.getSampleRate() != ac2.getSampleRate()) throw "can't mix audio clips of varying rates"; 
+	if (ac1.getSampleRate() != ac2.getSampleRate()) throw "can't mix audio clips of varying rates";
 
 	int SAMPLE_RATE = ac1.getSampleRate();
 	int sampleCount = SAMPLE_RATE * duration;
@@ -43,7 +44,8 @@ AudioClip mixFadeClips(const AudioClip& ac1, const AudioClip ac2, int fadeDurati
 	int fadeSamples = SAMPLE_RATE * fadeDuration;
 	fadeSamples = min(fadeSamples, acMix.getSampleCount());
 
-	int fadeHalf1 = fadeSamples / 2;	int fadeHalf2 = fadeHalf1 - (fadeSamples / 2);
+	int fadeHalf1 = fadeSamples / 2;
+	int fadeHalf2 = fadeHalf1 - (fadeSamples / 2);
 
 	int start = center - fadeHalf1;
 	int end = center + fadeHalf2;
@@ -74,9 +76,22 @@ int main() {
 	cout << "Oo oo aa aa\n";
 
 	Color color(255, 255, 255);
+	cout << "Colors\n";
 	ColorGrid cg = ColorGrid(1080, 1920, color);
+	cout << "Grid\n";
 
-	AudioClip ac = AudioClip("testaudio.wav");
+	ifstream ins("testaudio.wav"); //Okay, open it this way
+	if (!ins) cout << "WHO WOULDVE THOUGHT?\n";
+	else ins.close();
+
+	/*
+	ifstream ins2("./testaudio2.wav");
+	if (!ins2) cout << "NOOOOOO WAY\n";
+	else ins.close();
+	*/
+
+	AudioClip ac = AudioClip("testaudio.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
+	cout << "Clip made\n";
 
 	long long sampleCount = ac.getSampleCount();
 	vector<int> sampy(sampleCount);
@@ -89,9 +104,9 @@ int main() {
 		sum += sampy[i];
 	}
 
-	double avg = static_cast<double>(sum)/sampleCount;
+	double avg = static_cast<double>(sum) / sampleCount;
 	for (int i = 0; i < cg.getWidth(); i++) {
-		int height = (int)((avg+1) / 2.0 * cg.getHeight());
+		int height = (int)((avg + 1) / 2.0 * cg.getHeight());
 		for (int j = 0; j < height; j++) {
 			cg.set(i, j, Color(0, 0, 0));
 		}

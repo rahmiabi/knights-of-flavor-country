@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
 	bridges.setTitle("Testing Audio");
 	bridges.setDescription("Blah blah blah");
 
-	AudioClip ooga = AudioClip("./testaudio.wav");
+	AudioClip ooga = AudioClip("testaudio.wav");
 
 	bridges.setDataStructure(ooga);
 	bridges.visualize();
