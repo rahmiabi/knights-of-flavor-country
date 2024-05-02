@@ -4,11 +4,41 @@
  */
 
 #include "actor.h"
+
 #include <cstdio>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
     this->name = name;
     this->body = body;
+}
+
+std::string Actor::toJSON() {
+    rapidjson::Document json;
+    json["name"].SetString(this->name.c_str(), this->name.size());
+    
+    rapidjson::Value& pos = json["pos"].SetObject();
+    pos["x"].SetFloat(this->body->pos().x);
+    pos["y"].SetFloat(this->body->pos().y);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    json.Accept(writer);
+
+    return buffer.GetString();
+}
+
+void Actor::fromJSON(const rapidjson::Value& value) {
+    if (!value.HasMember("name") || !value.HasMember("pos")) {
+        throw std::runtime_error("Actor::fromJSON was passed incorrect json");
+    }
+
+    this->name = value["name"].GetString();
+    
+    const rapidjson::Value& pos = value["pos"].GetObj();
+    this->setPosition({pos["x"].GetFloat(), pos["y"].GetFloat()});
 }
 
 void World::removeActor(const std::string& name) {

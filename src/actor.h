@@ -13,6 +13,8 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "body.h"
+#define RAPIDJSON_HAS_STDSTRING
+#include "rapidjson/document.h"
 
 struct World;
 
@@ -58,6 +60,19 @@ public:
     void operator+=(glm::vec2 other){
         *body += other;
     }
+
+    /**
+     * {
+     *  "name": "...",
+     *  "pos": {
+     *    "x": 0.0,
+     *    "y": 0.0
+     *  }
+     * }
+     */
+    std::string toJSON();
+
+    void fromJSON(const rapidjson::Value& value);
 };
 class Player; 
 // ZA WARUDO, im sorry
