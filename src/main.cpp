@@ -6,9 +6,14 @@
 #include <chrono>
 #include <memory>
 #include <limits>
+#include <thread>
 #include <unordered_set>
 #include <queue>
 #include <string>
+
+#include <boost/asio/read_until.hpp>
+#include <boost/asio.hpp>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -68,28 +73,12 @@ void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, I
 
     draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
 }
-// returns true if point is colliding with wall
-bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2 point, const glm::vec2 size){
-    for (auto& s: space){
-       if (s->isColliding(point, size)){
-                return true;
-        }
-    }
-    return false;
-}
-bool checkCollisions(const vector<shared_ptr<PhysicsBody>>& space, const PhysicsBody& body){
-    for (auto& s: space){
-       if (s->isColliding(body)){
-                return true;
-        }
-    }
-    return false;
-}
+
 // raycasting probly doesnt need to be recursive but oh well
 glm::vec2 size0(0,0);
 void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<shared_ptr<PhysicsBody>>& space, int maxMag){
     while (true){
-        if (checkCollisions(space, initialPos + ray, size0)) {
+        if (world.checkCollisions(space, initialPos + ray, size0)) {
             return;
         }
         if (glm::length(ray) > maxMag) return;
@@ -103,7 +92,7 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 void aStar(ImDrawList* list, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& Camera, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const float& maxSize){
-    if (checkCollisions(space, finalPos, glm::vec2(step / 2, step / 2))) return;
+    if (world.checkCollisions(space, finalPos, glm::vec2(step / 2, step / 2))) return;
     struct Node {
         glm::vec2 position;
         float gCost, hCost, fCost;
@@ -132,8 +121,9 @@ void aStar(ImDrawList* list, const vector<shared_ptr<PhysicsBody>>& space, const
 
         if (glm::length(current->position - finalPos) <= step * 1.1) {lastNode = current;break;}
 
-        static auto checkPos = [&start, &current, &shortestDistance, &open, &closed, &openSet, &step](shared_ptr<Node>& newNode, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& finalPos){
-            if (checkCollisions(space, newNode->position, size0) || closed.count(newNode->toString())) return;
+        static auto checkPos = [&start, &current, &shortestDistance, &open, &closed, &openSet, &step](shared_ptr<Node>& newNode, const vector<shared_ptr<PhysicsBody>>& space, const glm::vec2& finalPos)
+        {
+            if (world.checkCollisions((world.staticBodies), newNode->position, size0) || closed.count(newNode->toString())) return;
             
             // erm what da sigma
 
@@ -153,7 +143,7 @@ void aStar(ImDrawList* list, const vector<shared_ptr<PhysicsBody>>& space, const
             for (int j = -1; j <= 1; j++){
                 if (!i && !j) continue;
                 shared_ptr<Node> temp = shared_ptr<Node>(new Node(current->position + glm::vec2(i * step, j * step), 0, 0, 0));
-                checkPos(temp, space, finalPos);
+                checkPos(temp, world.staticBodies, finalPos);
             }
         }
     }
@@ -302,13 +292,11 @@ int main(int, char**)
 
     // Upload pixels into texture
 
-    vector<shared_ptr<PhysicsBody>> space;
-
-    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{500, 500}, glm::vec2{100, 100})));
-    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{800, 532}, glm::vec2{250, 250})));
-    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{430, 80}, glm::vec2{90, 90})));
-    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{590, 700}, glm::vec2{100, 100})));
-    space.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{500, 500}, glm::vec2{100, 100})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{800, 532}, glm::vec2{250, 250})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{430, 80}, glm::vec2{90, 90})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{590, 700}, glm::vec2{100, 100})));
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rectangle(glm::vec2{1320, 5335}, glm::vec2{169, 169})));
     
 // Main loop
     float timer = 50;
@@ -358,7 +346,6 @@ int main(int, char**)
         ImGui::GetForegroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
-
         glm::vec2 velocity{0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
         int A= glfwGetKey(window, GLFW_KEY_A);
@@ -394,19 +381,19 @@ int main(int, char**)
 	  // collision checkin
 	  // eventually put this in player update
         player += glm::vec2(velocity.x / 3 * deltaTime, 0);
-        if (glm::length(velocity) && checkCollisions(space, player.getRect())){
+        if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
         	player += glm::vec2(-1 * velocity.x / 3 * deltaTime, 0);
         }
 
         player += glm::vec2(0, velocity.y / 3 * deltaTime);
-        if (glm::length(velocity) && checkCollisions(space, player.getRect())){
+        if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
         	player += glm::vec2(0, -1 * velocity.y / 3 * deltaTime);
         }
 
         
         glm::vec2 Camera = {player.pos().x - windowWidth / 2, player.pos().y - windowHeight / 2};
 	// draws squaes
-        for (const shared_ptr<PhysicsBody>& x: space){
+        for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(x->start().x - Camera.x, x->start().y - Camera.y) , 
                                                 ImVec2(x->end().x - Camera.x, x->end().y - Camera.y), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         }
@@ -414,7 +401,7 @@ int main(int, char**)
 
         glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
         normalize(direction);
-        aStar(ImGui::GetForegroundDrawList(), space, Camera, player.pos(), glm::vec2(player.pos().x + xPos - windowWidth / 2, player.pos().y + yPos - windowHeight / 2), 50.0f, 10.0f);
+        aStar(ImGui::GetForegroundDrawList(), world.staticBodies, Camera, player.pos(), glm::vec2(player.pos().x + xPos - windowWidth / 2, player.pos().y + yPos - windowHeight / 2), 50.0f, 10.0f);
 
         // SPAWN PROJECTILES
         if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
@@ -455,6 +442,7 @@ int main(int, char**)
                                                     ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         }
         scale = .1;
+
 //        for (float i = -3.14/5; i <= 3.14/5; i += .005){
 //            glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
 //            glm::vec2 ray = {0, 0};
@@ -553,6 +541,8 @@ int main(int, char**)
                 }
                 pressed = false;
             } else pressed = true;
+              //log += client.messageBuffer_.front();
+              //client.messageBuffer_.pop_front();
             ImGui::End();
         }
         ImGui::PopFont();
