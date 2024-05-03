@@ -389,7 +389,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
             rtimer = 0;
             mag = 1;
         }
-        //normalize(velocity);
+        normalize(velocity);
 
 	  // collision checkin
 	  // eventually put this in player update
