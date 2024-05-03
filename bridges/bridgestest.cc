@@ -9,6 +9,7 @@ using namespace std;
 using namespace bridges;
 
 //KERNEY WITH THE DEMO CODE
+//NOT WORKING, .wav not parsing
 AudioClip mixClips(const AudioClip& ac1, const AudioClip& ac2, float duration) {
 	if (ac1.getSampleRate() != ac2.getSampleRate()) {
 		throw "can't mix audio clips of varying rates";
@@ -75,12 +76,7 @@ int main() {
 	cout << "WHY ARE YOU NOT WORKING?\n";
 	Bridges bridges = Bridges(5, "gugu", "741219807521");
 	bridges.setTitle("Task Force OST");
-	cout << "Oo oo aa aa\n";
-
-	Color color(255, 255, 255);
-	cout << "Colors\n";
-	ColorGrid cg = ColorGrid(1080, 1920, color);
-	cout << "Grid\n";
+	cout << "Oo oo aa aa\n";;
 
 	ifstream ins("testaudio.wav"); //Okay, open it this way
 	if (!ins) cout << "WHO WOULDVE THOUGHT?\n";
@@ -92,12 +88,22 @@ int main() {
 	else ins.close();
 	*/
 
-	AudioClip ac = AudioClip("testaudio.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
-	cout << "Clip made\n"; //Never reaches this point
+	AudioClip ac1 = AudioClip("startnewtheme_low.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
+	cout << "Clip 1 made\n";
+	AudioClip ac2 = AudioClip("looptheme_low.wav");
+	cout << "Clip 2 made\n"; 
 
 	//Anything after this comment was me trying to put it on a ColorGrid, but it never got to this point so don't worry about it
-	//TODO: Mix
+	int duration = min(ac1.getSampleCount() / ac1.getSampleRate(), ac2.getSampleCount() / ac2.getSampleRate());
 
-	bridges.setDataStructure(ac);
+	AudioClip mix = mixClips(ac1, ac2, duration);
+
+	bridges.setDataStructure(ac1); //First clip
+	bridges.visualize();
+
+	bridges.setDataStructure(ac2); //Second clip
+	bridges.visualize();
+
+	bridges.setDataStructure(mix);
 	bridges.visualize();
 }
