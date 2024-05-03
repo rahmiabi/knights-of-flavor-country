@@ -26,7 +26,7 @@ class ChatClient {
 
 public:
     bool read = true;
-	thread* receiveThread;
+	thread receiveThread;
 	deque<string> messageBuffer_;
     ChatClient(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints)
         {
@@ -34,15 +34,12 @@ public:
         boost::asio::connect(*socket_, endpoints);
     }
 	~ChatClient(){
-		delete receiveThread;
-		delete socket_;
 	}
     void startChat() {
         try {
-			receiveThread = new thread([this]() {
+			receiveThread = thread([this]() {
 				while (read) {
 					boost::asio::streambuf* receiveBuffer = new boost::asio::streambuf();
-					try {
 						boost::asio::async_read_until(*socket_, *receiveBuffer, '\n', [this, receiveBuffer](const boost::system::error_code ec, size_t length) {
 							if (!ec) {
 							istream is(receiveBuffer);
@@ -52,11 +49,6 @@ public:
 							}
 						});
 						delete receiveBuffer;
-					} catch (boost::wrapexcept<boost::system::system_error> disconnectionError){
-						delete receiveBuffer;
-						ended = true;
-						break;
-					}
 				}
 				cout << "finished" << endl;
 				return;
