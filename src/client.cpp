@@ -419,7 +419,8 @@ int main(int, char**)
             if (ImGui::Button("Connect")){
               endpoints = resolver.resolve(address, port);
               try{
-                client = unique_ptr<ChatClient>(new ChatClient(io_context, endpoints));
+                string user(username);
+                client = unique_ptr<ChatClient>(new ChatClient(io_context, endpoints, user));
                 client->startChat();
                 clientState = State::MULTIGAME;
               }

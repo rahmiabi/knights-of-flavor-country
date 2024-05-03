@@ -10,17 +10,19 @@ using namespace std;
 using boost::asio::ip::tcp;
 
 class Chat{
-
+  int count = -1;
 	tcp::acceptor acceptor_;
 	boost::asio::streambuf receiveBuffer_;
 	vector<shared_ptr<tcp::socket>> clients_;
 
 void acceptConnection() {
+    count++;
     auto clientSocket = make_shared<tcp::socket>(acceptor_.get_executor());
     acceptor_.async_accept(*clientSocket, [this, clientSocket](const boost::system::error_code& ec) {
         if (!ec) {
             clients_.push_back(clientSocket);
             cout << "New client connected: " << clientSocket->remote_endpoint() << endl;
+            cout << count << endl;
             startReading(clientSocket);
         }
         acceptConnection();

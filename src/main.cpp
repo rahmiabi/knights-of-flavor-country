@@ -169,7 +169,8 @@ int main(int, char**)
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
     auto endpoints = resolver.resolve("localhost","6969");
-    ChatClient client(io_context, endpoints);
+    std::string user = "chat";
+    ChatClient client(io_context, endpoints, user);
     client.startChat();
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.;
