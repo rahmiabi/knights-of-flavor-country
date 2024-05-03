@@ -1,3 +1,7 @@
+//BENSON MADE THESE TESTS 🎉🥳
+
+#include <bits/chrono.h>
+#include <chrono>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <cstdlib>
@@ -17,34 +21,28 @@
 //#include "vecmath.h"
 using namespace std;
 
-TEST(Fizzbuzz, GoodTests) {
-	//EXPECT_EQ(fizzbuzz(11), "11");
-}
-
-TEST(Fizzbuzz, BadTests) {
-	//EXPECT_EQ(fizzbuzz(-50), "Error");
-}
-
-TEST(Fizzbuzz, EdgeTests) {
-	//EXPECT_EQ(fizzbuzz(1),"1");
+TEST(attack_traits, AttackTests) {
+	AttackTraits t1;
+	t1.setSpeed(10);
+	t1.setDefense(20);
+	t1.setHp(90);
+	EXPECT_EQ(t1.getSpeed(), 10);
+	EXPECT_EQ(t1.getDefense(), 20);
+	EXPECT_EQ(t1.getHp(), 90);
 }
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
-	//srand(time(0));
-
-/*
-#ifndef FOO
-	//Stop people from compiling this code using 'compile'
-	static_assert(false,"Type 'make' to build this, not 'compile'");
-#endif
 	string s;
 	getline(cin,s);
-	if (s == "test") return RUN_ALL_TESTS();
+	if (s == "test") {
+		auto start = chrono::high_resolution_clock::now();
+		return RUN_ALL_TESTS();
+		auto stop = chrono::high_resolution_clock::now();
+		auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+		cout << duration.count() << endl;
 	}
-	*/
 }
-
 
 //NEED TO:
 //include glm?
