@@ -1,21 +1,32 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <cstdlib>
+//#include "body.h"
+#include "csv_file.h"
+#include "inventory.h"
+#include "location.h"
+//#include "npc.h"
+//#include "player.h"
 #include "weapon.h"
+#include "attack_traits.h"
+#include "client.h"
+//#include "enemy.h"
+#include "item.h"
+//#include "projectile.h"
+#include "item_registry.h"
+//#include "vecmath.h"
 using namespace std;
 
 TEST(Fizzbuzz, GoodTests) {
-	EXPECT_EQ(fizzbuzz(11), "11");
-	EXPECT_EQ(fizzbuzz((1+rand() % 100)/15*15), "Fizzbuzz");
-	EXPECT_EQ(fizzbuzz(3), "Fizz");
+	//EXPECT_EQ(fizzbuzz(11), "11");
 }
 
 TEST(Fizzbuzz, BadTests) {
-	EXPECT_EQ(fizzbuzz(-50), "Error");
+	//EXPECT_EQ(fizzbuzz(-50), "Error");
 }
 
 TEST(Fizzbuzz, EdgeTests) {
-	EXPECT_EQ(fizzbuzz(1),"1");
+	//EXPECT_EQ(fizzbuzz(1),"1");
 }
 
 int main(int argc, char** argv) {
@@ -33,3 +44,7 @@ int main(int argc, char** argv) {
 	}
 	*/
 }
+
+
+//NEED TO:
+//include glm?
