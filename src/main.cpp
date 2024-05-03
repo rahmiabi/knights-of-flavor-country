@@ -49,6 +49,29 @@ World world;
 /* 
 STOLEN CODEE !!! i dont know how matrices work :c
 */
+void thing(){
+	ifstream ins2("assets/mapfile/maptest.csv");
+      string test;
+       getline(ins2,test);
+       
+       while (ins2) {
+       getline(ins2,test);
+       istringstream iss(test);
+       string type;
+       string tempp;
+       getline(iss,type,',');
+       getline(iss,tempp,',');
+       if(tempp== "") break;
+       int tempx = stoi(tempp);
+       getline(iss,tempp,',');
+       int tempy= stoi(tempp);
+       getline(iss,tempp,',');
+       int sizex = stoi(tempp);
+       getline(iss,tempp,',');
+       int sizey = stoi(tempp);
+       world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{tempx, tempy}, glm::vec2{sizex, sizey})));
+}
+}
 static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) 
 { 
     return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); 
@@ -166,11 +189,11 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
     // 
-    boost::asio::io_context io_context;
-    tcp::resolver resolver(io_context);
-    auto endpoints = resolver.resolve("localhost","6969");
-    ChatClient client(io_context, endpoints);
-    client.startChat();
+   // boost::asio::io_context io_context;
+    //tcp::resolver resolver(io_context);
+    //auto endpoints = resolver.resolve("localhost","6969");
+    //ChatClient client(io_context, endpoints);
+    //client.startChat();
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.;
     // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
@@ -256,28 +279,6 @@ int main(int, char**)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload pixels into texture
-
-ifstream ins2("assets/mapfile/maptest.csv");
-      string test;
-       getline(ins2,test);
-       
-       while (ins2) {
-       getline(ins2,test);
-       istringstream iss(test);
-       string type;
-       string tempp;
-       getline(iss,type,',');
-       getline(iss,tempp,',');
-       if(tempp== "") break;
-       int tempx = stoi(tempp);
-       getline(iss,tempp,',');
-       int tempy= stoi(tempp);
-       getline(iss,tempp,',');
-       int sizex = stoi(tempp);
-       getline(iss,tempp,',');
-       int sizey = stoi(tempp);
-       world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{tempx, tempy}, glm::vec2{sizex, sizey})));
-}
     
 // Main loop
     float timer = 50;
@@ -298,19 +299,20 @@ ifstream ins2("assets/mapfile/maptest.csv");
     Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
     Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
 
-    world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
-    world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
-    world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
-    world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
+  //  world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
+    //world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
+    //world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
+    //world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
 
     char clear[250] = "";
     char inputText[250] = "";
     string log = "";
     bool pressed = true;
-    thread t1(&World::update, &world);
-    thread t2(&World::physics, &world);
-    t1.detach();
-    t2.detach();
+    float xSize = 1.0, ySize = 1.0;
+    //thread t1(&World::update, &world);
+    //thread t2(&World::physics, &world);
+    //t1.detach();
+    //st2.detach();
     //thread t3(&Enemy::update, &enemy2, worldptr);
     //thread t4(&Enemy::update, &enemy3, worldptr);
     //t2.detach();
@@ -320,7 +322,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
     while (!glfwWindowShouldClose(window))
     {
         //enemy.update(worldptr);
-        ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+        //ImGui::SetMouseCursor(ImGuiMouseCursor_None);
         end = start;
         start = std::chrono::system_clock::now(); 
         int windowWidth, windowHeight;
@@ -339,7 +341,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
         }
         cout << skibid << endl;
         cout << jujutsu(skibid) << endl;
-        f = (jujutsu(skibid) * 2.5 + 0.5);
+        f = (jujutsu(skibid) * 2.5 + 0.001);
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -356,8 +358,8 @@ ifstream ins2("assets/mapfile/maptest.csv");
         double xPos, yPos;
         glfwGetCursorPos(window, &xPos, &yPos);
         double scale = 0.1;
-        ImGui::GetForegroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
-                                        ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+        //ImGui::GetForegroundDrawList()->AddImage((void*) image_texture1, ImVec2(width *// scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
+//                                        ImVec2(0 + xPos - width * scale / 2, 0 + yPos -// height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
         glm::vec2 velocity{0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
@@ -389,7 +391,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
             rtimer = 0;
             mag = 1;
         }
-        normalize(velocity);
+        //normalize(velocity);
 
 	  // collision checkin
 	  // eventually put this in player update
@@ -518,12 +520,19 @@ ifstream ins2("assets/mapfile/maptest.csv");
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
+        glm::vec2 dick = {  (player.pos().x + (xPos - windowWidth / 2) / f ),  (player.pos().y + (yPos - windowHeight / 2) / f )};
+        cout << dick.x << " " << dick.y << endl;
+        cout << player.pos().x << " " << player.pos().y << endl;
+ 
+          ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((dick.x - xSize - Camera.x) * f + windowWidth / 2, (dick.y - ySize - Camera.y) * f  + windowHeight / 2) , 
+                                        ImVec2((dick.x + xSize - Camera.x) * f + windowWidth / 2, (dick.y + ySize - Camera.y) * f  + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         {
             static int counter = 0;
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Text("This is some useful text."); 
+            ImGui::Text("x:%f, y:%f", dick.x, dick.y);       // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
@@ -531,10 +540,15 @@ ifstream ins2("assets/mapfile/maptest.csv");
             ImGui::SliderFloat("scale", &mapScale, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("xch", &xChange, 0.0f, 10 * width3);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("ych", &yChange, 0.0f, 10 * height3);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("ySize", &xSize, 0.0f, 5000.0f); 
+            ImGui::SliderFloat("xSize", &ySize, 0.0f, 5000.0f); 
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
+                {
+                world.staticBodies.clear();
+                thing();
+                }
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
 
@@ -570,17 +584,14 @@ ifstream ins2("assets/mapfile/maptest.csv");
                 if (pressed){
                     log += string(inputText) + '\n';
                     string inp(inputText);
-                    client.write(inp);
+
                     for (int i = 0; i < 250; i++){
                         inputText[i] = '\0';
                     }
                 }
                 pressed = false;
             } else pressed = true;
-            if (client.messageBuffer_.size()){
-                log += client.messageBuffer_.front() + '\n';
-                client.messageBuffer_.pop_front();
-            }
+
               //log += client.messageBuffer_.front();
               //client.messageBuffer_.pop_front();
             ImGui::End();
