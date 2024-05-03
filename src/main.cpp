@@ -524,8 +524,8 @@ int main(int, char**)
         cout << dick.x << " " << dick.y << endl;
         cout << player.pos().x << " " << player.pos().y << endl;
  
-          ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((dick.x - xSize - Camera.x) * f + windowWidth / 2, (dick.y - ySize - Camera.y) * f  + windowHeight / 2) , 
-                                        ImVec2((dick.x + xSize - Camera.x) * f + windowWidth / 2, (dick.y + ySize - Camera.y) * f  + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+          ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((dick.x - xSize / 2 - Camera.x) * f + windowWidth / 2, (dick.y - ySize / 2 - Camera.y) * f  + windowHeight / 2) , 
+                                        ImVec2((dick.x + xSize / 2- Camera.x) * f + windowWidth / 2, (dick.y + ySize / 2- Camera.y) * f  + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         {
             static int counter = 0;
 
@@ -555,7 +555,8 @@ int main(int, char**)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
-
+world.staticBodies.clear();
+                thing();
         // 3. Show another simple window.
         if (show_another_window)
         {
