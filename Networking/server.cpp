@@ -56,7 +56,9 @@ void startReading(shared_ptr<tcp::socket> clientSocket) {
 
 				cout << "Reveived from client " << self->remote_endpoint() << ": " << message << endl;
 
-				broadcastMessage(message, self);
+				if (message == "DISCONNECT"){
+					boost::asio::write(*self, boost::asio::buffer("\n"));
+				} else broadcastMessage(message, self);
 				
 				receiveBuffer_.consume(length);
 				startReading(self);

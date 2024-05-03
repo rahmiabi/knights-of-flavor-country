@@ -450,6 +450,12 @@ int main(int, char**)
         glfwSwapBuffers(window);
     }
 
+    if (client){
+        client->read = false;
+        client->receiveThread->join();
+        delete client.get();
+    }
+    cout << "hi" << endl;
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

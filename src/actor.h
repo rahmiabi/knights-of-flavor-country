@@ -65,11 +65,19 @@ public:
         *body += other;
     }
 
+    /**
+     * {
+     *  "name": "...",
+     *  "pos": {
+     *    "x": 0.0,
+     *    "y": 0.0
+     *  }
+     * }
+     */
     std::string toJSON();
 
-    virtual rapidjson::Value toJSONObject();
-
-    virtual void fromJSON(const rapidjson::Value& value);
+    rapidjson::Value toJSONObject();
+    void fromJSON(const rapidjson::Value& value);
 };
 class Player; 
 // ZA WARUDO, im sorry
@@ -88,12 +96,6 @@ struct World{
      * @param <T> Actor type. It MUST inherit Actor
      * @example auto enemy = Actor::create<M1ChipEnemy>(x, y);
      */
-    template<typename T, typename... Args>
-    std::shared_ptr<T> createActor(Args&&... args) requires std::is_base_of<Actor, T>::value {
-        std::shared_ptr<T> actor(new T(std::forward<Args>(args)...));
-        actors[actor->getName()] = actor;
-        return actor;
-    }
 
     void removeActor(const std::string& name);
     
@@ -151,6 +153,8 @@ struct World{
         }
       } 
     }
+
+
 
     std::string toJSON();
     void fromJSON(const rapidjson::Value& json);

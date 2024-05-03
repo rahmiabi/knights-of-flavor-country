@@ -46,14 +46,14 @@ public:
                                         ImVec2((body->end().x - Camera.x) * scale + windowWidth / 2, (body->end().y - Camera.y) * scale + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
     }
 
-    rapidjson::Value toJSONObject() override {
+    rapidjson::Value toJSONObject() {
         rapidjson::Value value = Actor::toJSONObject();
         value["scale"].SetDouble(this->scale);
         value["texture"].SetUint(this->texture);
         return value;
     }
 
-    void fromJSON(const rapidjson::Value& value) override {
+    void fromJSON(const rapidjson::Value& value) {
         Actor::fromJSON(value);
         this->scale = value["scale"].GetDouble();
         this->texture = value["texture"].GetUint();

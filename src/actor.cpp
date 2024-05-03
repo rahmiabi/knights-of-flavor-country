@@ -122,29 +122,29 @@ std::string World::toJSON() {
 void World::fromJSON(const rapidjson::Value& json) {
     const rapidjson::Value& actors = json["actors"].GetArray();
     for (rapidjson::Value::ConstValueIterator iter = actors.Begin(); iter != actors.End(); iter++) {
-        auto actor = std::make_shared<Actor>();
-        actor->fromJSON(*iter);
-        this->actors[actor->getName()] = actor;
+        //auto actor = std::make_shared<Actor>();
+        //actor->fromJSON(*iter);
+        //this->actors[actor->getName()] = actor;
     }
     
     const rapidjson::Value& staticBodies = json["staticBodies"].GetArray();
     for (rapidjson::Value::ConstValueIterator iter = staticBodies.Begin(); iter != staticBodies.End(); iter++) {
-        auto actor = std::make_shared<PhysicsBody>();
-        actor->fromJSONObject(*iter);
-        this->staticBodies.push_back(actor);
+        //auto actor = std::make_shared<PhysicsBody>();
+        //actor->fromJSONObject(*iter);
+        //this->staticBodies.push_back(actor);
     }
     
     const rapidjson::Value& rigidBodies = json["rigidBodies"].GetArray();
     for (rapidjson::Value::ConstValueIterator iter = rigidBodies.Begin(); iter != staticBodies.End(); iter++) {
-        auto actor = std::make_shared<PhysicsBody>();
-        actor->fromJSONObject(*iter);
-        this->rigidBodies.push_back(actor);
+        //auto actor = std::make_shared<PhysicsBody>();
+        //actor->fromJSONObject(*iter);
+        //this->rigidBodies.push_back(actor);
     }
     
     const rapidjson::Value& players = json["players"].GetArray();
     for (rapidjson::Value::ConstValueIterator iter = players.Begin(); iter != staticBodies.End(); iter++) {
-        auto actor = std::make_shared<Player>();
-        actor->fromJSON(*iter);
-        this->players.push_back(actor);
+        //auto actor = std::make_shared<Player>();
+        //actor->fromJSON(*iter);
+        //this->players.push_back(actor);
     }
 }

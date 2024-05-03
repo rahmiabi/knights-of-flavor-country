@@ -4,15 +4,16 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <chrono>
 #include <deque>
 using namespace std;
 using boost::asio::ip::tcp;
 
 class ChatClient {
-    tcp::socket socket_;
+    tcp::socket* socket_;
     boost::asio::io_context io_context_;
-    bool read = true;
-	jthread receiveThread;
+	bool ended = false;
+	boost::asio::streambuf* receiveBuffer;
 
 //Makes it to have 7 max msg on screen
 	void addMessageToBuffer(const string& message) {
@@ -24,32 +25,43 @@ class ChatClient {
 	}
 
 public:
+    bool read = true;
+	thread* receiveThread;
 	deque<string> messageBuffer_;
     ChatClient(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints)
-        : socket_(io_context) {
-        boost::asio::connect(socket_, endpoints);
+        {
+		socket_ = new tcp::socket(io_context);
+        boost::asio::connect(*socket_, endpoints);
     }
 	~ChatClient(){
+		delete receiveThread;
+		delete socket_;
 	}
     void startChat() {
         try {
-			receiveThread = jthread([this]() {
-				while (true) {
-					boost::asio::streambuf receiveBuffer;
-					boost::asio::read_until(socket_, receiveBuffer, '\n');
-					istream is(&receiveBuffer);
-					string message;
-					getline(is, message);
-		//Original, not part of testing chat
-				//	mvwprintw(outputWindow, 2, 0, message.c_str());
-				//	wrefresh(outputWindow);
-
-					addMessageToBuffer(message);
-
+			receiveThread = new thread([this]() {
+				while (read) {
+					boost::asio::streambuf* receiveBuffer = new boost::asio::streambuf();
+					try {
+						boost::asio::async_read_until(*socket_, *receiveBuffer, '\n', [this, receiveBuffer](const boost::system::error_code ec, size_t length) {
+							if (!ec) {
+							istream is(receiveBuffer);
+							string message;
+							getline(is, message);
+							addMessageToBuffer(message);
+							}
+						});
+						delete receiveBuffer;
+					} catch (boost::wrapexcept<boost::system::system_error> disconnectionError){
+						delete receiveBuffer;
+						ended = true;
+						break;
+					}
 				}
+				cout << "finished" << endl;
+				return;
 			});
 			//Lets the thread to work on its own
-			receiveThread.detach();
 
             io_context_.poll();
         } catch (exception& e) {
@@ -57,7 +69,7 @@ public:
         }
     }
 	void write(string& thing){
-        boost::asio::write(socket_, boost::asio::buffer(thing + "\n"));
+        boost::asio::write(*socket_, boost::asio::buffer(thing + "\n"));
 	}
 };
 
