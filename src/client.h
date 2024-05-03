@@ -12,8 +12,9 @@ using boost::asio::ip::tcp;
 class ChatClient {
     tcp::socket* socket_;
     boost::asio::io_context io_context_;
-	bool ended = false;
-	boost::asio::streambuf* receiveBuffer;
+	  bool ended = false;
+	  boost::asio::streambuf* receiveBuffer;
+    std::string username;
 
 //Makes it to have 7 max msg on screen
 	void addMessageToBuffer(const string& message) {
@@ -28,8 +29,9 @@ public:
     bool read = true;
 	thread receiveThread;
 	deque<string> messageBuffer_;
-    ChatClient(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints)
-        {
+    ChatClient(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints, std::string& name)
+      {
+      username = name;
 		socket_ = new tcp::socket(io_context);
         boost::asio::connect(*socket_, endpoints);
     }
