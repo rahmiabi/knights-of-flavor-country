@@ -8,7 +8,7 @@ using namespace bridges;
 
 //Using Bridges' tutorial code to see if that can get a visualization
 int main() {
-	Bridges bridges(5, "gugu", "741219807521");
+	Bridges bridges = Bridges(5, "gugu", "741219807521");
 	bridges.setTitle("Testing Audio");
 	bridges.setDescription("Blah blah blah");
 
