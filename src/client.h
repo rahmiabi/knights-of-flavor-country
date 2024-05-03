@@ -11,7 +11,8 @@ using boost::asio::ip::tcp;
 class ChatClient {
     tcp::socket socket_;
     boost::asio::io_context io_context_;
-    bool inChatMode_ = false;
+    bool read = true;
+	jthread receiveThread;
 
 //Makes it to have 7 max msg on screen
 	void addMessageToBuffer(const string& message) {
@@ -28,9 +29,11 @@ public:
         : socket_(io_context) {
         boost::asio::connect(socket_, endpoints);
     }
+	~ChatClient(){
+	}
     void startChat() {
         try {
-			thread receiveThread([this]() {
+			receiveThread = jthread([this]() {
 				while (true) {
 					boost::asio::streambuf receiveBuffer;
 					boost::asio::read_until(socket_, receiveBuffer, '\n');
@@ -48,8 +51,7 @@ public:
 			//Lets the thread to work on its own
 			receiveThread.detach();
 
-                // Process asynchronous operations
-                io_context_.poll();
+            io_context_.poll();
         } catch (exception& e) {
             cerr << "Exception: " << e.what() << endl;
         }

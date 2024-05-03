@@ -65,18 +65,11 @@ public:
         *body += other;
     }
 
-    /**
-     * {
-     *  "name": "...",
-     *  "pos": {
-     *    "x": 0.0,
-     *    "y": 0.0
-     *  }
-     * }
-     */
     std::string toJSON();
 
-    void fromJSON(const rapidjson::Value& value);
+    virtual rapidjson::Value toJSONObject();
+
+    virtual void fromJSON(const rapidjson::Value& value);
 };
 class Player; 
 // ZA WARUDO, im sorry
@@ -147,7 +140,6 @@ struct World{
     void physics(){
       float delta;
       std::shared_ptr<World> ptr(this);
-      std::cout << "started phyiscs" << std::endl;
       auto start = std::chrono::system_clock::now(); 
       auto end = start;
       while(true){
@@ -155,15 +147,12 @@ struct World{
         delta = std::chrono::duration<float, std::milli>(start - end).count();
         end = start;
       for (auto& actor: actors){
-        std::cout << actor.second->getPos().x << " " << actor.second->getPos().y << std::endl;
         actor.second->physics(delta, ptr);
         }
-        std::cout << std::endl;
       } 
     }
 
-
-
-    std::string toJSON(){}
+    std::string toJSON();
+    void fromJSON(const rapidjson::Value& json);
 };
 

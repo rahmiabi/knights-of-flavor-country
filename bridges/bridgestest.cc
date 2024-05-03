@@ -96,18 +96,7 @@ int main() {
 	cout << "Clip made\n"; //Never reaches this point
 
 	//Anything after this comment was me trying to put it on a ColorGrid, but it never got to this point so don't worry about it
-	long long sampleCount = ac.getSampleCount();
-	vector<long long> sampy(sampleCount);
-	sampy.reserve(sampleCount);
-	for (int i = 0; i < sampleCount; i++) {
-		sampy.at(i) = ac.getSample(0, i);
-	}
-
-
-	long long sum = 0;
-	for (int i = 0; i < sampleCount; i++) {
-		sum += sampy[i];
-	}
+	//TODO: Mix
 
 	bridges.setDataStructure(ac);
 	bridges.visualize();
