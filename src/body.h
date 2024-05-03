@@ -1,8 +1,9 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include "rapidjson/document.h"
 
-enum class Shape {
+enum class Shape : int32_t {
     RECTANGLE,
     CIRCLE
 };
@@ -32,6 +33,35 @@ class PhysicsBody {
     void operator+=(glm::vec2 other){
         startVec.x += other.x;
         startVec.y += other.y;
+    }
+
+    rapidjson::Value toJSONObject() {
+        rapidjson::Value value;
+        value.SetObject();
+
+        auto& startVecJson = value["startVec"].SetObject();
+        startVecJson["x"].SetFloat(this->startVec.x);
+        startVecJson["y"].SetFloat(this->startVec.y);
+
+        auto& sizeVecJson = value["sizeVec"].SetObject();
+        sizeVecJson["x"].SetFloat(this->startVec.x);
+        sizeVecJson["y"].SetFloat(this->startVec.y);
+
+        value["shape"].SetInt(static_cast<int32_t>(this->getShape()));
+
+        return value;
+    }
+
+    void fromJSONObject(const rapidjson::Value& value) {
+        const auto& startVecJson = value["startVec"].GetObj();
+        this->startVec.x = startVecJson["x"].GetFloat();
+        this->startVec.y = startVecJson["y"].GetFloat();
+
+        const auto& sizeVecJson = value["sizeVec"].GetObj();
+        this->sizeVec.x = sizeVecJson["x"].GetFloat();
+        this->sizeVec.y = sizeVecJson["y"].GetFloat();
+
+        this->shape = static_cast<Shape>(value["shape"].GetInt());
     }
 };
 

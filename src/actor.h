@@ -65,18 +65,11 @@ public:
         *body += other;
     }
 
-    /**
-     * {
-     *  "name": "...",
-     *  "pos": {
-     *    "x": 0.0,
-     *    "y": 0.0
-     *  }
-     * }
-     */
     std::string toJSON();
 
-    void fromJSON(const rapidjson::Value& value);
+    virtual rapidjson::Value toJSONObject();
+
+    virtual void fromJSON(const rapidjson::Value& value);
 };
 class Player; 
 // ZA WARUDO, im sorry
@@ -159,8 +152,7 @@ struct World{
       } 
     }
 
-
-
-    std::string toJSON(){}
+    std::string toJSON();
+    void fromJSON(const rapidjson::Value& json);
 };
 
