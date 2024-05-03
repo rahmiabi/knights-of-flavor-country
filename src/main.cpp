@@ -96,6 +96,18 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
+deque<double> scrollBuffer;
+
+float jujutsu(float x){
+    float val = (1 / (1 + pow(exp(1), -10 * (x / 100 - 0.5))));
+    return val;
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    scrollBuffer.push_back(yoffset);
+}
+
 
 // Main code
 int main(int, char**)
@@ -188,7 +200,7 @@ int main(int, char**)
     int width, height, channels;
     unsigned char* pixels = stbi_load("./assets/images/noelle.jpg", &width, &height, &channels, 4);
 
-    GLFWimage images[2];
+    GLFWimage images[4];
     images[0].width = width;
     images[0].height = height;
     images[0].pixels = pixels;
@@ -201,16 +213,18 @@ int main(int, char**)
     
     int width2, height2, channels2;
     unsigned char* pixels2 = stbi_load("./assets/images/edge.png", &width2, &height2, &channels2, 4);
-    images[1].width = width2;
-    images[1].height = height2;
-    images[1].pixels = pixels2;
+    images[2].width = width2;
+    images[2].height = height2;
+    images[2].pixels = pixels2;
     glfwSetWindowIcon(window, 1, images);
 
     int width3, height3, channels3;
     unsigned char* pixels3 = stbi_load("./assets/images/image.png", &width3, &height3, &channels3, 4);
-    images[1].width = width3;
-    images[1].height = height3;
-    images[1].pixels = pixels3;
+    images[3].width = width3;
+    images[3].height = height3;
+    images[3].pixels = pixels3;
+
+    glfwSetScrollCallback(window, scroll_callback);
 
     vector<Projectile> projectiles;
 // uhh idk what this does i just do copy paste haha
@@ -302,6 +316,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
     //t2.detach();
     //t3.detach();
     //t4.detach();
+    float skibid = 50;
     while (!glfwWindowShouldClose(window))
     {
         //enemy.update(worldptr);
@@ -315,6 +330,16 @@ ifstream ins2("assets/mapfile/maptest.csv");
         timer = (timer > fireRate)? fireRate : timer;
         rtimer = (rtimer > reloadTime)? reloadTime : rtimer;
         deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
+
+        if (scrollBuffer.size()){
+            skibid += scrollBuffer.back();
+            skibid = min(100.0f, skibid);
+            skibid = max(1.0f, skibid);
+            scrollBuffer.pop_back();
+        }
+        cout << skibid << endl;
+        cout << jujutsu(skibid) << endl;
+        f = (jujutsu(skibid) * 2.5 + 0.5);
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -502,7 +527,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.25f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            //ImGui::SliderFloat("float", &f, 0.25f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("scale", &mapScale, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("xch", &xChange, 0.0f, 10 * width3);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("ych", &yChange, 0.0f, 10 * height3);            // Edit 1 float using a slider from 0.0f to 1.0f

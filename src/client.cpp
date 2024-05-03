@@ -78,26 +78,30 @@ void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, I
 
     draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
 }
-
-// raycasting probly doesnt need to be recursive but oh well
-// put in server
-glm::vec2 size0(0,0);
-void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<shared_ptr<PhysicsBody>>& space, int maxMag){
-    while (true){
-        if (world.checkCollisions(space, initialPos + ray, size0)) {
-            return;
-        }
-        if (glm::length(ray) > maxMag) return;
-        ray.x += direction.x;
-        ray.y += direction.y;
-    }
+float jujutsu(float x){
+    float val = (1 / (1 + pow(exp(1), -10 * (x / 100 - 0.5))));
+    return val;
 }
+
+// callbacks
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
-
-
+bool pressed = false;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    pressed = true;
+}
+enum class State {
+    INTRO,
+    MAINMENU,
+    SETTINGS,
+    SINGLEPLAYER,
+    MULTIPLAYER,
+    SINGLEGAME,
+    MULTIGAME
+};
 // Main code
 int main(int, char**)
 {
@@ -130,12 +134,12 @@ int main(int, char**)
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Knights of Flavor Country", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Taskforce Redmond", nullptr, nullptr);
+
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0); // Enable vsync
-    srand(time(0));
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -155,11 +159,15 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
     // 
+//    boost::asio::io_context io_context;
+//    tcp::resolver resolver(io_context);
+//    auto endpoints = resolver.resolve("localhost","6969");
+//    ChatClient client(io_context, endpoints);
+//    client.startChat();
+    unique_ptr<ChatClient> client;
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
     auto endpoints = resolver.resolve("localhost","6969");
-    ChatClient client(io_context, endpoints);
-    client.startChat();
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.;
     // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
@@ -180,16 +188,16 @@ int main(int, char**)
     //IM_ASSERT(font != nullptr);
 
     // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    State clientState = State::INTRO;
+
+    ImVec4 clear_color = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
     glewInit();
 
     // Set Window Icon
     int width, height, channels;
     unsigned char* pixels = stbi_load("./assets/images/noelle.jpg", &width, &height, &channels, 4);
 
-    GLFWimage images[2];
+    GLFWimage images[5];
     images[0].width = width;
     images[0].height = height;
     images[0].pixels = pixels;
@@ -202,24 +210,30 @@ int main(int, char**)
     
     int width2, height2, channels2;
     unsigned char* pixels2 = stbi_load("./assets/images/edge.png", &width2, &height2, &channels2, 4);
-    images[1].width = width2;
-    images[1].height = height2;
-    images[1].pixels = pixels2;
+    images[2].width = width2;
+    images[2].height = height2;
+    images[2].pixels = pixels2;
     glfwSetWindowIcon(window, 1, images);
 
     int width3, height3, channels3;
-    unsigned char* pixels3 = stbi_load("./assets/images/image.png", &width3, &height3, &channels3, 4);
-    images[1].width = width3;
-    images[1].height = height3;
-    images[1].pixels = pixels3;
+    unsigned char* pixels3 = stbi_load("./assets/images/undertale.jpg", &width3, &height3, &channels3, 4);
+    images[3].width = width3;
+    images[3].height = height3;
+    images[3].pixels = pixels3;
+    
+    int width4, height4, channels4;
+    unsigned char* pixels4 = stbi_load("./assets/images/logo.png", &width4, &height4, &channels4, 4);
+    images[4].width = width3;
+    images[4].height = height3;
+    images[4].pixels = pixels3;
 
-    vector<Projectile> projectiles;
-// uhh idk what this does i just do copy paste haha
-    GLuint image_texture1, image_texture2, image_texture3, map;
+    // uhh idk what this does i just do copy paste haha
+    GLuint image_texture1, image_texture2, image_texture3, map, logo;
     glGenTextures(1, &image_texture1);
     glGenTextures(1, &image_texture2);
     glGenTextures(1, &image_texture3);
     glGenTextures(1, &map);
+    glGenTextures(1, &logo);
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, image_texture2);
@@ -238,84 +252,34 @@ int main(int, char**)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width3, height3, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels3);
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    glBindTexture(GL_TEXTURE_2D, logo);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width4, height4, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels4);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
     // Setup filtering parameters for display
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload pixels into texture
-
-ifstream ins2("assets/mapfile/maptest.csv");
-      string test;
-       getline(ins2,test);
-       
-       while (ins2) {
-       getline(ins2,test);
-       istringstream iss(test);
-       string type;
-       string tempp;
-       getline(iss,type,',');
-       getline(iss,tempp,',');
-       if(tempp== "") break;
-       int tempx = stoi(tempp);
-       getline(iss,tempp,',');
-       int tempy= stoi(tempp);
-       getline(iss,tempp,',');
-       int sizex = stoi(tempp);
-       getline(iss,tempp,',');
-       int sizey = stoi(tempp);
-       world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{tempx, tempy}, glm::vec2{sizex, sizey})));
-}
     
 // Main loop
-    float timer = 50;
-    float rtimer = 1000;
-    double deltaTime = 0;
-    double fireRate = 100;
-    double reloadTime = 250;
-    int mag = 1;
     auto start = std::chrono::system_clock::now(); 
     auto end = start;
-
-    float angler = 3.14/4;
-    static float f = 1.0f;
-    Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
-    world.players.push_back(shared_ptr<Player>(&player));
-    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
-    Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, 10000), glm::vec2(width * .1, height * .1))));
-    Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
-    Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
-
-    world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
-    world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
-    world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
-    world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
-
+    float deltaTime = 0;
     char clear[250] = "";
     char inputText[250] = "";
+    float f = 0;
     string log = "";
-    bool pressed = true;
-    thread t1(&World::update, &world);
-    thread t2(&World::physics, &world);
-    t1.detach();
-    t2.detach();
-    //thread t3(&Enemy::update, &enemy2, worldptr);
-    //thread t4(&Enemy::update, &enemy3, worldptr);
-    //t2.detach();
-    //t3.detach();
-    //t4.detach();
     while (!glfwWindowShouldClose(window))
     {
-        //enemy.update(worldptr);
+        glfwSetKeyCallback(window, key_callback);
         ImGui::SetMouseCursor(ImGuiMouseCursor_None);
         end = start;
         start = std::chrono::system_clock::now(); 
+        deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
+
         int windowWidth, windowHeight;
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        timer = timer + deltaTime;
-        rtimer = rtimer + deltaTime;
-        timer = (timer > fireRate)? fireRate : timer;
-        rtimer = (rtimer > reloadTime)? reloadTime : rtimer;
-        deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -329,184 +293,95 @@ ifstream ins2("assets/mapfile/maptest.csv");
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // custom cursor
         double xPos, yPos;
         glfwGetCursorPos(window, &xPos, &yPos);
         double scale = 0.1;
         ImGui::GetForegroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
                                         ImVec2(0 + xPos - width * scale / 2, 0 + yPos - height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-
-        glm::vec2 velocity{0, 0};
         int W= glfwGetKey(window, GLFW_KEY_W);
         int A= glfwGetKey(window, GLFW_KEY_A);
         int S= glfwGetKey(window, GLFW_KEY_S);
         int D= glfwGetKey(window, GLFW_KEY_D);
-        int F = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-        int R = glfwGetKey(window, GLFW_KEY_R);
+        int F= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+        int R= glfwGetKey(window, GLFW_KEY_R);
 
-        if (W == GLFW_PRESS){
-            velocity.y -= 100;
+        switch (clientState){
+           case (State::INTRO): {
+                static float timer = 0;
+                static int alpha; 
+                if (timer < 3000){
+                    alpha = timer / 1500 * 255;
+                    alpha = min(alpha, 255);
+                }
+                else if (timer < 5000){
+                    alpha = 255 + (timer - 3000) / 1000 * -255;
+                    alpha = max(alpha, 0);
+                } else 
+                    clientState = State::MAINMENU;
+                if (pressed)
+                    clientState = State::MAINMENU;
+                ImGui::GetBackgroundDrawList()->AddImage((void*) map, ImVec2((width3 / -2)  + windowWidth / 2, (height3/ -2) + windowHeight / 2), 
+                                                ImVec2((width3 / 2)  + windowWidth / 2, height3 / 2 + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, alpha));
+                timer += deltaTime;
+           } break;
+           case (State::MAINMENU): {
+                static float timer =0;
+                static float size = 0;
+                timer += deltaTime;
+                if (timer < 1000){
+                    size = jujutsu(timer / 10);
+                    size = min(size, 1.0f); 
+                }
+                ImGui::GetBackgroundDrawList()->AddImage((void*) logo, ImVec2((width4 / -2) * size  + windowWidth / 2, (height4/ -2) * size  + windowHeight / 5), 
+                                                ImVec2((width4 / 2) * size + windowWidth / 2, height4 / 2 * size + windowHeight / 5), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+                {
+                ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight));
+                ImGui::SetNextWindowPos(ImVec2(0, 0));
+                ImGui::Begin("Another Window", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                ImGui::SetCursorPos(ImVec2(windowWidth / 4, windowHeight * 9/ 20));
+                if (ImGui::Button("Singleplayer", ImVec2(windowWidth / 2, windowHeight / 10)))
+                    clientState = State::SINGLEPLAYER;
+                ImGui::SetCursorPos(ImVec2(windowWidth / 4, windowHeight * (1.0f / 2.0f + 1.0f / 8.0f - 1.0f / 20.0f)));
+                if (ImGui::Button("Multiplayer", ImVec2(windowWidth / 2, windowHeight / 10)))
+                    clientState = State::MULTIPLAYER;
+                ImGui::SetCursorPos(ImVec2(windowWidth / 4, windowHeight * 7 / 10));
+                if (ImGui::Button("Settings", ImVec2(windowWidth / 2, windowHeight / 10)))
+                    clientState = State::SETTINGS;
+                ImGui::End();
+                }
+           } break;
+           case (State::SETTINGS): {
+                float size = 1.0f;
+                ImGui::GetBackgroundDrawList()->AddImage((void*) logo, ImVec2((width4 / -2) * size  + windowWidth / 2, (height4/ -2) * size  + windowHeight / 5), 
+                                                ImVec2((width4 / 2) * size + windowWidth / 2, height4 / 2 * size + windowHeight / 5), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+           } break;
+           case (State::SINGLEPLAYER):{
+                float size = 1.0f;
+                ImGui::GetBackgroundDrawList()->AddImage((void*) logo, ImVec2((width4 / -2) * size  + windowWidth / 2, (height4/ -2) * size  + windowHeight / 5), 
+                                                ImVec2((width4 / 2) * size + windowWidth / 2, height4 / 2 * size + windowHeight / 5), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+
+           } break;
+           case (State::MULTIPLAYER):{
+                float size = 1.0f;
+                ImGui::GetBackgroundDrawList()->AddImage((void*) logo, ImVec2((width4 / -2) * size  + windowWidth / 2, (height4/ -2) * size  + windowHeight / 5), 
+                                                ImVec2((width4 / 2) * size + windowWidth / 2, height4 / 2 * size + windowHeight / 5), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+                client = unique_ptr<ChatClient>(new ChatClient(io_context, endpoints));
+                client->startChat();
+                clientState = State::SETTINGS;
+           } break;
         }
-        if (A == GLFW_PRESS){
-            velocity.x -= 100;
-        }
-        if (S == GLFW_PRESS){
-            velocity.y += 100;
-        }
-        if (D == GLFW_PRESS){
-            velocity.x += 100;
-        }
-//        if (R == GLFW_PRESS && rtimer == reloadTime){
-//            cout << "Reloading" << endl;
-//            rtimer = 0;
-//            mag = 32;
-//        }
-         if (rtimer == reloadTime && !mag){
-            //cout << "Reloading" << endl;
-            rtimer = 0;
-            mag = 1;
-        }
-        normalize(velocity);
-
-	  // collision checkin
-	  // eventually put this in player update
-        player += glm::vec2(velocity.x / 3 * deltaTime, 0);
-        if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
-        	player += glm::vec2(-1 * velocity.x / 3 * deltaTime, 0);
-        }
-
-        player += glm::vec2(0, velocity.y / 3 * deltaTime);
-        if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
-        	player += glm::vec2(0, -1 * velocity.y / 3 * deltaTime);
-        }
-
-        
-        glm::vec2 Camera = player.pos();
-	// draws squaes
-        static float mapScale = 6.502;
-        static float xChange = 3422.421;
-        static float yChange = 1140.718;
-          ImGui::GetBackgroundDrawList()->AddImage((void*) map, ImVec2((width3 * mapScale / -2  - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / -2 - Camera.y - yChange) * f + windowHeight / 2),
-                                                ImVec2((width3 * mapScale / 2 - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / 2 - Camera.y - yChange) * f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((x->start().x - Camera.x) * f + windowWidth / 2, (x->start().y - Camera.y) * f + windowHeight / 2),
-                                                ImVec2((x->end().x - Camera.x) * f + windowWidth / 2, (x->end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        }
 
 
-        glm::vec2 direction = {xPos - windowWidth / 2, yPos - windowHeight /2};
-        normalize(direction);
-
-        // SPAWN PROJECTILES
-        if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
-            // for projectiles;
-//            glm::vec2 initial = player.pos();
-//            glm::vec2 end {0.0};
-//            float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
-//            cout << angle << endl;
-//            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
-//            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
-//	        if(dir.x && dir.y)
-//            normalize(dir);
-//            raycast(dir, end, initial, space, 1000);
-//            end.x += initial.x;
-//            end.y += initial.y;
-//            Projectile proj = {player.pos(), dir, end, true};
-//            normalize(proj.vel);
-//            projectiles.push_back(proj);
-//            mag--;
-//            cout << "Ammo: " << mag << " / 32" << endl;
-//            timer = 0.0;
-
-            // for melee
-            mag--;
-        }
-        scale = .05;
-
-        // DO PROJECTILE THINGS
-//        for (Projectile& a: projectiles){
-//            if (!a.render) continue;
-//            for (int i = 0; i < 50 * deltaTime / 6; i++){
-//                if (sqrt(pow(a.pos.x - a.end.x, 2) + pow(a.pos.y - a.end.y, 2)) <= 25) {a.render = false; break;}
-//                a.pos.x += a.vel.x;
-//                a.pos.y += a.vel.y;
-//            }
-//            if (a.render)
-//            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
-//                                                    ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-//        }
-        scale = .1;
-
-//        for (float i = -3.14/5; i <= 3.14/5; i += .005){
-//            glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
-//            glm::vec2 ray = {0, 0};
-//            glm::vec2 initial(characterX, characterY);
-//            raycast(rotatedDir, ray, initial, space, 250);
-//            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
-//        }
-//
-//      draw path
-        if (true) {
-              //ImGui::GetBackgroundDrawList()->AddLine(ImVec2(enemy.path[i].x * -1 - Camera.x, enemy.path[i].y * -1 - Camera.y), ImVec2(enemy.path[i +1].x * -1 - Camera.x, enemy.path[i + 1].y * -1 - Camera.y) , IM_COL32(255, 255, 255, 255), 4);
-        }      
-        ImGui::PushFont(font2);
-        string skib = to_string(mag) + "/32";
-        ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 100));
-        ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture3, ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , 
-                                                ImVec2(windowWidth - 10, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
-
-       ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy1.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy1.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy2.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy2.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy3.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy3.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        if (rtimer < reloadTime){
-            angler = 3.14/4 - 3.14/2 * rtimer/reloadTime;
-            ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * rtimer / reloadTime, windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
-        }
-        //ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
-        //                                ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-        player.render(ImGui::GetBackgroundDrawList(), Camera, f, windowWidth, windowHeight);
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        // if (show_demo_window)
-        //    ImGui::ShowDemoWindow(&show_demo_window);
-        static float angle = 0.0f;
-        angle += deltaTime / 1000  * 1.0f;
-        ImDrawList* list = ImGui::GetBackgroundDrawList();
-        ImGui::PopFont();
-
-        int flip = 1;
-        glm::vec2 rotatedDir;
-        if (rtimer < reloadTime)
-            rotatedDir = {direction.x * cos(angler) - direction.y * sin(angler), direction.x * sin(angler) + direction.y * cos(angler)};
-        else
-            rotatedDir = direction;
-        float angul = atan(rotatedDir.y/rotatedDir.x);
-        float flippy = 1;
-        if (rotatedDir.x < 0) {angul += 3.14/2 /*- 3.14 / 2*/; flip = -1; flippy = -1;}
-        else angul += 3.14/2;
-        ImageRotated((void*) image_texture2, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
-        ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
-
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        ImGui::PushFont(font1);
+        /*
         {
             static int counter = 0;
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
 
             ImGui::SliderFloat("float", &f, 0.25f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("scale", &mapScale, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("xch", &xChange, 0.0f, 10 * width3);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("ych", &yChange, 0.0f, 10 * height3);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -516,20 +391,12 @@ ifstream ins2("assets/mapfile/maptest.csv");
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
-        }
+        }*/
 
-        // 3. Show another simple window.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
 
         // Chat Window
         // TODO - Kiyoshi
+        /*
         {
             ImGui::SetNextWindowSize(ImVec2(windowWidth * 0.35, windowHeight * 0.35));
             ImGui::SetNextWindowPos(ImVec2(10, windowHeight - windowHeight * 0.35 - 30));
@@ -561,7 +428,8 @@ ifstream ins2("assets/mapfile/maptest.csv");
               //client.messageBuffer_.pop_front();
             ImGui::End();
         }
-        ImGui::PopFont();
+        */
+        
 
         // TODO: uncomment when world object is available
         // for (auto& actor : world.actors) {
@@ -578,11 +446,8 @@ ifstream ins2("assets/mapfile/maptest.csv");
         glClear(GL_COLOR_BUFFER_BIT);
         glEnd();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+        pressed = false;
         glfwSwapBuffers(window);
-
-        // Make sure this is commented out in the final build
-        //ActorManager::checkForDanglingActors();
     }
 
     // Cleanup
