@@ -205,12 +205,20 @@ int main(int, char**)
     images[1].height = height2;
     images[1].pixels = pixels2;
     glfwSetWindowIcon(window, 1, images);
+
+    int width3, height3, channels3;
+    unsigned char* pixels3 = stbi_load("./assets/images/image.png", &width3, &height3, &channels3, 4);
+    images[1].width = width3;
+    images[1].height = height3;
+    images[1].pixels = pixels3;
+
     vector<Projectile> projectiles;
 // uhh idk what this does i just do copy paste haha
-    GLuint image_texture1, image_texture2, image_texture3;
+    GLuint image_texture1, image_texture2, image_texture3, map;
     glGenTextures(1, &image_texture1);
     glGenTextures(1, &image_texture2);
     glGenTextures(1, &image_texture3);
+    glGenTextures(1, &map);
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, image_texture2);
@@ -220,8 +228,13 @@ int main(int, char**)
     glBindTexture(GL_TEXTURE_2D, image_texture1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
+
     glBindTexture(GL_TEXTURE_2D, image_texture3);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels2);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, map);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width3, height3, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels3);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Setup filtering parameters for display
@@ -263,7 +276,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
     auto end = start;
 
     float angler = 3.14/4;
-    static float f = 0.1f;
+    static float f = 1.0f;
     Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
     world.players.push_back(shared_ptr<Player>(&player));
     shared_ptr<World> worldptr = shared_ptr<World>(&world);
@@ -353,6 +366,11 @@ ifstream ins2("assets/mapfile/maptest.csv");
         
         glm::vec2 Camera = player.pos();
 	// draws squaes
+        static float mapScale = 6.502;
+        static float xChange = 3422.421;
+        static float yChange = 1140.718;
+          ImGui::GetBackgroundDrawList()->AddImage((void*) map, ImVec2((width3 * mapScale / -2  - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / -2 - Camera.y - yChange) * f + windowHeight / 2),
+                                                ImVec2((width3 * mapScale / 2 - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / 2 - Camera.y - yChange) * f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((x->start().x - Camera.x) * f + windowWidth / 2, (x->start().y - Camera.y) * f + windowHeight / 2),
                                                 ImVec2((x->end().x - Camera.x) * f + windowWidth / 2, (x->end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
@@ -453,6 +471,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
         else angul += 3.14/2;
         ImageRotated((void*) image_texture2, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
         ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
+
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
         {
@@ -464,7 +483,10 @@ ifstream ins2("assets/mapfile/maptest.csv");
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.001f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("float", &f, 0.25f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("scale", &mapScale, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("xch", &xChange, 0.0f, 10 * width3);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("ych", &yChange, 0.0f, 10 * height3);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -552,6 +574,9 @@ ifstream ins2("assets/mapfile/maptest.csv");
     glfwTerminate();
 
     delete pixels;
+    delete pixels1;
+    delete pixels2;
+    delete pixels3;
 
     return 0;
 }
