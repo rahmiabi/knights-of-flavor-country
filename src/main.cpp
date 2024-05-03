@@ -381,9 +381,9 @@ ifstream ins2("assets/mapfile/maptest.csv");
         
         glm::vec2 Camera = player.pos();
 	// draws squaes
-        static float mapScale = 6.502;
-        static float xChange = 3422.421;
-        static float yChange = 1140.718;
+        static float mapScale = 10.502;
+        static float xChange = 5359;
+        static float yChange = 1790.518;
           ImGui::GetBackgroundDrawList()->AddImage((void*) map, ImVec2((width3 * mapScale / -2  - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / -2 - Camera.y - yChange) * f + windowHeight / 2),
                                                 ImVec2((width3 * mapScale / 2 - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / 2 - Camera.y - yChange) * f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
