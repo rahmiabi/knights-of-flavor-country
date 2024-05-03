@@ -279,14 +279,29 @@ ifstream ins2("assets/mapfile/maptest.csv");
     static float f = 1.0f;
     Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
     world.players.push_back(shared_ptr<Player>(&player));
-    shared_ptr<World> worldptr = shared_ptr<World>(&world);
     Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
+    Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, 10000), glm::vec2(width * .1, height * .1))));
+    Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
+    Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
+
+    world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
+    world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
+    world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
+    world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
+
     char clear[250] = "";
     char inputText[250] = "";
     string log = "";
     bool pressed = true;
-    thread t1(&Enemy::update, &enemy, worldptr);
+    thread t1(&World::update, &world);
+    thread t2(&World::physics, &world);
     t1.detach();
+    t2.detach();
+    //thread t3(&Enemy::update, &enemy2, worldptr);
+    //thread t4(&Enemy::update, &enemy3, worldptr);
+    //t2.detach();
+    //t3.detach();
+    //t4.detach();
     while (!glfwWindowShouldClose(window))
     {
         //enemy.update(worldptr);
@@ -430,9 +445,7 @@ ifstream ins2("assets/mapfile/maptest.csv");
 //
 //      draw path
         if (true) {
-            for (int i = 0; i < enemy.path.size() - 1; i++){
               //ImGui::GetBackgroundDrawList()->AddLine(ImVec2(enemy.path[i].x * -1 - Camera.x, enemy.path[i].y * -1 - Camera.y), ImVec2(enemy.path[i +1].x * -1 - Camera.x, enemy.path[i + 1].y * -1 - Camera.y) , IM_COL32(255, 255, 255, 255), 4);
-            }
         }      
         ImGui::PushFont(font2);
         string skib = to_string(mag) + "/32";
@@ -442,8 +455,14 @@ ifstream ins2("assets/mapfile/maptest.csv");
                                                 ImVec2(windowWidth - 10, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
 
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
+       ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
                                         ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy1.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
+                                        ImVec2((enemy1.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy2.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
+                                        ImVec2((enemy2.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy3.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
+                                        ImVec2((enemy3.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         if (rtimer < reloadTime){
             angler = 3.14/4 - 3.14/2 * rtimer/reloadTime;
             ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * rtimer / reloadTime, windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);

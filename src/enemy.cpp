@@ -5,7 +5,6 @@
 
 #include "enemy.h"
 #include <iostream>
-#include <chrono>
 std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size){
   std::vector<glm::vec2> path;
   if (World::checkCollisions(space, finalPos, size)) {return {finalPos};}
@@ -70,15 +69,8 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
   return path;
 }
 
-void Enemy::update(const std::shared_ptr<World> world){
+void Enemy::update(float delta, const std::shared_ptr<World>& world){
   pathRefresh = 5000;
-  static auto start = std::chrono::system_clock::now(); 
-  static auto end = start;
-  while(true){
-    start = std::chrono::system_clock::now(); 
-    delta = std::chrono::duration<float, std::milli>(start - end).count();
-    end = start;
-
     static bool init = true;
     static float pathTimer;
     // point it is goind to
@@ -118,14 +110,19 @@ void Enemy::update(const std::shared_ptr<World> world){
 
     init = false;
 
+
+}
+
+void Enemy::physics(float delta, const std::shared_ptr<World>& world) {
     // TODO MOVE ON PATH
     // this code moves the goon
-    if (pathThing.size() > 1){
-      glm::vec2 bruh = pathThing[pathThing.size() - 1] - pathThing[pathThing.size() - 2]; 
-      direction = glm::normalize(bruh);
-      if (glm::length(this->getPos() - pathThing[pathThing.size() - 2]) < 1.00) path.pop_back();
-    }
-
+    if (path.size() > 1){
+      glm::vec2 bruh = path[path.size() - 1] - path[path.size() - 2]; 
+      if (bruh.x || bruh.y)
+        direction = glm::normalize(bruh);
+      else direction = glm::vec2(0,0);
+      if (glm::length(this->getPos() - path[path.size() - 2]) < 1.00) path.pop_back();
+    }else direction = glm::vec2(0,0);
 
     *this += glm::vec2(direction.x / 3* delta, 0);
     if (glm::length(direction) && world->checkCollisions(world->staticBodies, *body)){
@@ -136,58 +133,58 @@ void Enemy::update(const std::shared_ptr<World> world){
     if (glm::length(direction) && world->checkCollisions(world->staticBodies, *body)){
       *this += glm::vec2(0, -1 * direction.y / 3* delta);
     }
-  }
 }
-///////////////////////////////////////////////////////
-//                    M1ChipEnemy
-///////////////////////////////////////////////////////
-
-
-void M1ChipEnemy::update(float delta) {
-  // TODO
-}
-
-///////////////////////////////////////////////////////
-//                    M2ChipEnemy
-///////////////////////////////////////////////////////
-
-
-void M2ChipEnemy::update(float delta) {
-  // TODO
-}
-
-///////////////////////////////////////////////////////
-//                    M3ChipEnemy
-///////////////////////////////////////////////////////
-
-
-void M3ChipEnemy::update(float delta) {
-  // TODO
-}
-
-///////////////////////////////////////////////////////
-//                    M4ChipEnemy
-///////////////////////////////////////////////////////
-
-
-void M4ChipEnemy::update(float delta) {
-  // TODO
-}
-
-///////////////////////////////////////////////////////
-//                  EvilSurinEnemy
-///////////////////////////////////////////////////////
-
-
-void EvilSurinEnemy::update(float delta) {
-  // TODO
-}
-
-///////////////////////////////////////////////////////
-//                 EvilKerneyEnemy
-///////////////////////////////////////////////////////
-
-
-void EvilKerneyEnemy::update(float delta) {
-  // TODO
-}
+/////////////////////////////////////////////////////////
+////                    M1ChipEnemy
+/////////////////////////////////////////////////////////
+//
+//
+//void M1ChipEnemy::update(float delta) {
+//  // TODO
+//}
+//
+/////////////////////////////////////////////////////////
+////                    M2ChipEnemy
+/////////////////////////////////////////////////////////
+//
+//
+//void M2ChipEnemy::update(float delta) {
+//  // TODO
+//}
+//
+/////////////////////////////////////////////////////////
+////                    M3ChipEnemy
+/////////////////////////////////////////////////////////
+//
+//
+//void M3ChipEnemy::update(float delta) {
+//  // TODO
+//}
+//
+/////////////////////////////////////////////////////////
+////                    M4ChipEnemy
+/////////////////////////////////////////////////////////
+//
+//
+//void M4ChipEnemy::update(float delta) {
+//  // TODO
+//}
+//
+/////////////////////////////////////////////////////////
+////                  EvilSurinEnemy
+/////////////////////////////////////////////////////////
+//
+//
+//void EvilSurinEnemy::update(float delta) {
+//  // TODO
+//}
+//
+/////////////////////////////////////////////////////////
+////                 EvilKerneyEnemy
+/////////////////////////////////////////////////////////
+//
+//
+//void EvilKerneyEnemy::update(float delta) {
+//  // TODO
+//}
+//

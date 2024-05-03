@@ -21,7 +21,6 @@ private:
 public:
     MCNpc() = default;
     MCNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
-    void update(float delta) override;
 };
 
 class MackerelliNpc final : public Npc {
@@ -30,7 +29,6 @@ private:
 public:
     MackerelliNpc() = default;
     MackerelliNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
-    void update(float delta) override;
 };
 
 class RedmondNpc final : public Npc {
@@ -38,7 +36,6 @@ private:
 public:
     RedmondNpc() = default;
     RedmondNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
-    void update(float delta) override;
 };
 
 class KerneyNpc final : public Npc {
@@ -47,7 +44,6 @@ private:
 public:
     KerneyNpc() = default;
     KerneyNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
-    void update(float delta) override;
 };
 
 class CountVolodymyrNpc final : public Npc {
@@ -55,5 +51,4 @@ private:
 public:
     CountVolodymyrNpc() = default;
     CountVolodymyrNpc(std::string name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
-    void update(float delta) override;
 };

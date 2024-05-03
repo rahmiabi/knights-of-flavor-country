@@ -11,16 +11,19 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <iostream>
 #include <glm/glm.hpp>
 #include "body.h"
 #define RAPIDJSON_HAS_STDSTRING true
 #include "../lib/rapidjson/include/rapidjson/document.h"
+#include <chrono>
 
 struct World;
 
 /**
  * The most basic game object
  */
+
 class Actor {
 protected:
     std::string name;
@@ -36,7 +39,8 @@ public:
     /**
      * AI tick function. Called each frame
      */
-    virtual void update(float delta) {}
+    virtual void update(float delta, const std::shared_ptr<World>& world);
+    virtual void physics(float delta, const std::shared_ptr<World>& world);
 
     inline const std::string& getName() const {
         return this->name;
@@ -124,6 +128,41 @@ struct World{
       }
       return false;
     } 
+
+    void update(){
+      float delta;
+      std::shared_ptr<World> ptr(this);
+      auto start = std::chrono::system_clock::now(); 
+      auto end = start;
+      while(true){
+        start = std::chrono::system_clock::now(); 
+        delta = std::chrono::duration<float, std::milli>(start - end).count();
+        end = start;
+      for (auto& actor: actors){
+        actor.second->update(delta, ptr);
+        }
+      }
+    }
+
+    void physics(){
+      float delta;
+      std::shared_ptr<World> ptr(this);
+      std::cout << "started phyiscs" << std::endl;
+      auto start = std::chrono::system_clock::now(); 
+      auto end = start;
+      while(true){
+        start = std::chrono::system_clock::now(); 
+        delta = std::chrono::duration<float, std::milli>(start - end).count();
+        end = start;
+      for (auto& actor: actors){
+        std::cout << actor.second->getPos().x << " " << actor.second->getPos().y << std::endl;
+        actor.second->physics(delta, ptr);
+        }
+        std::cout << std::endl;
+      } 
+    }
+
+
 
     std::string toJSON(){}
 };

@@ -15,6 +15,12 @@ Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
     this->body = body;
 }
 
+void Actor::update(float delta, const std::shared_ptr<World>& world ){
+
+}
+void Actor::physics(float delta, const std::shared_ptr<World>& world ){
+
+}
 std::string Actor::toJSON() {
     rapidjson::Document json;
     json["name"].SetString(this->name.c_str(), this->name.size());
