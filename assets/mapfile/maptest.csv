@@ -6,5 +6,15 @@ rectangledown,-150,700,100,900
 rectangleup,-150,-1250,100,2000
 citysquare,-1200,300,1000,1000
 citysquare,-1200,-1250,1000,1000
-lowlevel,-1000,1200,1800,100
-lowlevel,-1600,-2200,3000,100
+lowlevel,-3600,1200,7000,100
+lowlevel,-3600,-2200,7000,100
+citysquare2,-2750,300,1000,1000
+citysquareup2split,-3050,-1250,400,1000
+citysquareup2split,-2450,-1250,400,1000
+block,-1975,300,550,550
+divforparkAlley,-4300,200,1000,100
+lowblock,-4300,650,1000,300
+lowblocklast,-4250,975,500,350
+topblocklast,-4250,975,500,350
+citysquare3,-5850,300,1000,1000
+citysquare3,-5850,-1250,1000,1000
