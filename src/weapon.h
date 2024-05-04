@@ -15,7 +15,6 @@ private:
     uint32_t reloadSpeed;
     uint32_t ammo;
     uint32_t maxAmmo;
-    float time;
     uint32_t size;
     WeaponType type;
     uint32_t accuracy;
@@ -26,6 +25,8 @@ private:
     friend class ItemRegistry;
 
 public:
+    float time = 0;
+    bool reloading = false;
     Weapon() = default;
     Weapon(const Weapon&) = default;
 
@@ -46,6 +47,9 @@ public:
         return this->ammo;
     }
 
+    inline int getMaxAmmo() const {
+        return this->maxAmmo;
+    }
     inline void setAmmo(int value) {
         this->ammo = value;
     }
@@ -53,6 +57,10 @@ public:
     inline void incAmmo(int value = 1) {
         this->ammo += value;
     }
+
+    inline void setReloading(bool val){
+        reloading = val;
+    } 
 
     inline void decAmmo(int value = 1) {
         this->ammo -= value;
@@ -74,12 +82,15 @@ public:
         return this->textureId;
     }
     
-    inline int update(float delta){
+    inline void update(float delta){
+        if (!reloading) return;
+
         time += delta;
         if (time > reloadSpeed){
             ammo = maxAmmo;
-
             time = 0;
+            reloading = false;
         }
+
     }
 };

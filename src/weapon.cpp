@@ -22,6 +22,7 @@ Weapon Weapon::fromCsvEntry(const CsvEntry& entry) {
     weapon.name = entry["name"];
     weapon.description = entry["description"];
     weapon.ammo = entry.getU32("ammo");
+    weapon.maxAmmo = weapon.ammo;
     weapon.reloadSpeed = entry.getU32("reloadSpeed");
     weapon.fireRate = entry.getU32("fireRate");
     weapon.size = entry.getU32("size");

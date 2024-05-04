@@ -26,7 +26,7 @@ private:
     // stores pos
     
 public:
-    Weapon curWeapon;
+    Weapon* curWeapon = nullptr;
     Inventory inventory; 
     mutable std::unordered_map<std::string, int> weaponNames;
     Player() = default;
@@ -56,8 +56,9 @@ public:
         return "";
     }
     int getIndex() const {
-        if (weaponNames.count(curWeapon.getName())){
-            return weaponNames[curWeapon.getName()];
+        if (!curWeapon) return -1;
+        if (weaponNames.count(curWeapon->getName())){
+            return weaponNames[curWeapon->getName()];
         }
         return -1;
     }

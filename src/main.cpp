@@ -303,8 +303,6 @@ int main(int, char**)
    ItemRegistry::init();
     Weapon weap = ItemRegistry::getWeapon("Edge Blade");
 
-    cout << endl;
-    cout << weap.getFireRate() << endl;
 // Main loop
     float timer = 50;
     float rtimer = 1000;
@@ -401,17 +399,13 @@ int main(int, char**)
 
 
         if (num1 == GLFW_PRESS){
-            player.curWeapon = player.inventory.getWeapon(player.getWeapInd(0));
-            cout << "Equipped " << player.curWeapon.getTextureId() << '\n';
+            player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(0));
         }
         if (num2 == GLFW_PRESS){
-            player.curWeapon = player.inventory.getWeapon(player.getWeapInd(1));
-            cout << "Equipped " << player.curWeapon.getName() << '\n';
-            cout << "Equipped " << player.curWeapon.getTextureId() << '\n';
+            player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(1));
         }
         if (num3 == GLFW_PRESS){
-            player.curWeapon = player.inventory.getWeapon(player.getWeapInd(2));
-            cout << "Equipped " << player.curWeapon.getName() << '\n';
+            player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(2));
         }
         if (W == GLFW_PRESS){
             velocity.y -= 100;
@@ -430,10 +424,13 @@ int main(int, char**)
 //            rtimer = 0;
 //            mag = 32;
 //        }
-         if (rtimer == reloadTime && !mag){
-            //cout << "Reloading" << endl;
-            rtimer = 0;
-            mag = 32;
+        if (player.curWeapon){
+            player.curWeapon->update(deltaTime);
+            cout << player.curWeapon->time << endl;
+            cout << player.curWeapon->reloading << endl;
+        }
+        if (player.curWeapon && !player.curWeapon->getAmmo()){
+            player.curWeapon->setReloading(true);
         }
         normalize(velocity);
 
@@ -468,8 +465,11 @@ int main(int, char**)
 
         // SPAWN PROJECTILES
         static int numby = 0;
-        if (F == GLFW_PRESS && player.getIndex() > -1 && timer >= fireRate && player.curWeapon.getAmmo() && rtimer == reloadTime){
-            cout << player.curWeapon.getAmmo() << endl;
+        {
+            static float time = 0.0;
+            if (player.curWeapon)
+            time = min((float) player.curWeapon->getFireRate(), time);
+        if (F == GLFW_PRESS && player.getIndex() > -1 && time >= player.curWeapon->getFireRate()  && player.curWeapon->getAmmo() && !player.curWeapon->reloading){
             for (int i = 0; i < 1; i++){
             glm::vec2 initial = player.pos();
             float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
@@ -481,10 +481,13 @@ int main(int, char**)
             shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.pos(), glm::vec2{10, 10})), dir));
         
             world.actors.emplace(proj->getName(), proj);
-            player.curWeapon.decAmmo();
+            player.curWeapon->decAmmo();
+            cout << player.curWeapon->getAmmo() << endl;
             numby++;
+            time = 0;
             }
-            timer = 0.0;
+        }
+            time += deltaTime;
         }
         scale = .05;
 
@@ -525,16 +528,19 @@ int main(int, char**)
         string skib = to_string(mag) + "/32";
         //cout << player.curWeapon.getName() << endl;
         //cout << player.getIndex() << endl;
-        if (player.getIndex() > -1)
-        ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
+        if (player.curWeapon && player.getIndex() > -1)
+            ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
         for (int i = 0; i < 3; i++){
             ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), IM_COL32(255, 255, 255, 255));
             
-            ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ims.size() - 1 - ItemRegistry::getWeapon(player.getWeapInd(i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
+            ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ItemRegistry::getWeapon(player.getWeapInd(i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
                                                 ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 128));
         }
 
-        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
+        if (player.curWeapon){
+            string ammoText = (to_string(player.curWeapon->getAmmo()) + " / " + to_string(player.curWeapon->getMaxAmmo()));
+        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(ammoText.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(ammoText.c_str()).y - 140), IM_COL32_WHITE, (ammoText).c_str());
+        }
        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
                                         ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy1.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
@@ -543,12 +549,11 @@ int main(int, char**)
                                         ImVec2((enemy2.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy3.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
                                         ImVec2((enemy3.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        if (rtimer < reloadTime){
-            angler = 3.14/4 - 3.14/2 * rtimer/reloadTime;
-            ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * rtimer / reloadTime, windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
+        if (player.curWeapon && player.curWeapon->time < player.curWeapon->getReloadSpeed()){
+            ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * player.curWeapon->time / player.curWeapon->getReloadSpeed(), windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
         }
-        //ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
-        //                                ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
+           // ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
+           //                             ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         player.render(ImGui::GetBackgroundDrawList(), Camera, f, windowWidth, windowHeight);
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
@@ -560,16 +565,16 @@ int main(int, char**)
 
         int flip = 1;
         glm::vec2 rotatedDir;
-        if (rtimer < reloadTime)
-            rotatedDir = {direction.x * cos(angler) - direction.y * sin(angler), direction.x * sin(angler) + direction.y * cos(angler)};
-        else
+        //if (timer < reloadTime)
+        //    rotatedDir = {direction.x * cos(angler) - direction.y * sin(angler), direction.x * sin(angler) + direction.y * cos(angler)};
+        //else
             rotatedDir = direction;
+
         float angul = atan(rotatedDir.y/rotatedDir.x);
         float flippy = 1;
-        if (rotatedDir.x < 0) {angul += 3.14/2 /*- 3.14 / 2*/; flip = -1; flippy = -1;}
-        else angul += 3.14/2;
-        if (player.getIndex() > -1)
-            ImageRotated((void*) ims.at(player.curWeapon.getTextureId())->texture, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
+         angul += 3.14/2;
+        if (player.curWeapon && player.getIndex() > -1)
+            ImageRotated((void*) ims.at(player.curWeapon->getTextureId())->texture, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
 
         ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
 
