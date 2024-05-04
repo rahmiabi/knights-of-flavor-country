@@ -50,7 +50,7 @@ World world;
 STOLEN CODEE !!! i dont know how matrices work :c
 */
 void thing(){
-	ifstream ins2("assets/mapfile/maptest.csv");
+	ifstream ins2("assets/mapfile/map1.csv");
       string test;
        getline(ins2,test);
        
@@ -222,6 +222,7 @@ int main(int, char**)
     // Set Window Icon
     int width, height, channels;
     unsigned char* pixels = stbi_load("./assets/images/noelle.jpg", &width, &height, &channels, 4);
+    shared_ptr<World> worldptr = shared_ptr<World>(&world);
 
     GLFWimage images[4];
     images[0].width = width;
@@ -310,12 +311,10 @@ int main(int, char**)
     bool pressed = true;
     float xSize = 1.0, ySize = 1.0;
     //thread t1(&World::update, &world);
-    //thread t2(&World::physics, &world);
+    //jthread t2(&World::physics, &world);
     //t1.detach();
-    //st2.detach();
     //thread t3(&Enemy::update, &enemy2, worldptr);
     //thread t4(&Enemy::update, &enemy3, worldptr);
-    //t2.detach();
     //t3.detach();
     //t4.detach();
     float skibid = 50;
@@ -339,8 +338,8 @@ int main(int, char**)
             skibid = max(1.0f, skibid);
             scrollBuffer.pop_back();
         }
-        cout << skibid << endl;
-        cout << jujutsu(skibid) << endl;
+        //cout << skibid << endl;
+        //cout << jujutsu(skibid) << endl;
         f = (jujutsu(skibid) * 2.5 + 0.001);
 
         // Poll and handle events (inputs, window resize, etc.)
@@ -389,9 +388,9 @@ int main(int, char**)
          if (rtimer == reloadTime && !mag){
             //cout << "Reloading" << endl;
             rtimer = 0;
-            mag = 1;
+            mag = 32;
         }
-        //normalize(velocity);
+        normalize(velocity);
 
 	  // collision checkin
 	  // eventually put this in player update
@@ -423,31 +422,30 @@ int main(int, char**)
         normalize(direction);
 
         // SPAWN PROJECTILES
+        static int numby = 0;
         if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
-            // for projectiles;
-//            glm::vec2 initial = player.pos();
-//            glm::vec2 end {0.0};
-//            float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
-//            cout << angle << endl;
-//            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
-//            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
-//	        if(dir.x && dir.y)
-//            normalize(dir);
-//            raycast(dir, end, initial, space, 1000);
-//            end.x += initial.x;
-//            end.y += initial.y;
-//            Projectile proj = {player.pos(), dir, end, true};
-//            normalize(proj.vel);
-//            projectiles.push_back(proj);
-//            mag--;
-//            cout << "Ammo: " << mag << " / 32" << endl;
-//            timer = 0.0;
+            glm::vec2 initial = player.pos();
+            float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
+            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
+            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
+	        if(dir.x && dir.y)
+            normalize(dir);
+            dir = glm::vec2{dir.x * 10, dir.y * 10};
+            shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.pos(), glm::vec2{10, 10})), dir));
 
-            // for melee
+            world.actors.emplace(proj->getName(), proj);
             mag--;
+            timer = 0.0;
+            numby++;
         }
         scale = .05;
 
+        for (auto& actor: world.actors){
+ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
+                                                ImVec2((actor.second->getBody().end().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+            actor.second->physics(deltaTime, worldptr);
+        
+        }
         // DO PROJECTILE THINGS
 //        for (Projectile& a: projectiles){
 //            if (!a.render) continue;
@@ -521,8 +519,8 @@ int main(int, char**)
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
         glm::vec2 dick = {  (player.pos().x + (xPos - windowWidth / 2) / f ),  (player.pos().y + (yPos - windowHeight / 2) / f )};
-        cout << dick.x << " " << dick.y << endl;
-        cout << player.pos().x << " " << player.pos().y << endl;
+        //cout << dick.x << " " << dick.y << endl;
+        //cout << player.pos().x << " " << player.pos().y << endl;
  
           ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((dick.x - xSize / 2 - Camera.x) * f + windowWidth / 2, (dick.y - ySize / 2 - Camera.y) * f  + windowHeight / 2) , 
                                         ImVec2((dick.x + xSize / 2- Camera.x) * f + windowWidth / 2, (dick.y + ySize / 2- Camera.y) * f  + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
