@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <map>
 #include <unordered_map>
+#include <memory>
 #include "item.h"
 #include "ability.h"
 #include "boost.h"
@@ -16,11 +17,11 @@
 
 class Inventory {
 private:
+
+public:
     std::unordered_map<std::string, Ability> abilities;
     std::unordered_map<std::string, Boost> boosts;
     std::unordered_map<std::string, Weapon> weapons;
-
-public:
     inline bool hasAbility(const std::string& name) {
         return this->abilities.contains(name);
     }

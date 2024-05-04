@@ -33,6 +33,7 @@ Weapon Weapon::fromCsvEntry(const CsvEntry& entry) {
     weapon.type = stringToWeaponTypeMap[weaponType];
 
     weapon.accuracy = entry.getI32("accuracy");
-    weapon.textureId = entry.getI32("textureID");
+    weapon.textureId = entry.getU32("textureID");
+
     return weapon;
 }

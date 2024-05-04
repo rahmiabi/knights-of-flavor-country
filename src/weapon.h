@@ -14,11 +14,12 @@ private:
     uint32_t fireRate;
     uint32_t reloadSpeed;
     uint32_t ammo;
+    uint32_t maxAmmo;
+    float time;
     uint32_t size;
     WeaponType type;
     uint32_t accuracy;
-    uint32_t textureId;
-
+    uint32_t textureId = 0;
 
     static Weapon fromCsvEntry(const CsvEntry& entry);
 
@@ -71,5 +72,14 @@ public:
 
     inline int getTextureId() const {
         return this->textureId;
+    }
+    
+    inline int update(float delta){
+        time += delta;
+        if (time > reloadSpeed){
+            ammo = maxAmmo;
+
+            time = 0;
+        }
     }
 };

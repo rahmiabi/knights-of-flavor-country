@@ -38,9 +38,7 @@ void ItemRegistry::init() {
     }
 
     for (auto& entry : weaponsFile) {
-        std::cout << "hi" << '\n';
         Weapon weapon = Weapon::fromCsvEntry(entry);
-        std::cout << "hi" << '\n';
         gWeapons.emplace(weapon.getName(), weapon);
         // gWeapons[weapon.getName()] = std::move(weapon);
     }
@@ -67,5 +65,6 @@ const Weapon& ItemRegistry::getWeapon(const std::string& name) {
         throw std::runtime_error("ItemRegistry::getWeapon item doesn't exist");
     }
 
+    //std::cout << name << std::endl;
     return gWeapons.at(name);
 }

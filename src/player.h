@@ -2,6 +2,7 @@
 
 #include "actor.h"
 #include "body.h"
+#include "inventory.h"
 #include <glm/glm.hpp>
 
 #include "imgui.h"
@@ -14,13 +15,20 @@
 #include "attack_traits.h"
 #include <memory>
 
+#include <stdexcept>
+
+#define MAX_WEAPONS 3
 class Player final : public Actor, AttackTraits {
 private:
     double scale = 0.5;
     GLuint texture;
+    int curInvenSize = 0, maxInvenSize = MAX_WEAPONS;
     // stores pos
     
 public:
+    Weapon curWeapon;
+    Inventory inventory; 
+    mutable std::unordered_map<std::string, int> weaponNames;
     Player() = default;
     ~Player() = default;
 
@@ -39,6 +47,32 @@ public:
 
     const PhysicsBody& getRect() const {
       	return *body.get();
+    }
+    std::string getWeapInd(int index){
+        for (auto x: weaponNames){
+            if (x.second == index)
+                return x.first; 
+        }
+        return "";
+    }
+    int getIndex() const {
+        if (weaponNames.count(curWeapon.getName())){
+            return weaponNames[curWeapon.getName()];
+        }
+        return -1;
+    }
+    void addWeapon(const std::string& str){
+        if (curInvenSize > maxInvenSize - 1){
+            throw std::runtime_error("Max Inventory Size Reached");
+        }
+        weaponNames.emplace(str, curInvenSize);
+        curInvenSize++;
+        inventory.addWeapon(str);
+    }
+
+    void removeWeapon(const std::string& str){
+        weaponNames.erase(weaponNames.find(str));
+        inventory.removeWeapon(str);
     }
 
     void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight){

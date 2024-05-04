@@ -11,7 +11,7 @@
 
 class Item {
 protected:
-    std::string name;
+    std::string name = "";
     std::string description;
     /**
      * Amount that exist

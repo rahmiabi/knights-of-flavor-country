@@ -10,7 +10,6 @@ std::vector<std::string> splitString(const std::string& s, char c) {
     std::string token;
     std::istringstream stream(s);
     while (std::getline(stream, token, c)) {
-    std::cout << token << '\n';
         tokens.push_back(token);
     }
     

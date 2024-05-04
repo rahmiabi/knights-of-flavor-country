@@ -132,7 +132,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     scrollBuffer.push_back(yoffset);
 }
 
-
+struct Image{
+    int width, height, channels;
+    unsigned char* pixels;
+    GLuint texture;
+};
 // Main code
 int main(int, char**)
 {
@@ -225,7 +229,7 @@ int main(int, char**)
     unsigned char* pixels = stbi_load("./assets/images/noelle.jpg", &width, &height, &channels, 4);
     shared_ptr<World> worldptr = shared_ptr<World>(&world);
 
-    GLFWimage images[4];
+    GLFWimage images[50];
     images[0].width = width;
     images[0].height = height;
     images[0].pixels = pixels;
@@ -253,6 +257,8 @@ int main(int, char**)
 
     vector<Projectile> projectiles;
 // uhh idk what this does i just do copy paste haha
+    vector<shared_ptr<Image>> ims;
+
     GLuint image_texture1, image_texture2, image_texture3, map;
     glGenTextures(1, &image_texture1);
     glGenTextures(1, &image_texture2);
@@ -276,13 +282,27 @@ int main(int, char**)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width3, height3, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels3);
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    for (int i =0; i < 7; i++){
+       shared_ptr<Image> image = shared_ptr<Image>(new Image);
+       image->pixels = stbi_load(("./assets/images/weapons/im" + to_string(i) + ".jpg").c_str(), &image->width, &image->height, &image->channels, 4);
+       images[3 + i].width = image->width;
+       images[3 + i].height = image->height;
+       images[3 + i].pixels = image->pixels;
+       glGenTextures(1, &image->texture);
+
+        glBindTexture(GL_TEXTURE_2D, image->texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        ims.push_back(image);
+    }
     // Setup filtering parameters for display
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload pixels into texture
-    ItemRegistry::init();
+   ItemRegistry::init();
     Weapon weap = ItemRegistry::getWeapon("Edge Blade");
+
     cout << endl;
     cout << weap.getFireRate() << endl;
 // Main loop
@@ -304,6 +324,10 @@ int main(int, char**)
     Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
     Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
 
+
+    player.addWeapon("Edge Blade");
+    player.addWeapon("Sniper");
+    player.addWeapon("Shotgun");
    //world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
     //world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
     //world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
@@ -369,9 +393,26 @@ int main(int, char**)
         int A= glfwGetKey(window, GLFW_KEY_A);
         int S= glfwGetKey(window, GLFW_KEY_S);
         int D= glfwGetKey(window, GLFW_KEY_D);
+        int num1= glfwGetKey(window, GLFW_KEY_1);
+        int num2= glfwGetKey(window, GLFW_KEY_2);
+        int num3= glfwGetKey(window, GLFW_KEY_3);
         int F = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         int R = glfwGetKey(window, GLFW_KEY_R);
 
+
+        if (num1 == GLFW_PRESS){
+            player.curWeapon = player.inventory.getWeapon(player.getWeapInd(0));
+            cout << "Equipped " << player.curWeapon.getTextureId() << '\n';
+        }
+        if (num2 == GLFW_PRESS){
+            player.curWeapon = player.inventory.getWeapon(player.getWeapInd(1));
+            cout << "Equipped " << player.curWeapon.getName() << '\n';
+            cout << "Equipped " << player.curWeapon.getTextureId() << '\n';
+        }
+        if (num3 == GLFW_PRESS){
+            player.curWeapon = player.inventory.getWeapon(player.getWeapInd(2));
+            cout << "Equipped " << player.curWeapon.getName() << '\n';
+        }
         if (W == GLFW_PRESS){
             velocity.y -= 100;
         }
@@ -427,7 +468,8 @@ int main(int, char**)
 
         // SPAWN PROJECTILES
         static int numby = 0;
-        if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
+        if (F == GLFW_PRESS && player.getIndex() > -1 && timer >= fireRate && player.curWeapon.getAmmo() && rtimer == reloadTime){
+            cout << player.curWeapon.getAmmo() << endl;
             for (int i = 0; i < 1; i++){
             glm::vec2 initial = player.pos();
             float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
@@ -439,8 +481,7 @@ int main(int, char**)
             shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.pos(), glm::vec2{10, 10})), dir));
         
             world.actors.emplace(proj->getName(), proj);
-            cout << world.actors.size() << endl;
-            mag--;
+            player.curWeapon.decAmmo();
             numby++;
             }
             timer = 0.0;
@@ -482,12 +523,18 @@ int main(int, char**)
         }      
         ImGui::PushFont(font2);
         string skib = to_string(mag) + "/32";
-        ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 100));
-        ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , ImVec2(windowWidth - 10, windowHeight - 25), IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture3, ImVec2(windowWidth - 110 - 10, windowHeight - 110 - 25) , 
-                                                ImVec2(windowWidth - 10, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
+        //cout << player.curWeapon.getName() << endl;
+        //cout << player.getIndex() << endl;
+        if (player.getIndex() > -1)
+        ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
+        for (int i = 0; i < 3; i++){
+            ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), IM_COL32(255, 255, 255, 255));
+            
+            ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ims.size() - 1 - ItemRegistry::getWeapon(player.getWeapInd(i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
+                                                ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 128));
+        }
 
+        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(skib.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(skib.c_str()).y - 140), IM_COL32_WHITE, (skib).c_str());
        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
                                         ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy1.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
@@ -521,7 +568,9 @@ int main(int, char**)
         float flippy = 1;
         if (rotatedDir.x < 0) {angul += 3.14/2 /*- 3.14 / 2*/; flip = -1; flippy = -1;}
         else angul += 3.14/2;
-        ImageRotated((void*) image_texture2, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
+        if (player.getIndex() > -1)
+            ImageRotated((void*) ims.at(player.curWeapon.getTextureId())->texture, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
+
         ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
