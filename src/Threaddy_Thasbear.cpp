@@ -15,4 +15,12 @@ public:
 		map.insert({s, function});
 	}
 
+	void make_detatched(string s) {
+		map.find(s)->second.detach();
+	}
+
+	void make_joined(string s) {
+		map.find(s)->second.join();
+	}
+
 };
