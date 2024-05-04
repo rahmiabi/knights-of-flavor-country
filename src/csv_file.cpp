@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 std::vector<std::string> splitString(const std::string& s, char c) {
     std::vector<std::string> tokens;
@@ -9,6 +10,7 @@ std::vector<std::string> splitString(const std::string& s, char c) {
     std::string token;
     std::istringstream stream(s);
     while (std::getline(stream, token, c)) {
+    std::cout << token << '\n';
         tokens.push_back(token);
     }
     
@@ -33,6 +35,7 @@ const std::string& CsvEntry::getValueAtColumn(const std::string& column) const {
     }
 
     size_t index = this->indexMap[column];
+
     if (this->tokens.size() <= index) {
         throw std::runtime_error("CsvEntry::getValueAtColumn column doesn't exist");
     }

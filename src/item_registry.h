@@ -7,6 +7,7 @@
 
 class ItemRegistry {
 public:
+    ItemRegistry() = default;
     static void init();
 
     static const Ability& getAbility(const std::string& name);

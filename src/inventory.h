@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include "item_registry.h"
 
 #include <cstdint>
 #include <map>

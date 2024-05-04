@@ -16,6 +16,7 @@
 #include "body.h"
 #define RAPIDJSON_HAS_STDSTRING true
 #include "../lib/rapidjson/include/rapidjson/document.h"
+#include <mutex>
 #include <chrono>
 
 struct World;
@@ -88,6 +89,7 @@ struct World{
     // ActorManager
     std::unordered_map<std::string, std::shared_ptr<Actor>> actors;
     std::vector<std::shared_ptr<Player>> players;
+    std::mutex muntex;
     
     /**
      * Create a new Actor.
@@ -132,9 +134,11 @@ struct World{
         start = std::chrono::system_clock::now(); 
         delta = std::chrono::duration<float, std::milli>(start - end).count();
         end = start;
+        muntex.lock();
       for (auto& actor: actors){
         actor.second->update(delta, ptr);
         }
+        muntex.unlock();
       }
     }
 
@@ -143,14 +147,22 @@ struct World{
       std::shared_ptr<World> ptr(this);
       auto start = std::chrono::system_clock::now(); 
       auto end = start;
+      float timer = 0;
+        std::cout << "thread\n";
       while(true){
         start = std::chrono::system_clock::now(); 
         delta = std::chrono::duration<float, std::milli>(start - end).count();
         end = start;
+        if (timer > 100){
+        muntex.lock();
       for (auto& actor: actors){
         actor.second->physics(delta, ptr);
         }
+        muntex.unlock();
+          timer = 0;
       } 
+      timer += delta;
+      }
     }
 
 

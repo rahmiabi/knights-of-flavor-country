@@ -1,7 +1,6 @@
-#include "inventory.h"
 
 #include <stdexcept>
-#include "item_registry.h"
+#include "inventory.h"
 
 Ability& Inventory::getAbility(const std::string& name) {
     if (!this->abilities.contains(name)) {
@@ -22,8 +21,8 @@ void Inventory::addAbility(const std::string& abilityName) {
         throw std::runtime_error("already has ability");
     }
 
-    const Ability& ability = ItemRegistry::getAbility(abilityName);
-    this->abilities.emplace(abilityName, ability);
+//    const Ability& ability = ItemRegistry::getAbility(abilityName);
+//    this->abilities.emplace(abilityName, ability);
 }
 
 void Inventory::removeAbility(const std::string& abilityName) {
@@ -49,8 +48,8 @@ void Inventory::addBoost(const std::string& boostName) {
         throw std::runtime_error("already has boost");
     }
 
-    const Boost& boost = ItemRegistry::getBoost(boostName);
-    this->boosts.emplace(boostName, boost);
+//    const Boost& boost = ItemRegistry::getBoost(boostName);
+//    this->boosts.emplace(boostName, boost);
 }
 
 void Inventory::removeBoost(const std::string& boostName) {

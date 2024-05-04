@@ -4,32 +4,33 @@
 #include <string>
 #include <stdexcept>
 #include "csv_file.h"
+#include <iostream>
 
 static std::unordered_map<std::string, Ability> gAbilities;
 static std::unordered_map<std::string, Boost> gBoosts;
 static std::unordered_map<std::string, Weapon> gWeapons;
 
 void ItemRegistry::init() {
-    CsvFile abilitiesFile("assets/abilities.csv");
-    if (abilitiesFile.hasParseError()) {
-        throw std::runtime_error("failed reading assets/abilities.csv, does it exist?");
-    }
-
-    for (auto& entry : abilitiesFile) {
-        Ability ability = Ability::fromCsvEntry(entry);
-        gAbilities.emplace(ability.getName(), ability);
-        // gAbilities[ability.getName()] = std::move(ability);
-    }
-
-    CsvFile boostsFile("assets/boosts.csv");
-    if (boostsFile.hasParseError()) {
-        throw std::runtime_error("failed reading assets/boosts.csv, does it exist?");
-    }
-
-    for (auto& entry : boostsFile) {
-        Boost boost = Boost::fromCsvEntry(entry);
-        gBoosts.emplace(boost.getName(), boost);
-    }
+//    CsvFile abilitiesFile("assets/abilities.csv");
+//    if (abilitiesFile.hasParseError()) {
+//        throw std::runtime_error("failed reading assets/abilities.csv, does it exist?");
+//    }
+//
+//    for (auto& entry : abilitiesFile) {
+//        Ability ability = Ability::fromCsvEntry(entry);
+//        gAbilities.emplace(ability.getName(), ability);
+//        // gAbilities[ability.getName()] = std::move(ability);
+//    }
+//
+//    CsvFile boostsFile("assets/boosts.csv");
+//    if (boostsFile.hasParseError()) {
+//        throw std::runtime_error("failed reading assets/boosts.csv, does it exist?");
+//    }
+//
+//    for (auto& entry : boostsFile) {
+//        Boost boost = Boost::fromCsvEntry(entry);
+//        gBoosts.emplace(boost.getName(), boost);
+//    }
 
     CsvFile weaponsFile("assets/weapons.csv");
     if (weaponsFile.hasParseError()) {
@@ -37,7 +38,9 @@ void ItemRegistry::init() {
     }
 
     for (auto& entry : weaponsFile) {
+        std::cout << "hi" << '\n';
         Weapon weapon = Weapon::fromCsvEntry(entry);
+        std::cout << "hi" << '\n';
         gWeapons.emplace(weapon.getName(), weapon);
         // gWeapons[weapon.getName()] = std::move(weapon);
     }

@@ -9,7 +9,6 @@ enum class WeaponType {
     GUN
 };
 
-class ItemRegistry;
 class Weapon final : public Item {
 private:
     uint32_t fireRate;

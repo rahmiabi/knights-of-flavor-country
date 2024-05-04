@@ -43,6 +43,7 @@
 #include "body.h"
 #include "projectile.h"
 #include "client.h"
+#include "item_registry.h"
 using namespace std;
 
 World world;
@@ -280,7 +281,10 @@ int main(int, char**)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload pixels into texture
-    
+    ItemRegistry::init();
+    Weapon weap = ItemRegistry::getWeapon("Edge Blade");
+    cout << endl;
+    cout << weap.getFireRate() << endl;
 // Main loop
     float timer = 50;
     float rtimer = 1000;
@@ -300,7 +304,7 @@ int main(int, char**)
     Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
     Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
 
-  //  world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
+   //world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
     //world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
     //world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
     //world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
@@ -424,6 +428,7 @@ int main(int, char**)
         // SPAWN PROJECTILES
         static int numby = 0;
         if (F == GLFW_PRESS && timer >= fireRate && mag && rtimer == reloadTime){
+            for (int i = 0; i < 1; i++){
             glm::vec2 initial = player.pos();
             float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
             glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
@@ -432,16 +437,19 @@ int main(int, char**)
             normalize(dir);
             dir = glm::vec2{dir.x * 10, dir.y * 10};
             shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.pos(), glm::vec2{10, 10})), dir));
-
+        
             world.actors.emplace(proj->getName(), proj);
+            cout << world.actors.size() << endl;
             mag--;
-            timer = 0.0;
             numby++;
+            }
+            timer = 0.0;
         }
         scale = .05;
 
+        //cout << "hi" << endl;
         for (auto& actor: world.actors){
-ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
+            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
                                                 ImVec2((actor.second->getBody().end().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
             actor.second->physics(deltaTime, worldptr);
         
@@ -598,7 +606,7 @@ world.staticBodies.clear();
         ImGui::PopFont();
 
         if (F == GLFW_PRESS){
-            cout << "rectangle," << dick.x << ", " << dick.y << ", " << xSize << ", " << ySize << endl;
+            //cout << "rectangle," << dick.x << ", " << dick.y << ", " << xSize << ", " << ySize << endl;
         }
         // TODO: uncomment when world object is available
         // for (auto& actor : world.actors) {
