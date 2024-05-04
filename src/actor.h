@@ -14,11 +14,21 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include "body.h"
-#define RAPIDJSON_HAS_STDSTRING true
+#define RAPIDJSON_HAS_STDSTRING 1
 #include "../lib/rapidjson/include/rapidjson/document.h"
 #include <mutex>
 #include <chrono>
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+#include <GL/glew.h>
+#include <GL/gl.h> // Will drag system OpenGL headers
+#include <cstdio>
+#include "../lib/rapidjson/include/rapidjson/document.h"
+#include "../lib/rapidjson/include/rapidjson/writer.h"
+#include "../lib/rapidjson/include/rapidjson/stringbuffer.h"
 struct World;
 
 /**
@@ -52,6 +62,13 @@ public:
     inline const PhysicsBody& getBody() const {
       return *body;
     }
+    glm::vec2 size() const {
+        return glm::vec2(body->size().x, body->size().y);
+    }
+
+    const PhysicsBody& getRect() const {
+      	return *body.get();
+    }
 
     inline glm::vec2 getPos() const {
         return this->body->pos();
@@ -63,8 +80,7 @@ public:
     void operator+=(glm::vec2 other){
         *body += other;
     }
-void hi();
-
+    virtual void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight){}
     /**
      * {
      *  "name": "...",
@@ -80,15 +96,23 @@ void hi();
     void fromJSON(const rapidjson::Value& value);
 };
 class Player; 
+class Enemy; 
+class Npc; 
 // ZA WARUDO, im sorry
 struct World{
     // Static Bodies, aka things that wont move (walls and stuff like that)
     std::vector<std::shared_ptr<PhysicsBody>> staticBodies; 
     // Rigid Bodies, aka things that might move (players)
     std::vector<std::shared_ptr<PhysicsBody>> rigidBodies; 
+    // Hitboxes for Players
+    std::vector<std::shared_ptr<Player>> players;
+    // Hitboxes for Enemies
+    std::vector<std::shared_ptr<Enemy>> enemies;
+    // Hitboxes for NPCS
+    std::vector<std::shared_ptr<Npc>> npcs;
+
     // ActorManager
     std::unordered_map<std::string, std::shared_ptr<Actor>> actors;
-    std::vector<std::shared_ptr<Player>> players;
     std::mutex muntex;
     
     /**

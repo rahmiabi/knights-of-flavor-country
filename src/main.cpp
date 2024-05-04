@@ -323,9 +323,10 @@ int main(int, char**)
     Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
 
 
-    player.addWeapon("Edge Blade");
-    player.addWeapon("Sniper");
-    player.addWeapon("Shotgun");
+        player.addWeapon("Edge Blade");
+    //player.addWeapon("Edge Blade");
+    //player.addWeapon("Sniper");
+    //player.addWeapon("Z-Zip");
    //world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
     //world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
     //world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
@@ -398,13 +399,13 @@ int main(int, char**)
         int R = glfwGetKey(window, GLFW_KEY_R);
 
 
-        if (num1 == GLFW_PRESS){
+        if (num1 == GLFW_PRESS && player.weaponNames.size() >= 1){
             player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(0));
         }
-        if (num2 == GLFW_PRESS){
+        if (num2 == GLFW_PRESS && player.weaponNames.size() >= 2){
             player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(1));
         }
-        if (num3 == GLFW_PRESS){
+        if (num3 == GLFW_PRESS && player.weaponNames.size() >= 3){
             player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(2));
         }
         if (W == GLFW_PRESS){
@@ -426,8 +427,6 @@ int main(int, char**)
 //        }
         if (player.curWeapon){
             player.curWeapon->update(deltaTime);
-            cout << player.curWeapon->time << endl;
-            cout << player.curWeapon->reloading << endl;
         }
         if (player.curWeapon && !player.curWeapon->getAmmo()){
             player.curWeapon->setReloading(true);
@@ -447,7 +446,7 @@ int main(int, char**)
         }
 
         
-        glm::vec2 Camera = player.pos();
+        glm::vec2 Camera = player.getPos();
 	// draws squaes
         static float mapScale = 9.647;//map1 = 10.502
         static float xChange = 19162;//map1 = 5359
@@ -467,22 +466,24 @@ int main(int, char**)
         static int numby = 0;
         {
             static float time = 0.0;
-            if (player.curWeapon)
-            time = min((float) player.curWeapon->getFireRate(), time);
+            if (player.curWeapon){
+            cout << player.curWeapon->getFireRate() << endl;
+            time = min((float) player.curWeapon->getFireRate(), time);}
         if (F == GLFW_PRESS && player.getIndex() > -1 && time >= player.curWeapon->getFireRate()  && player.curWeapon->getAmmo() && !player.curWeapon->reloading){
-            for (int i = 0; i < 1; i++){
-            glm::vec2 initial = player.pos();
+            int bullets = 1;
+            if (player.curWeapon->getName() == "Shotgun") bullets = player.curWeapon->getMaxAmmo();
+            for (int i = 0; i < bullets; i++){
+            glm::vec2 initial = player.getPos();
             float angle = 3.14 / 50 - 3.14 / 25 * (rand() % 100 + 1) / 100;
             glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
             glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
 	        if(dir.x && dir.y)
             normalize(dir);
             dir = glm::vec2{dir.x * 10, dir.y * 10};
-            shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.pos(), glm::vec2{10, 10})), dir));
+            shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.getPos(), glm::vec2{10, 10})), dir));
         
             world.actors.emplace(proj->getName(), proj);
             player.curWeapon->decAmmo();
-            cout << player.curWeapon->getAmmo() << endl;
             numby++;
             time = 0;
             }
@@ -529,17 +530,21 @@ int main(int, char**)
         //cout << player.curWeapon.getName() << endl;
         //cout << player.getIndex() << endl;
         if (player.curWeapon && player.getIndex() > -1)
-            ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (2 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
-        for (int i = 0; i < 3; i++){
+            ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (player.weaponNames.size() - 1 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (player.weaponNames.size() - 1 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
+        for (int i = 0; i < player.weaponNames.size(); i++){
             ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), IM_COL32(255, 255, 255, 255));
             
-            ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ItemRegistry::getWeapon(player.getWeapInd(i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
+            ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ItemRegistry::getWeapon(player.getWeapInd(player.weaponNames.size() - 1- i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
                                                 ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 128));
+            cout << ItemRegistry::getWeapon(player.getWeapInd(i)).getTextureId() << endl;
         }
 
-        if (player.curWeapon){
-            string ammoText = (to_string(player.curWeapon->getAmmo()) + " / " + to_string(player.curWeapon->getMaxAmmo()));
-        ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(ammoText.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(ammoText.c_str()).y - 140), IM_COL32_WHITE, (ammoText).c_str());
+        if (player.curWeapon && player.curWeapon->getType() == WeaponType::GUN){
+            string ammoText = (player.curWeapon->getName() + ": " + to_string(player.curWeapon->getAmmo()) + " / " + to_string(player.curWeapon->getMaxAmmo()));
+            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(ammoText.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(ammoText.c_str()).y - 140), IM_COL32_WHITE, (ammoText).c_str());
+        } else if (player.curWeapon && player.curWeapon->getType() == WeaponType::MELEE){
+            string ammoText = (player.curWeapon->getName());
+            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(ammoText.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(ammoText.c_str()).y - 140), IM_COL32_WHITE, (ammoText).c_str());
         }
        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
                                         ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
@@ -574,13 +579,13 @@ int main(int, char**)
         float flippy = 1;
          angul += 3.14/2;
         if (player.curWeapon && player.getIndex() > -1)
-            ImageRotated((void*) ims.at(player.curWeapon->getTextureId())->texture, ImVec2((width * scale + player.pos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.pos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
+            ImageRotated((void*) ims.at(player.curWeapon->getTextureId())->texture, ImVec2((width * scale + player.getPos().x - width * scale - Camera.x + rotatedDir.x * 80) * f + windowWidth / 2, (height * scale + player.getPos().y - height * scale - Camera.y + rotatedDir.y * 100) * f + windowHeight / 2), ImVec2(width * flippy * .125 * f, f * flip * height * .125), angul, list); 
 
         ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
-        glm::vec2 dick = {  (player.pos().x + (xPos - windowWidth / 2) / f ),  (player.pos().y + (yPos - windowHeight / 2) / f )};
+        glm::vec2 dick = {  (player.getPos().x + (xPos - windowWidth / 2) / f ),  (player.getPos().y + (yPos - windowHeight / 2) / f )};
         //cout << dick.x << " " << dick.y << endl;
         //cout << player.pos().x << " " << player.pos().y << endl;
  
@@ -588,6 +593,7 @@ int main(int, char**)
                                         ImVec2((dick.x + xSize / 2- Camera.x) * f + windowWidth / 2, (dick.y + ySize / 2- Camera.y) * f  + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         {
             static int counter = 0;
+            static char weaponN[50] = "";
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
@@ -603,6 +609,22 @@ int main(int, char**)
             ImGui::SliderFloat("xSize", &xSize, 0.0f, 5000.0f); 
             ImGui::SliderFloat("ySize", &ySize, 0.0f, 5000.0f); 
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            ImGui::InputText("WeaponName", weaponN, IM_ARRAYSIZE(inputText));
+
+            if (ImGui::Button("Add Weapon"))  {                          // Buttons return true when clicked (most widgets return true when edited/activated)
+                try{
+                    player.addWeapon(string(weaponN));
+                } catch(...){
+                }
+            }
+            if (ImGui::Button("Remove Weapon")) {                           // Buttons return true when clicked (most widgets return true when edited/activated)
+                try{
+                    if (player.weaponNames.count(string(weaponN)))
+                        player.removeWeapon(string(weaponN));
+                } catch (...){
+                }
+            }
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                 {

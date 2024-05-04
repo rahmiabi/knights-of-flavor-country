@@ -5,10 +5,6 @@
 
 #include "actor.h"
 
-#include <cstdio>
-#include "../lib/rapidjson/include/rapidjson/document.h"
-#include "../lib/rapidjson/include/rapidjson/writer.h"
-#include "../lib/rapidjson/include/rapidjson/stringbuffer.h"
 #include "player.h"
 
 Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
@@ -23,9 +19,6 @@ void Actor::physics(float delta, const std::shared_ptr<World>& world ){
     return;
 }
 
-void Actor::hi(){
-    std::cout << "hi" << std::endl;
-}
 std::string Actor::toJSON() {
     rapidjson::Value json = this->toJSONObject();
 
