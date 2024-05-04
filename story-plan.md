@@ -166,6 +166,8 @@
     + Aoe and reloads a shell at a time
     + ref image (m90 from halo  for ref) 
 ![](https://static.wikia.nocookie.net/thedemonapostles-rpg-collections/images/d/df/M90_Close_Assault_Weapon_System.png/revision/latest?cb=20190819065500)
+
+  + Flame thrower
     
 + Items (found in the world)
   + CSM (Combat Supply Meds) - generic meds
@@ -201,6 +203,8 @@
   + DX Drone Strike - char pulls out a Microsoft surface
     + Calls in a drone strike on the selected location that targets the largest unit first
     + player does not show the item, but instead just calls it in on a set location and causes an explosion
+ 
+  + Instant reload beacon
 
 ## Storyline
 
