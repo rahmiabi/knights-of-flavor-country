@@ -21,6 +21,7 @@ protected:
     Item(const std::string& name, const std::string& description);
 
 public:
+    Item() = default;
     virtual ~Item() = default;
 
     /**

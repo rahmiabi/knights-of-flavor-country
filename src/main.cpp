@@ -538,8 +538,8 @@ ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.s
             ImGui::SliderFloat("scale", &mapScale, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("xch", &xChange, 0.0f, 10 * width3);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("ych", &yChange, 0.0f, 10 * height3);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("ySize", &xSize, 0.0f, 5000.0f); 
-            ImGui::SliderFloat("xSize", &ySize, 0.0f, 5000.0f); 
+            ImGui::SliderFloat("xSize", &xSize, 0.0f, 5000.0f); 
+            ImGui::SliderFloat("ySize", &ySize, 0.0f, 5000.0f); 
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -597,6 +597,9 @@ world.staticBodies.clear();
         }
         ImGui::PopFont();
 
+        if (F == GLFW_PRESS){
+            cout << "rectangle," << dick.x << ", " << dick.y << ", " << xSize << ", " << ySize << endl;
+        }
         // TODO: uncomment when world object is available
         // for (auto& actor : world.actors) {
         //     actor.update(deltaTime);

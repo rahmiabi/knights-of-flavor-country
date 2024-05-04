@@ -13,12 +13,12 @@
  */
 class Boost : public Item {
 private:
-    Boost();
 
     static Boost fromCsvEntry(const CsvEntry& entry);
 
     friend class ItemRegistry;
     
 public:
+    Boost() = default;
     // TODO
 };
