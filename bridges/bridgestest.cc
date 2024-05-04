@@ -73,22 +73,25 @@ AudioClip mixFadeClips(const AudioClip& ac1, const AudioClip& ac2) {
 int main() {
 	//Possible Issues:
 	//1. There's a problem with AudioClip opening these files?
-	cout << "WHY ARE YOU NOT WORKING?\n";
+	//cout << "WHY ARE YOU NOT WORKING?\n";
 	Bridges bridges = Bridges(5, "gugu", "741219807521");
 	bridges.setTitle("Task Force OST");
-	cout << "Oo oo aa aa\n";;
+	//cout << "Oo oo aa aa\n";;
 
-	ifstream ins("testaudio.wav"); //Okay, open it this way
+	/*
+	ifstream ins("startnewtheme_low.wav"); //Okay, open it this way
 	if (!ins) cout << "WHO WOULDVE THOUGHT?\n";
 	else ins.close();
 
-	/*
+	
 	ifstream ins2("./testaudio2.wav");
 	if (!ins2) cout << "NOOOOOO WAY\n";
 	else ins.close();
 	*/
 
-	AudioClip ac1 = AudioClip("startnewtheme_low.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
+	AudioClip ac1 = AudioClip("testaudio.wav"); //I'm convinced it just takes forever? Is there a faster way to do this?
+	AudioClip newA = AudioClip(ac1.getSampleCount(), 1, ac1.getSampleBits(), ac1.getSampleRate());
+	/*
 	cout << "Clip 1 made\n";
 	AudioClip ac2 = AudioClip("looptheme_low.wav");
 	cout << "Clip 2 made\n"; 
@@ -103,7 +106,11 @@ int main() {
 
 	bridges.setDataStructure(ac2); //Second clip
 	bridges.visualize();
+	*/
 
-	bridges.setDataStructure(mix);
+	cerr << "Setting the data structure\n";
+	bridges.setDataStructure(newA);
+	cerr << "Set the data structure\n";
+
 	bridges.visualize();
 }
