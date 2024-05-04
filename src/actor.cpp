@@ -17,10 +17,14 @@ Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
 }
 
 void Actor::update(float delta, const std::shared_ptr<World>& world ){
-
+    return;
 }
 void Actor::physics(float delta, const std::shared_ptr<World>& world ){
+    return;
+}
 
+void Actor::hi(){
+    std::cout << "hi" << std::endl;
 }
 std::string Actor::toJSON() {
     rapidjson::Value json = this->toJSONObject();

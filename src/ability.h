@@ -15,7 +15,6 @@ class ItemRegistry;
  */
 class Ability : public Item {
 private:
-    Ability();
 
     static Ability fromCsvEntry(const CsvEntry& entry);
 
@@ -23,4 +22,5 @@ private:
 
 public:
     // TODO
+    Ability() = default;
 };

@@ -20,14 +20,14 @@ private:
     uint32_t accuracy;
     uint32_t textureId;
 
-    Weapon();
 
     static Weapon fromCsvEntry(const CsvEntry& entry);
 
     friend class ItemRegistry;
 
 public:
-    // Weapon(const Weapon&) = default;
+    Weapon() = default;
+    Weapon(const Weapon&) = default;
 
     // Character can only have one of a weapon
     inline uint32_t getMaxAmount() override {

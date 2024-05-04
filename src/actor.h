@@ -29,8 +29,6 @@ protected:
     std::string name;
     std::shared_ptr<PhysicsBody> body;
 
-    friend struct World;
-
 public:
     Actor() = default;
     Actor(std::string name, std::shared_ptr<PhysicsBody> body);
@@ -64,6 +62,7 @@ public:
     void operator+=(glm::vec2 other){
         *body += other;
     }
+void hi();
 
     /**
      * {
