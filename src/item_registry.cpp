@@ -61,7 +61,6 @@ const Boost& ItemRegistry::getBoost(const std::string& name) {
 }
 
 const Weapon& ItemRegistry::getWeapon(const std::string& name) {
-    std::cout << name << std::endl;
     if (!gWeapons.contains(name)) {
         throw std::runtime_error("ItemRegistry::getWeapon item doesn't exist");
     }

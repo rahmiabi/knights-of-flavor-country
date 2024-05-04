@@ -37,8 +37,8 @@
 #include <glm/glm.hpp>
 #include "vecmath.h"
 #include "actor.h"
-#include "npc.h"
 #include "player.h"
+#include "npc.h"
 #include "enemy.h"
 #include "body.h"
 #include "projectile.h"
@@ -137,6 +137,7 @@ struct Image{
     unsigned char* pixels;
     GLuint texture;
 };
+
 // Main code
 int main(int, char**)
 {
@@ -317,13 +318,19 @@ int main(int, char**)
     static float f = 1.0f;
     Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
     world.players.push_back(shared_ptr<Player>(&player));
+    Npc npc("john", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
+    // TODO MATTHEW - DIALOGUE
+    npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
+
+    world.actors.emplace(npc.getName(), shared_ptr<Actor>(&npc));
+
     Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
     Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, 10000), glm::vec2(width * .1, height * .1))));
     Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
     Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
 
 
-        player.addWeapon("Edge Blade");
+    player.addWeapon("Edge Blade");
     //player.addWeapon("Edge Blade");
     //player.addWeapon("Sniper");
     //player.addWeapon("Z-Zip");
@@ -397,6 +404,7 @@ int main(int, char**)
         int num3= glfwGetKey(window, GLFW_KEY_3);
         int F = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         int R = glfwGetKey(window, GLFW_KEY_R);
+        int E = glfwGetKey(window, GLFW_KEY_E);
 
 
         if (num1 == GLFW_PRESS && player.weaponNames.size() >= 1){
@@ -446,6 +454,8 @@ int main(int, char**)
         }
 
         
+
+        
         glm::vec2 Camera = player.getPos();
 	// draws squaes
         static float mapScale = 9.647;//map1 = 10.502
@@ -467,7 +477,6 @@ int main(int, char**)
         {
             static float time = 0.0;
             if (player.curWeapon){
-            cout << player.curWeapon->getFireRate() << endl;
             time = min((float) player.curWeapon->getFireRate(), time);}
         if (F == GLFW_PRESS && player.getIndex() > -1 && time >= player.curWeapon->getFireRate()  && player.curWeapon->getAmmo() && !player.curWeapon->reloading){
             int bullets = 1;
@@ -689,6 +698,30 @@ world.staticBodies.clear();
         //     actor.update(deltaTime);
         // }
         //cout << enemy.getPos().x << " " << enemy.getPos().y << endl;
+        ImGui::GetIO().FontGlobalScale = f;
+        if (player.prompt) {
+            ImGui::PushFont(font2);
+            if (E == GLFW_PRESS){
+                player.promptGiver->speaking = true;
+            }
+            string prompt = "Press [E] to interact";
+            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth / 2 - (ImGui::CalcTextSize(prompt.c_str()).x) / 2, windowHeight * 2 / 3 + ImGui::CalcTextSize(prompt.c_str()).y / 2), IM_COL32_BLACK, (prompt).c_str());
+            ImGui::PopFont();
+        } 
+        if (player.promptGiver && player.promptGiver->speaking){
+            //cout << player.promptGiver->speaking << endl;
+            // gets random line from dialogue
+            ImGui::PushFont(font2);
+            try{
+            string line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
+            ImGui::SameLine((windowWidth / 2) - (ImGui::CalcTextSize(line.c_str()).x / 2));
+            ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_BLACK, (line).c_str());
+            } catch(...){}
+            ImGui::PopFont();
+        }
+        cout << "Prompt " << player.prompt << endl;
+        player.prompt = false;
+        player.promptGiver = nullptr;
 
         // Rendering
         ImGui::Render();

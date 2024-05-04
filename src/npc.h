@@ -10,9 +10,13 @@
 class Npc : public Actor {
 
 public:
+    std::vector<std::string> dialogue;
+    bool speaking = false;
     Npc() = default;
     Npc(std::string name, std::shared_ptr<PhysicsBody> body) : Actor(name, body){}
     virtual ~Npc() = default;
+
+    void physics(float delta, const std::shared_ptr<World>& world) override;
 };
 
 class MCNpc final : public Npc {

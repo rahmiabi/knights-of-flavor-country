@@ -19,6 +19,9 @@ private:
 public:
     Weapon* curWeapon = nullptr;
     Inventory inventory; 
+    bool prompt = false;
+    Npc* promptGiver;
+
     mutable std::unordered_map<std::string, int> weaponNames;
     Player() = default;
     ~Player() = default;
