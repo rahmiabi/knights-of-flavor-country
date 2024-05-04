@@ -50,7 +50,7 @@ World world;
 STOLEN CODEE !!! i dont know how matrices work :c
 */
 void thing(){
-	ifstream ins2("assets/mapfile/map1.csv");
+	ifstream ins2("assets/mapfile/maptest.csv");
       string test;
        getline(ins2,test);
        
