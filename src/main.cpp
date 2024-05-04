@@ -431,7 +431,7 @@ int main(int, char**)
         if (player.curWeapon && !player.curWeapon->getAmmo()){
             player.curWeapon->setReloading(true);
         }
-        //normalize(velocity);
+        normalize(velocity);
 
 	  // collision checkin
 	  // eventually put this in player update
@@ -448,9 +448,9 @@ int main(int, char**)
         
         glm::vec2 Camera = player.getPos();
 	// draws squaes
-        static float mapScale = 9.647;//map1 = 10.502 //map2 = 9.647
-        static float xChange = 19162;//map1 = 5359 //map2 = 19162
-        static float yChange = 10;//map1 = 1790.518 //map2 = 10
+        static float mapScale = 3.5;//map1 = 10.502 //map2 = 9.647 //map3 = 3.5
+        static float xChange = -6260;//map1 = 5359 //map2 = 19162 //map3 = -6260
+        static float yChange = -2384;//map1 = 1790.518 //map2 = 10 //map3 = -2385
           ImGui::GetBackgroundDrawList()->AddImage((void*) map, ImVec2((width3 * mapScale / -2  - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / -2 - Camera.y - yChange) * f + windowHeight / 2),
                                                 ImVec2((width3 * mapScale / 2 - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / 2 - Camera.y - yChange) * f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
