@@ -95,6 +95,7 @@ public:
     rapidjson::Value toJSONObject();
     void fromJSON(const rapidjson::Value& value);
 };
+
 class Player; 
 class Enemy; 
 class Npc; 

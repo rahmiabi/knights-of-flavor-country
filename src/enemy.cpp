@@ -5,9 +5,10 @@
 
 #include "enemy.h"
 #include <iostream>
+#include <stdexcept>
 std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size){
   std::vector<glm::vec2> path;
-  if (World::checkCollisions(space, finalPos, size)) {return {finalPos};}
+  if (World::checkCollisions(space, finalPos, size)) {throw std::runtime_error("unable to go to finalPos");}
   struct Node {
     glm::vec2 position;
     float gCost, hCost, fCost;
@@ -28,6 +29,7 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
   openSet.insert(start->toString());
   std::shared_ptr<Node> lastNode;
   while (open.size()){
+    std::cout << "hi\n";
     std::shared_ptr<Node> current = open.top();
     open.pop();
     openSet.erase(current->toString());
@@ -63,6 +65,7 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
   }
 
   for (std::shared_ptr<Node> tmp = lastNode; tmp; tmp = tmp->parent){
+    std::cout << tmp->position.x << " " << tmp->position.y << '\n';
     path.push_back(glm::vec2(tmp->position.x * -1, tmp->position.y * -1));
   }
 
@@ -70,13 +73,13 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
 }
 
 void Enemy::update(float delta, const std::shared_ptr<World>& world){
-  pathRefresh = 5000;
+    pathRefresh = 2500;
     static bool init = true;
     static float pathTimer;
     // point it is goind to
-    glm::vec2 charaPos = world->players[0]->pos(); 
-    glm::vec2 charaStart = world->players[0]->getRect().start();
-    glm::vec2 charaEnd = world->players[0]->getRect().end();
+    const glm::vec2 charaPos = world->players[0]->getPos(); 
+    const glm::vec2 charaStart = world->players[0]->getRect().start();
+    const glm::vec2 charaEnd = world->players[0]->getRect().end();
 
     //float xDisp = charaPos.x - this->getPos().x;
     //if (xDisp != 0)
@@ -93,19 +96,24 @@ void Enemy::update(float delta, const std::shared_ptr<World>& world){
     pathTimer += delta;
     std::vector<glm::vec2> pathThing;
     if (pathTimer >= pathRefresh){
-      {
+      try {
       pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x, charaStart.y), 50, this->body->size());
+      } catch (...){
+        try {
+        pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x, charaEnd.y), 50, this->body->size());
+        } catch (...){
+          try {
+            pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x, charaStart.y), 50, this->body->size());
+          } catch (...){
+            try {
+            pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x, charaEnd.y), 50, this->body->size());
+            } catch (...){
+              pathThing = {this->getPos()};
+            }
+          }
+        }
       }
-      if (pathThing.size() <= 1){
-      pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x, charaEnd.y), 50, this->body->size());
-      }
-      if (pathThing.size() <= 1){
-      pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x, charaStart.y), 50, this->body->size());
-      }
-      if (pathThing.size() <= 1){
-      pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x, charaEnd.y), 50, this->body->size());
-      }
-      path = pathThing;
+      this->path = pathThing;
     }
 
     init = false;

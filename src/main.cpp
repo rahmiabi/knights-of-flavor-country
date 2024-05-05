@@ -37,8 +37,8 @@
 #include <glm/glm.hpp>
 #include "vecmath.h"
 #include "actor.h"
-#include "npc.h"
 #include "player.h"
+#include "npc.h"
 #include "enemy.h"
 #include "body.h"
 #include "projectile.h"
@@ -51,7 +51,7 @@ World world;
 STOLEN CODEE !!! i dont know how matrices work :c
 */
 void thing(){
-	ifstream ins2("assets/mapfile/maptest.csv");
+	ifstream ins2("assets/mapfile/map2.csv");
       string test;
        getline(ins2,test);
        
@@ -137,6 +137,7 @@ struct Image{
     unsigned char* pixels;
     GLuint texture;
 };
+
 // Main code
 int main(int, char**)
 {
@@ -255,8 +256,6 @@ int main(int, char**)
 
     glfwSetScrollCallback(window, scroll_callback);
 
-    vector<Projectile> projectiles;
-// uhh idk what this does i just do copy paste haha
     vector<shared_ptr<Image>> ims;
 
     GLuint image_texture1, image_texture2, image_texture3, map;
@@ -317,17 +316,29 @@ int main(int, char**)
     static float f = 1.0f;
     Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
     world.players.push_back(shared_ptr<Player>(&player));
-    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
-    Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, 10000), glm::vec2(width * .1, height * .1))));
-    Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-10000, -10000), glm::vec2(width * .1, height * .1))));
+    Npc npc("john", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
+    // TODO MATTHEW - DIALOGUE
+    npc.planned.push_back("Crazy? I was crazy once.");
+    npc.planned.push_back("They locked me in a room.");
+    npc.planned.push_back("A rubber room.");
+    npc.planned.push_back("A rubber room with rats.");
+    npc.planned.push_back("And rats make me crazy.");
+
+    npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
+
+    world.actors.emplace(npc.getName(), shared_ptr<Actor>(&npc));
+
+    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
+    Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
+    Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, -1000), glm::vec2(width * .1, height * .1))));
     Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
 
 
-        player.addWeapon("Edge Blade");
+    player.addWeapon("Edge Blade");
     //player.addWeapon("Edge Blade");
     //player.addWeapon("Sniper");
     //player.addWeapon("Z-Zip");
-   //world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
+    //world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
     //world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
     //world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
     //world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
@@ -397,6 +408,7 @@ int main(int, char**)
         int num3= glfwGetKey(window, GLFW_KEY_3);
         int F = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         int R = glfwGetKey(window, GLFW_KEY_R);
+        int E = glfwGetKey(window, GLFW_KEY_E);
 
 
         if (num1 == GLFW_PRESS && player.weaponNames.size() >= 1){
@@ -432,6 +444,7 @@ int main(int, char**)
             player.curWeapon->setReloading(true);
         }
         normalize(velocity);
+        velocity = glm::vec2{velocity.x * 1.5, velocity.y * 1.5};
 
 	  // collision checkin
 	  // eventually put this in player update
@@ -444,6 +457,8 @@ int main(int, char**)
         if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
         	player += glm::vec2(0, -1 * velocity.y / 3 * deltaTime);
         }
+
+        
 
         
         glm::vec2 Camera = player.getPos();
@@ -467,7 +482,6 @@ int main(int, char**)
         {
             static float time = 0.0;
             if (player.curWeapon){
-            cout << player.curWeapon->getFireRate() << endl;
             time = min((float) player.curWeapon->getFireRate(), time);}
         if (F == GLFW_PRESS && player.getIndex() > -1 && time >= player.curWeapon->getFireRate()  && player.curWeapon->getAmmo() && !player.curWeapon->reloading){
             int bullets = 1;
@@ -497,6 +511,7 @@ int main(int, char**)
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
                                                 ImVec2((actor.second->getBody().end().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
             actor.second->physics(deltaTime, worldptr);
+            actor.second->update(deltaTime, worldptr);
         
         }
         // DO PROJECTILE THINGS
@@ -689,6 +704,32 @@ world.staticBodies.clear();
         //     actor.update(deltaTime);
         // }
         //cout << enemy.getPos().x << " " << enemy.getPos().y << endl;
+        ImGui::GetIO().FontGlobalScale = f;
+        if (player.prompt) {
+            ImGui::PushFont(font2);
+            if (E == GLFW_PRESS){
+                player.promptGiver->speaking = true;
+            }
+            string prompt = "Press [E] to interact";
+            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth / 2 - (ImGui::CalcTextSize(prompt.c_str()).x) / 2, windowHeight * 2 / 3 + ImGui::CalcTextSize(prompt.c_str()).y / 2), IM_COL32_BLACK, (prompt).c_str());
+            ImGui::PopFont();
+        } 
+        if (player.promptGiver && player.promptGiver->speaking){
+            //cout << player.promptGiver->speaking << endl;
+            // gets random line from dialogue
+            ImGui::PushFont(font2);
+            try{
+            string line;
+            if (!npc.planned.size()) line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
+            else line = npc.planned.front();
+            ImGui::SameLine((windowWidth / 2) - (ImGui::CalcTextSize(line.c_str()).x / 2));
+            ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_BLACK, (line).c_str());
+            } catch(...){}
+            ImGui::PopFont();
+        }
+        cout << "Prompt " << player.prompt << endl;
+        player.prompt = false;
+        player.promptGiver = nullptr;
 
         // Rendering
         ImGui::Render();
