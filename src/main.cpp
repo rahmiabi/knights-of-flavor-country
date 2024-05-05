@@ -35,6 +35,7 @@
 
 #define GLM_SWIZZLE_FORCE_SWIZZLE
 #include <glm/glm.hpp>
+#include <algorithm>
 #include "vecmath.h"
 #include "actor.h"
 #include "player.h"
@@ -492,13 +493,13 @@ int main(int, char**)
                 if (Q == GLFW_PRESS){
                     if (justPressed){
                         stratagemState = true;
-                        if (!puzzle) puzzle = rand() % 2 + 1; 
+                        if (!puzzle) puzzle = rand() % 3 + 1; 
                     }
                     justPressed = false;
                 } else {
                     justPressed = true;
                 }
-            } else {
+            } else{
                 if (Q == GLFW_PRESS){
                     if (justPressed)
                         stratagemState = false;
@@ -639,8 +640,103 @@ int main(int, char**)
 
                     ImGui::PopStyleColor();
                     ImGui::End();
-                    }                    
+                    }
+                    // TODO - THIRD PUZZLE - AMONG US WIRES                   
+                else if (puzzle == 3){
+                   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
+                    ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
+                    ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
+                    ImGui::Begin("Wires from Among Us", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                    ImVec2 curSize = ImGui::GetWindowSize();
+                    static bool reset = true;
+                    static vector<pair<string, ImVec4>> leftPos;
+                    static vector<pair<string, ImVec4>> rightPos;
+                    static unordered_map<int, pair<bool, ImVec2>> done;
+                    static unordered_map<int, bool> clicked = {{0, 0}, {1, 0}, {2, 0}, {3, 0}};
+                    static unordered_map<int, bool> endClicked = {{0, 0}, {1, 0}, {2, 0}, {3, 0}};
+                    static unordered_map<string, vector<int>> wires;
+                    static unordered_set<int> connected; 
+
+                    if (reset){
+                        leftPos.clear();
+                        leftPos.clear();
+                        wires.clear();
+                        connected.clear();
+                        leftPos.push_back(make_pair("RED", ImVec4(252 / 255.0f, 94 / 255.0f, 3 / 255.0f, 255 / 255.0f)));
+                        leftPos.push_back(make_pair("BLUE", ImVec4(23 / 255.0f, 3 / 255.0f, 252 / 255.0f, 255 / 255.0f)));
+                        leftPos.push_back(make_pair("YELLOW", ImVec4(252 / 255.0f, 236 / 255.0f, 3 / 255.0f, 255 / 255.0f)));
+                        leftPos.push_back(make_pair("PINK", ImVec4(255 / 255.0f, 181 / 255.0f, 243 / 255.0f, 255 / 255.0f)));
+                        rightPos = leftPos;
+                        auto rd = std::random_device {};
+                        auto rng = default_random_engine{rd()};
+                        shuffle(rightPos.begin(), rightPos.end(), rng);
+                        shuffle(leftPos.begin(), leftPos.end(), rng);
+                        reset = false;
+                        for (int i = 0; i < 4; i++){
+                            wires[leftPos[i].first].push_back(i);
+                        }
+                        for (int i = 0; i < 4; i++){
+                            wires[rightPos[i].first].push_back(i);
+                        }
+                    }
+
+                    if (connected.size() == 4){
+                        reset = true;
+                        stratagemState = false;
+                        puzzle = 0;
+                        for (auto x: clicked){
+                            x.second = false;
+                        }
+                        for (auto x: endClicked){
+                            x.second = false;
+                        }
+                    }
+
+                    for (int i = 0; i < 4; i++){
+
+                        glm::vec2 direction = {xPos, yPos};
+
+
+                        ImGui::PushStyleColor(ImGuiCol_Button, rightPos.at(i).second); // Set window background to red
+                        ImGui::SetCursorPos(ImVec2(curSize.x * .8, curSize.y * 0.1 + curSize.y * 0.2 * i));
+                        ImGui::Button(("##END" + to_string(i)).c_str(), ImVec2(100, 100));
+
+                        if (connected.find(i) != connected.end()) {
+                            ImGui::GetWindowDrawList()->AddLine(ImVec2(windowWidth *(1/2.0f - 3/8.0f) + curSize.x * .1 + 50, windowHeight * (1/2.0f - 3/8.0f)  + (curSize.y * 0.1 + curSize.y * 0.2 * wires[rightPos[i].first].front() ) + 50), ImVec2(windowWidth *(1/2.0f - 3/8.0f) + curSize.x * .8+ 50, windowHeight * (1/2.0f - 3/8.0f)  + (curSize.y * 0.1 + curSize.y * 0.2 * i ) + 50), IM_COL32(255 * rightPos.at(i).second.x, 255 * rightPos.at(i).second.y, 255 * rightPos.at(i).second.z, 255 * rightPos.at(i).second.w), 3);
+                        }
+
+                        if (ImGui::IsItemHovered() && endClicked.at(i)) {
+                            cout << "hi" << endl;
+                            connected.insert(i);
+                        } else if (!clicked.at(wires[rightPos[i].first].front())){
+                            endClicked.at(i) = false; 
+                        }
+
+                        if (clicked.at(i) == true){
+                        ImGui::GetWindowDrawList()->AddLine(ImVec2(windowWidth *(1/2.0f - 3/8.0f) + curSize.x * .1 + 50, windowHeight * (1/2.0f - 3/8.0f)  + (curSize.y * 0.1 + curSize.y * 0.2 * i ) + 50), ImVec2(direction.x, direction.y), IM_COL32(255 * leftPos.at(i).second.x, 255 * leftPos.at(i).second.y,255 * leftPos.at(i).second.z,255 * leftPos.at(i).second.w), 3);
+                        }
+
+                    }
+
+                    for (int i = 0; i < 4; i++){
+                        ImGui::PopStyleColor();
+                        ImGui::PushStyleColor(ImGuiCol_Button, leftPos.at(i).second); // Set window background to red
+                        ImGui::SetCursorPos(ImVec2(curSize.x * .1, curSize.y * 0.1 + curSize.y * 0.2 * i));
+                        ImGui::Button(("##START" + to_string(i)).c_str(), ImVec2(100, 100));
+                        if (ImGui::IsItemHovered() && F == GLFW_PRESS) {
+                            clicked.at(i) = true; 
+                            endClicked.at(wires[leftPos[i].first].back()) = true; 
+                        } else if (F == GLFW_RELEASE){
+                            clicked.at(i) = false;
+                        }
+                        ImGui::PopStyleColor();
+
+                    }
+
+                    ImGui::PopStyleColor();
+                    ImGui::End();
                 }
+        } 
     }
 
 
