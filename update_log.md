@@ -42,4 +42,32 @@
 - Json parser
 - Begun work on command console
 - Planned how processing will be handled
-- **5/1/24 INCOMPLETE**
+- Logo
+- Chat working/implemented
+- Character collision
+
+## 5/2/24
+- Enemy AI path finding complete
+- Zooming in/out
+- Puzzle brainstorming
+- Cleaned up code
+- First attempt at running on multiple threads
+- Start screen
+
+## 5/3/24
+- Weapon stats spreadsheet
+- Map editor 
+- More maps
+- Projectiles improved
+- Talked about the Drake vs Kendrick beef cuz important
+
+## 5/4/24
+- Bridges visualization
+- Progress on inventory
+- More weapon progress
+- More maps
+- Dialogue
+- Stratagems
+- Puzzles
+
+## 5/5/24
