@@ -8,7 +8,7 @@
 #include <stdexcept>
 std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size){
   std::vector<glm::vec2> path;
-  if (World::checkCollisions(space, finalPos, size)) {throw std::runtime_error("unable to go to finalPos");}
+  if (World::checkCollisions(space, finalPos, size)) return {pos};
   struct Node {
     glm::vec2 position;
     float gCost, hCost, fCost;
@@ -29,7 +29,6 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
   openSet.insert(start->toString());
   std::shared_ptr<Node> lastNode;
   while (open.size()){
-    std::cout << "hi\n";
     std::shared_ptr<Node> current = open.top();
     open.pop();
     openSet.erase(current->toString());
@@ -113,7 +112,9 @@ void Enemy::update(float delta, const std::shared_ptr<World>& world){
           }
         }
       }
+      muntx.lock();
       this->path = pathThing;
+      muntx.unlock();
     }
 
     init = false;
@@ -129,7 +130,9 @@ void Enemy::physics(float delta, const std::shared_ptr<World>& world) {
       if (bruh.x || bruh.y)
         direction = glm::normalize(bruh);
       else direction = glm::vec2(0,0);
+      muntx.lock();
       if (glm::length(this->getPos() - path[path.size() - 2]) < 1.00) path.pop_back();
+      muntx.unlock();
     }else direction = glm::vec2(0,0);
 
     *this += glm::vec2(direction.x / 3* delta, 0);

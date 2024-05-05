@@ -18,6 +18,7 @@
 #include "../lib/rapidjson/include/rapidjson/document.h"
 #include <mutex>
 #include <chrono>
+#include <thread>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -29,6 +30,7 @@
 #include "../lib/rapidjson/include/rapidjson/document.h"
 #include "../lib/rapidjson/include/rapidjson/writer.h"
 #include "../lib/rapidjson/include/rapidjson/stringbuffer.h"
+#include <unistd.h>
 struct World;
 
 /**
@@ -39,6 +41,7 @@ class Actor {
 protected:
     std::string name;
     std::shared_ptr<PhysicsBody> body;
+    std::mutex muntx;
 
 public:
     Actor() = default;
@@ -75,10 +78,14 @@ public:
     }
 
     inline void setPosition(const glm::vec2& pos) {
+      muntx.lock();
         this->body->setPos(pos);
+      muntx.unlock();
     }
     void operator+=(glm::vec2 other){
+      muntx.lock();
         *body += other;
+      muntx.unlock();
     }
     virtual void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight){}
     /**
@@ -114,6 +121,7 @@ struct World{
 
     // ActorManager
     std::unordered_map<std::string, std::shared_ptr<Actor>> actors;
+    bool stop = false;
     std::mutex muntex;
     
     /**
@@ -155,15 +163,13 @@ struct World{
       std::shared_ptr<World> ptr(this);
       auto start = std::chrono::system_clock::now(); 
       auto end = start;
-      while(true){
+      while(!stop){
         start = std::chrono::system_clock::now(); 
         delta = std::chrono::duration<float, std::milli>(start - end).count();
         end = start;
-        muntex.lock();
-      for (auto& actor: actors){
-        actor.second->update(delta, ptr);
+        for (auto& actor: actors){
+          actor.second->update(delta, ptr);
         }
-        muntex.unlock();
       }
     }
 
@@ -173,24 +179,25 @@ struct World{
       auto start = std::chrono::system_clock::now(); 
       auto end = start;
       float timer = 0;
-        std::cout << "thread\n";
       while(true){
         start = std::chrono::system_clock::now(); 
         delta = std::chrono::duration<float, std::milli>(start - end).count();
         end = start;
         if (timer > 100){
-        muntex.lock();
-      for (auto& actor: actors){
-        actor.second->physics(delta, ptr);
+        for (auto& actor: actors){
+          actor.second->physics(delta, ptr);
         }
-        muntex.unlock();
-          timer = 0;
+        timer = 0;
       } 
       timer += delta;
       }
     }
 
-
+    void addActor(std::shared_ptr<Actor> actor){
+      muntex.lock();
+      actors.emplace(actor->getName(), actor);
+      muntex.unlock();
+    }
 
     std::string toJSON();
     void fromJSON(const rapidjson::Value& json);

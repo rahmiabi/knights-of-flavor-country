@@ -367,8 +367,11 @@ int main(int, char**)
 
     float angler = 3.14/4;
     static float f = 1.0f;
+
     Player player(glm::vec2(0, 0), glm::vec2(width *0.25, height* 0.25), image_texture1);
+    player.setName("jon");
     world.players.push_back(shared_ptr<Player>(&player));
+
     Npc npc("john", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
     // TODO MATTHEW - DIALOGUE
     npc.planned.push_back("Crazy? I was crazy once.");
@@ -379,31 +382,29 @@ int main(int, char**)
 
     npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
 
-    world.actors.emplace(npc.getName(), shared_ptr<Actor>(&npc));
-    world.actors.emplace("player1", shared_ptr<Actor>(&player));
+    world.addActor(shared_ptr<Actor>(&npc));
+    world.addActor(shared_ptr<Actor>(&player));
 
     Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
     Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
     Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, -1000), glm::vec2(width * .1, height * .1))));
-    Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(10000, 10000), glm::vec2(width * .1, height * .1))));
+    Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
 
 
     player.addWeapon("Edge Blade");
     //player.addWeapon("Edge Blade");
     //player.addWeapon("Sniper");
     //player.addWeapon("Z-Zip");
-    //world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
-    //world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
-    //world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
-    //world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
+    world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
+    world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
+    world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
+    world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
 
     char clear[250] = "";
     char inputText[250] = "";
     string log = "";
     bool pressed = true;
     float xSize = 1.0, ySize = 1.0;
-    //thread t1(&World::update, &world);
-    //jthread t2(&World::physics, &world);
     //t1.detach();
     //thread t3(&Enemy::update, &enemy2, worldptr);
     //thread t4(&Enemy::update, &enemy3, worldptr);
@@ -412,7 +413,10 @@ int main(int, char**)
     float skibid = 50;
 
     Stratagem stratagem(6);
+    thing();
 
+    jthread t1(&World::update, &world);
+    //jthread t2(&World::physics, &world);
     while (!glfwWindowShouldClose(window))
     {
         //enemy.update(worldptr);
@@ -747,9 +751,9 @@ int main(int, char**)
             player.curWeapon->setReloading(true);
         }
         normalize(velocity);
-        velocity = glm::vec2{velocity.x * 1.5, velocity.y * 1.5};
+        velocity = glm::vec2{velocity.x, velocity.y};
 
-        player.velocity = velocity;
+        player.setVel(velocity);
         
         glm::vec2 Camera = player.getPos();
 
@@ -786,7 +790,7 @@ int main(int, char**)
             dir = glm::vec2{dir.x * 10, dir.y * 10};
             shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.getPos(), glm::vec2{10, 10})), dir));
         
-            world.actors.emplace(proj->getName(), proj);
+            world.addActor(proj);
             player.curWeapon->decAmmo();
             numby++;
             time = 0;
@@ -799,9 +803,8 @@ int main(int, char**)
         for (auto& actor: world.actors){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
                                                 ImVec2((actor.second->getBody().end().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-            actor.second->physics(deltaTime, worldptr);
-            actor.second->update(deltaTime, worldptr);
-        
+            actor.second->physics(deltaTime, worldptr);                      
+
         }
         scale = .1;
 
@@ -908,8 +911,11 @@ int main(int, char**)
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                 {
-                world.staticBodies.clear();
-                thing();
+       // usleep(1);
+       //         world.muntex.lock();
+       //         world.staticBodies.clear();
+       //         world.muntex.unlock();
+       //         thing();
                 }
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
@@ -917,8 +923,11 @@ int main(int, char**)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
-        world.staticBodies.clear();
-                thing();
+      //  usleep(1);
+      //  world.muntex.lock();
+      //  world.staticBodies.clear();
+      //          thing();
+      //          world.muntex.unlock();
 
         // Chat Window
         // TODO - Kiyoshi
@@ -1001,8 +1010,11 @@ int main(int, char**)
 
         // Make sure this is commented out in the final build
         //ActorManager::checkForDanglingActors();
+        usleep(10);
     }
-
+    world.stop = true;
+    t1.join();
+    //t2.join();
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

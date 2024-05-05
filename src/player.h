@@ -22,6 +22,7 @@ public:
     bool prompt = false;
     Npc* promptGiver;
     glm::vec2 velocity{0,0};
+    std::mutex velMuntx;
 
     mutable std::unordered_map<std::string, int> weaponNames;
     Player() = default;
@@ -75,6 +76,12 @@ public:
     void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight) override {
         list->AddImage((void*) texture, ImVec2((body->start().x - Camera.x) * scale + windowWidth / 2, (body->start().y - Camera.y) * scale + windowHeight / 2) , 
                                         ImVec2((body->end().x - Camera.x) * scale + windowWidth / 2, (body->end().y - Camera.y) * scale + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+    }
+
+    void setVel(glm::vec2 vel){
+        velMuntx.lock();
+        velocity = vel;
+        velMuntx.unlock();
     }
 
     rapidjson::Value toJSONObject() {
