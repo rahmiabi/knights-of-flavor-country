@@ -1,5 +1,7 @@
-# Task Force Redmond
-Edging to freedom one day at a time...
+![image](assets/images/logo.png)
+
+# Edging to freedom one day at a time...
+**A Nightmare Studios Production**
 
 
 The nightmare team of CSCI41 made up of
