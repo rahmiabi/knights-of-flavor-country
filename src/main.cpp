@@ -591,44 +591,58 @@ int main(int, char**)
                    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
                     ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
                     ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
-                    ImGui::Begin("Stratagem", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-                    pair<ImVec2, int> curSize = ImGui::GetWindowSize();
+                    ImGui::Begin("Rainbow (sorry if you're colorblind)", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+
+                    ImVec2 curSize = ImGui::GetWindowSize();
                     static int position = 0;
                     static bool reset = true;
-                    static vector<ImVec2> positions;
+                    static vector<pair<ImVec2, int>> positions;
                     static vector<int> values;
+                    static const vector<ImVec4> colors = {
+                        ImVec4(255 / 255.0f, 68 / 255.0f, 0 / 255.0f, 255 / 255.0f), ImVec4(255 / 255.0f, 145 / 255.0f, 0 / 255.0f, 255 / 255.0f), ImVec4(255 / 255.0f, 230 / 255.0f, 0 / 255.0f, 255 / 255.0f), ImVec4(34 / 255.0f, 255 / 255.0f, 0 / 255.0f, 255 / 255.0f), ImVec4(0 / 255.0f, 183 / 255.0f, 255 / 255.0f, 255 / 255.0f), ImVec4(43 / 255.0f, 0 / 255.0f, 255 / 255.0f, 255 / 255.0f), ImVec4(230 / 255.0f, 0 / 255.0f, 255 / 255.0f, 255 / 255.0f) 
+                    };
                     
-                    static const int MAX_SIZE = 70;
-                    static const int MIN_SIZE = 20;
+                    static const int MAX_SIZE = 100;
+                    static const int MIN_SIZE = 30;
                     
                     if (reset){
                         positions.clear();
                         for (int i = 0; i < 7; i++){
-                            positions.push_back(make_pair(ImVec2(), rand() % (MAX_SIZE - MIN_SIZE + 1) + MIN_SIZE));
+                            int x = rand() % 2;
+                            int y = rand() % 2;
+                            if (!x) x = -1;
+                            if (!y) y = -1; 
+                            positions.push_back(make_pair(ImVec2(curSize.x / 2 - curSize.x * 0.4 * (rand() % 100 + 1) / 100.0f * x, curSize.y / 2 - curSize.y * 0.4 * (rand() % 100 + 1) / 100.0f * y ), rand() % (MAX_SIZE - MIN_SIZE + 1) + MIN_SIZE));
                         }
                         reset = false;
                     }
 
-                    ImGui::SetCursorPos(ImVec2(curSize.x /2 + 35, curSize.y * .75 + 35));
-                    if (ImGui::ImageButton((void*) downForward.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
-
-                        if (stratagem.arrows.at(position) == 6) position++;
-                        else position = 0; 
+                    for (int i = position; i < 7; i++){
+                        ImGui::PushStyleColor(ImGuiCol_Button, colors.at(i)); // Set window background to red
+                        ImGui::SetCursorPos(positions.at(i).first);
+                        if (ImGui::Button(to_string(i + 1).c_str(), ImVec2(positions.at(i).second, positions.at(i).second))){
+                            if (position == i){
+                                position++;
+                            } else {
+                                position = 0;
+                            }
+                        }
+                        ImGui::PopStyleColor();
                     }
 
-                    if (position >= stratagem.arrows.size()){
-                        stratagem.reset(6);
+                    if (position == 7){
                         stratagemState = false;
                         position = 0;
                         puzzle = 0;
+                        reset = true;
                     }
 
                     ImGui::PopStyleColor();
                     ImGui::End();
                     }                    
                 }
-            }
-        }
+    }
+
 
         if (player.curWeapon){
             player.curWeapon->update(deltaTime);
