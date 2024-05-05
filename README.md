@@ -14,9 +14,7 @@ The nightmare team of CSCI41 made up of
   - Story/art: Matthew Mazone
 
 
-
-
-
+Bridges Link: https://bridges-cs.herokuapp.com/assignments/5/gugu
 
 [secret](https://youtu.be/Z3J_MCbwaJ0?si=_qsZjARRNZ0IOaqa)
 
