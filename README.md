@@ -44,3 +44,5 @@
 
 **Matthew Mazone, Story/Art**
 - Matthew made his biggest contributions outside of the field of coding. He developed all of the game's lore, some dialogue, the maps, weapon and character ideas, boss fights, puzzles, etc. He did a great job, as the game has an amazing storyline full of ups and downs, interesting characters and dialogue, and cool weapons.
+
+> Overall, everyone did a great job of doing what they were responsible for, and no one held the group back from success. The group's hardwork put together a great game that we hope everyone enjoys.
