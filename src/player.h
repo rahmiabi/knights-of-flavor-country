@@ -21,6 +21,7 @@ public:
     Inventory inventory; 
     bool prompt = false;
     Npc* promptGiver;
+    glm::vec2 velocity{0,0};
 
     mutable std::unordered_map<std::string, int> weaponNames;
     Player() = default;
@@ -57,6 +58,18 @@ public:
     void removeWeapon(const std::string& str){
         weaponNames.erase(weaponNames.find(str));
         inventory.removeWeapon(str);
+    }
+
+    void physics(float delta, const std::shared_ptr<World>& world) override {
+        *this += glm::vec2(velocity.x / 3 * delta, 0);
+        if (glm::length(velocity) && world->checkCollisions(world->staticBodies, this->getRect())){
+        	*this += glm::vec2(-1 * velocity.x / 3 * delta, 0);
+        }
+
+        *this += glm::vec2(0, velocity.y / 3 * delta);
+        if (glm::length(velocity) && world->checkCollisions(world->staticBodies, this->getRect())){
+        	*this += glm::vec2(0, -1 * velocity.y / 3 * delta);
+        }
     }
 
     void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight) override {

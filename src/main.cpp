@@ -380,6 +380,7 @@ int main(int, char**)
     npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
 
     world.actors.emplace(npc.getName(), shared_ptr<Actor>(&npc));
+    world.actors.emplace("player1", shared_ptr<Actor>(&player));
 
     Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
     Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
@@ -706,7 +707,6 @@ int main(int, char**)
                         }
 
                         if (ImGui::IsItemHovered() && endClicked.at(i)) {
-                            cout << "hi" << endl;
                             connected.insert(i);
                         } else if (!clicked.at(wires[rightPos[i].first].front())){
                             endClicked.at(i) = false; 
@@ -749,23 +749,10 @@ int main(int, char**)
         normalize(velocity);
         velocity = glm::vec2{velocity.x * 1.5, velocity.y * 1.5};
 
-	  // collision checkin
-	  // eventually put this in player update
-        player += glm::vec2(velocity.x / 3 * deltaTime, 0);
-        if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
-        	player += glm::vec2(-1 * velocity.x / 3 * deltaTime, 0);
-        }
-
-        player += glm::vec2(0, velocity.y / 3 * deltaTime);
-        if (glm::length(velocity) && world.checkCollisions(world.staticBodies, player.getRect())){
-        	player += glm::vec2(0, -1 * velocity.y / 3 * deltaTime);
-        }
-
-        
-
+        player.velocity = velocity;
         
         glm::vec2 Camera = player.getPos();
-	// draws squaes
+
         static float mapScale = 3.5;//map1 = 10.502 //map2 = 9.647 //map3 = 3.5
         static float xChange = -6260;//map1 = 5359 //map2 = 19162 //map3 = -6260
         static float yChange = -2384;//map1 = 1790.518 //map2 = 10 //map3 = -2385
@@ -859,6 +846,7 @@ int main(int, char**)
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
         //    ImGui::ShowDemoWindow(&show_demo_window);
+
         static float angle = 0.0f;
         angle += deltaTime / 1000  * 1.0f;
         ImDrawList* list = ImGui::GetBackgroundDrawList();
@@ -929,17 +917,8 @@ int main(int, char**)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
-world.staticBodies.clear();
+        world.staticBodies.clear();
                 thing();
-        // 3. Show another simple window.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
 
         // Chat Window
         // TODO - Kiyoshi
