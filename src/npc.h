@@ -6,11 +6,14 @@
 #pragma once
 
 #include "actor.h"
+#include <deque>
 
 class Npc : public Actor {
 
 public:
+    std::deque<std::string> planned;
     std::vector<std::string> dialogue;
+
     bool speaking = false;
     Npc() = default;
     Npc(std::string name, std::shared_ptr<PhysicsBody> body) : Actor(name, body){}
