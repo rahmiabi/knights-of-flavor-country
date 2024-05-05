@@ -31,6 +31,8 @@ public:
     Player(glm::vec2 position, glm::vec2 size, auto& newTexture){
         body = std::shared_ptr<PhysicsBody>(new Rect(position, glm::vec2(size.x * scale, size.y * scale)));
         texture = newTexture;
+        speed = 1;
+        hp = 200;
     }
 
     std::string getWeapInd(int index){

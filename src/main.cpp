@@ -50,7 +50,6 @@ using namespace std;
 World world;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    cout << key << endl;
   ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 }
 /* 
@@ -111,16 +110,7 @@ void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, I
 
 // raycasting probly doesnt need to be recursive but oh well
 glm::vec2 size0(0,0);
-void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const vector<shared_ptr<PhysicsBody>>& space, int maxMag){
-    while (true){
-        if (world.checkCollisions(space, initialPos + ray, size0)) {
-            return;
-        }
-        if (glm::length(ray) > maxMag) return;
-        ray.x += direction.x;
-        ray.y += direction.y;
-    }
-}
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -162,11 +152,9 @@ struct Stratagem {
     Stratagem(int size){
         for (int i = 0; i < size; i++){
             arrows.push_back(rand() % 8 + 1);
-            cout << (int)arrows.back() << endl;
         } 
     }
     void reset(int size){
-        cout << "burh" << endl;
         arrows.clear();
         for (int i = 0; i < size; i++){
             arrows.push_back(rand() % 8 + 1);
@@ -385,10 +373,10 @@ int main(int, char**)
     world.addActor(shared_ptr<Actor>(&npc));
     world.addActor(shared_ptr<Actor>(&player));
 
-    Enemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
-    Enemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
-    Enemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, -1000), glm::vec2(width * .1, height * .1))));
-    Enemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 500), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, -1000), glm::vec2(width * .1, height * .1))));
 
 
     player.addWeapon("Edge Blade");
@@ -751,7 +739,7 @@ int main(int, char**)
             player.curWeapon->setReloading(true);
         }
         normalize(velocity);
-        velocity = glm::vec2{velocity.x, velocity.y};
+        velocity = glm::vec2{velocity.x * 1.1, velocity.y * 1.1};
 
         player.setVel(velocity);
         

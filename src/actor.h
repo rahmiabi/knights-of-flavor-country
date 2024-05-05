@@ -192,7 +192,26 @@ struct World{
       timer += delta;
       }
     }
-
+    void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const std::vector<std::shared_ptr<PhysicsBody>>& space, int maxMag){
+      while (true){
+        if (this->checkCollisions(space, initialPos + ray, glm::vec2{0,0})) {
+            return;
+        }
+        if (glm::length(ray) > maxMag) return;
+        ray.x += direction.x;
+        ray.y += direction.y;
+       }
+    }
+    void raycast(const glm::vec2& direction, glm::vec2& ray, const PhysicsBody& body, const std::vector<std::shared_ptr<PhysicsBody>>& space, int maxMag){
+      while (true){
+        if (this->checkCollisions(space, body.pos() + ray, body.size())){
+            return;
+        }
+        if (glm::length(ray) > maxMag) return;
+        ray.x += direction.x;
+        ray.y += direction.y;
+       }
+    }
     void addActor(std::shared_ptr<Actor> actor){
       muntex.lock();
       actors.emplace(actor->getName(), actor);

@@ -12,32 +12,32 @@
  */
 class AttackTraits {
 protected:
-    uint32_t speed;
-    uint32_t defense;
-    uint32_t hp;
+    int32_t speed;
+    int32_t defense;
+    int32_t hp;
 
 public:
-    uint32_t getSpeed() const {
+    int32_t getSpeed() const {
         return this->speed;
     }
 
-    void setSpeed(uint32_t speed) {
+    void setSpeed(int32_t speed) {
         this->speed = speed;
     }
     
-    uint32_t getDefense() const {
+    int32_t getDefense() const {
         return this->defense;
     }
 
-    void setDefense(uint32_t defense) {
+    void setDefense(int32_t defense) {
         this->defense = defense;
     }
     
-    uint32_t getHp() const {
+    int32_t getHp() const {
         return this->speed;
     }
 
-    void setHp(uint32_t speed) {
+    void setHp(int32_t speed) {
         this->speed = speed;
     }
 };

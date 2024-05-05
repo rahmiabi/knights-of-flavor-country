@@ -64,7 +64,6 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
   }
 
   for (std::shared_ptr<Node> tmp = lastNode; tmp; tmp = tmp->parent){
-    std::cout << tmp->position.x << " " << tmp->position.y << '\n';
     path.push_back(glm::vec2(tmp->position.x * -1, tmp->position.y * -1));
   }
 
@@ -76,17 +75,23 @@ void Enemy::update(float delta, const std::shared_ptr<World>& world){
     static bool init = true;
     static float pathTimer;
     // point it is goind to
-    const glm::vec2 charaPos = world->players[0]->getPos(); 
-    const glm::vec2 charaStart = world->players[0]->getRect().start();
-    const glm::vec2 charaEnd = world->players[0]->getRect().end();
+    glm::vec2 charaPos = world->players[0]->getPos(); 
+    glm::vec2 charaStart = world->players[0]->getRect().start();
+    glm::vec2 charaEnd = world->players[0]->getRect().end();
+    float minLength = glm::length(charaPos - this->getPos());
+    for (auto x : world->players){
+      if (glm::length(x->getPos() - this->getPos()) < minLength){
+        minLength = glm::length(x->getPos() - this->getPos());
+        charaPos = x->getPos();
+        charaStart = x->getRect().start();
+        charaEnd = x->getRect().end();
+      }
+    }
 
-    //float xDisp = charaPos.x - this->getPos().x;
-    //if (xDisp != 0)
-    //  xDisp /= abs(xDisp);
 
-    //float yDisp = charaPos.y - this->getPos().y;
-    //if (yDisp != 0)
-    //  yDisp /= abs(yDisp);
+    glm::vec2 direction = {rand() % 100 / 100.0f * 3, rand() % 100 / 100.0f * 3};
+    float angle = 3.14 * 2 * (rand() % 100 / 100.0f);
+    glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
 
     if (init) {
       pathTimer = pathRefresh;
@@ -96,16 +101,16 @@ void Enemy::update(float delta, const std::shared_ptr<World>& world){
     std::vector<glm::vec2> pathThing;
     if (pathTimer >= pathRefresh){
       try {
-      pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x, charaStart.y), 50, this->body->size());
+      pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x + rotatedDir.x, charaStart.y + rotatedDir.y), 50, this->body->size());
       } catch (...){
         try {
-        pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x, charaEnd.y), 50, this->body->size());
+        pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaStart.x + rotatedDir.x, charaEnd.y + rotatedDir.y), 50, this->body->size());
         } catch (...){
           try {
-            pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x, charaStart.y), 50, this->body->size());
+            pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x + rotatedDir.x, charaStart.y + rotatedDir.y), 50, this->body->size());
           } catch (...){
             try {
-            pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x, charaEnd.y), 50, this->body->size());
+            pathThing = aStar(world->staticBodies, this->getPos(), glm::vec2(charaEnd.x + rotatedDir.x, charaEnd.y + rotatedDir.y), 50, this->body->size());
             } catch (...){
               pathThing = {this->getPos()};
             }
