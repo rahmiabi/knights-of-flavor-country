@@ -47,6 +47,11 @@
 using namespace std;
 
 World world;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    cout << key << endl;
+  ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+}
 /* 
 STOLEN CODEE !!! i dont know how matrices work :c
 */
@@ -136,6 +141,36 @@ struct Image{
     int width, height, channels;
     unsigned char* pixels;
     GLuint texture;
+    Image(){}
+    Image(string filename, int index, GLFWimage images[]){
+       pixels = stbi_load((filename).c_str(), &width, &height, &channels, 4);
+       images[index].width = width;
+       images[index].height = height;
+       images[index].pixels = pixels;
+       glGenTextures(1, &texture);
+
+       glBindTexture(GL_TEXTURE_2D, texture);
+       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+       glGenerateMipmap(GL_TEXTURE_2D);
+    }
+};
+
+struct Stratagem {
+    vector<unsigned char> arrows;
+    Stratagem(){}
+    Stratagem(int size){
+        for (int i = 0; i < size; i++){
+            arrows.push_back(rand() % 8 + 1);
+            cout << (int)arrows.back() << endl;
+        } 
+    }
+    void reset(int size){
+        cout << "burh" << endl;
+        arrows.clear();
+        for (int i = 0; i < size; i++){
+            arrows.push_back(rand() % 8 + 1);
+        } 
+    }
 };
 
 // Main code
@@ -294,6 +329,27 @@ int main(int, char**)
         glGenerateMipmap(GL_TEXTURE_2D);
         ims.push_back(image);
     }
+
+    Image back("./assets/images/arrows/b.png", 10, images);
+    Image down("./assets/images/arrows/d.png", 11, images);
+    Image downBack("./assets/images/arrows/db.png", 12, images);
+    Image downForward("./assets/images/arrows/df.png", 13, images);
+    Image forward("./assets/images/arrows/f.png", 14, images);
+    Image up("./assets/images/arrows/u.png", 15, images);
+    Image upBack("./assets/images/arrows/ub.png", 16, images);
+    Image upForward("./assets/images/arrows/uf.png", 17, images);
+
+    unordered_map<int, Image*> arrowMap = {
+        {1, &up},
+        {2, &forward},
+        {3, &down},
+        {4, &back},
+        {5, &upForward},
+        {6, &downForward},
+        {7, &downBack},
+        {8, &upBack}
+    };
+
     // Setup filtering parameters for display
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -303,11 +359,7 @@ int main(int, char**)
     Weapon weap = ItemRegistry::getWeapon("Edge Blade");
 
 // Main loop
-    float timer = 50;
-    float rtimer = 1000;
     double deltaTime = 0;
-    double fireRate = 100;
-    double reloadTime = 250;
     int mag = 1;
     auto start = std::chrono::system_clock::now(); 
     auto end = start;
@@ -356,6 +408,9 @@ int main(int, char**)
     //t3.detach();
     //t4.detach();
     float skibid = 50;
+
+    Stratagem stratagem(6);
+
     while (!glfwWindowShouldClose(window))
     {
         //enemy.update(worldptr);
@@ -364,10 +419,6 @@ int main(int, char**)
         start = std::chrono::system_clock::now(); 
         int windowWidth, windowHeight;
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        timer = timer + deltaTime;
-        rtimer = rtimer + deltaTime;
-        timer = (timer > fireRate)? fireRate : timer;
-        rtimer = (rtimer > reloadTime)? reloadTime : rtimer;
         deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
 
         if (scrollBuffer.size()){
@@ -376,8 +427,6 @@ int main(int, char**)
             skibid = max(1.0f, skibid);
             scrollBuffer.pop_back();
         }
-        //cout << skibid << endl;
-        //cout << jujutsu(skibid) << endl;
         f = (jujutsu(skibid) * 2.5 + 0.001);
 
         // Poll and handle events (inputs, window resize, etc.)
@@ -410,6 +459,7 @@ int main(int, char**)
         int R = glfwGetKey(window, GLFW_KEY_R);
         int E = glfwGetKey(window, GLFW_KEY_E);
 
+        int Q = glfwGetKey(window, GLFW_KEY_Q);
 
         if (num1 == GLFW_PRESS && player.weaponNames.size() >= 1){
             player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(0));
@@ -420,23 +470,166 @@ int main(int, char**)
         if (num3 == GLFW_PRESS && player.weaponNames.size() >= 3){
             player.curWeapon = &player.inventory.getWeapon(player.getWeapInd(2));
         }
-        if (W == GLFW_PRESS){
-            velocity.y -= 100;
+
+        {
+            // puzzle state dont wanna rename tho
+            static bool stratagemState = false;
+            static bool justPressed = false;
+            static int puzzle = 0;
+            if (!stratagemState){
+                if (W == GLFW_PRESS){
+                    velocity.y -= 100;
+                }
+                if (A == GLFW_PRESS){
+                    velocity.x -= 100;
+                }
+                if (S == GLFW_PRESS){
+                    velocity.y += 100;
+                }
+                if (D == GLFW_PRESS){
+                    velocity.x += 100;
+                }
+                if (Q == GLFW_PRESS){
+                    if (justPressed){
+                        stratagemState = true;
+                        if (!puzzle) puzzle = rand() % 2 + 1; 
+                    }
+                    justPressed = false;
+                } else {
+                    justPressed = true;
+                }
+            } else {
+                if (Q == GLFW_PRESS){
+                    if (justPressed)
+                        stratagemState = false;
+                    justPressed = false;
+                } else {
+                    justPressed = true;
+                }
+
+               if (puzzle == 1) {
+                {
+                    //ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,255));
+                 ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
+                    ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
+                    ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
+                    ImGui::Begin("Stratagem", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                    ImVec2 curSize = ImGui::GetWindowSize();
+                    static int position = 0;
+
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 - 85, curSize.y * .75 - 85));
+                    if (ImGui::ImageButton((void*) upBack.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+                        if (stratagem.arrows.at(position) == 8) position++;
+                        else position = 0; 
+                    }
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 - 25, curSize.y * .75 - 85));
+                    if (ImGui::ImageButton((void*) up.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 1) position++;
+                        else position = 0; 
+                    }
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 + 35, curSize.y * .75 - 85));
+                    if (ImGui::ImageButton((void*) upForward.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 5) position++;
+                        else position = 0; 
+                    }
+
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 - 85, curSize.y * .75 - 25));
+                    if (ImGui::ImageButton((void*) back.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 4) position++;
+                        else position = 0; 
+                    }
+
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 + 35, curSize.y * .75 - 25));
+                    if (ImGui::ImageButton((void*) forward.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+                        if (stratagem.arrows.at(position) == 2) position++;
+                        else position = 0; 
+                    }
+
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 - 85, curSize.y * .75 + 35));
+                    if (ImGui::ImageButton((void*) downBack.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 7) position++;
+                        else position = 0; 
+                    }
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 - 25, curSize.y * .75 + 35));
+                    if (ImGui::ImageButton((void*) down.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 3) position++;
+                        else position = 0; 
+                    }
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 + 35, curSize.y * .75 + 35));
+                    if (ImGui::ImageButton((void*) downForward.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 6) position++;
+                        else position = 0; 
+                    }
+
+                    if (position >= stratagem.arrows.size()){
+                        stratagem.reset(6);
+                        stratagemState = false;
+                        position = 0;
+                        puzzle = 0;
+                    }
+
+                    for (int i = 0; i < stratagem.arrows.size(); i++){
+                        if (i <= stratagem.arrows.size() / 2)
+                            ImGui::SetCursorPos(ImVec2(curSize.x / 2 - 100 * (stratagem.arrows.size() /2 - i), curSize.y * .25));
+                        else
+                            ImGui::SetCursorPos(ImVec2(curSize.x / 2 + 100 * (i - stratagem.arrows.size() / 2 + 1) - 100, curSize.y * .25));
+                        if (i < position)
+                            ImGui::Image((void*) arrowMap.at(stratagem.arrows.at(i))->texture, ImVec2(100, 100), ImVec2(0.0f,0.0f), ImVec2(1.0f,1.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                        else ImGui::Image((void*) arrowMap.at(stratagem.arrows.at(i))->texture, ImVec2(100, 100), ImVec2(0.0f,0.0f), ImVec2(1.0f,1.0f), ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+                    }
+                    ImGui::PopStyleColor();
+                    ImGui::End();
+                    }   
+                // PUZZLE NUMBER 2
+                } else if (puzzle == 2){ 
+                   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
+                    ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
+                    ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
+                    ImGui::Begin("Stratagem", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                    pair<ImVec2, int> curSize = ImGui::GetWindowSize();
+                    static int position = 0;
+                    static bool reset = true;
+                    static vector<ImVec2> positions;
+                    static vector<int> values;
+                    
+                    static const int MAX_SIZE = 70;
+                    static const int MIN_SIZE = 20;
+                    
+                    if (reset){
+                        positions.clear();
+                        for (int i = 0; i < 7; i++){
+                            positions.push_back(make_pair(ImVec2(), rand() % (MAX_SIZE - MIN_SIZE + 1) + MIN_SIZE));
+                        }
+                        reset = false;
+                    }
+
+                    ImGui::SetCursorPos(ImVec2(curSize.x /2 + 35, curSize.y * .75 + 35));
+                    if (ImGui::ImageButton((void*) downForward.texture, ImVec2(50, 50), ImVec2(0, 0), ImVec2(1,1), 1.0f)){
+
+                        if (stratagem.arrows.at(position) == 6) position++;
+                        else position = 0; 
+                    }
+
+                    if (position >= stratagem.arrows.size()){
+                        stratagem.reset(6);
+                        stratagemState = false;
+                        position = 0;
+                        puzzle = 0;
+                    }
+
+                    ImGui::PopStyleColor();
+                    ImGui::End();
+                    }                    
+                }
+            }
         }
-        if (A == GLFW_PRESS){
-            velocity.x -= 100;
-        }
-        if (S == GLFW_PRESS){
-            velocity.y += 100;
-        }
-        if (D == GLFW_PRESS){
-            velocity.x += 100;
-        }
-//        if (R == GLFW_PRESS && rtimer == reloadTime){
-//            cout << "Reloading" << endl;
-//            rtimer = 0;
-//            mag = 32;
-//        }
+
         if (player.curWeapon){
             player.curWeapon->update(deltaTime);
         }
@@ -506,7 +699,6 @@ int main(int, char**)
         }
         scale = .05;
 
-        //cout << "hi" << endl;
         for (auto& actor: world.actors){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
                                                 ImVec2((actor.second->getBody().end().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
@@ -514,18 +706,6 @@ int main(int, char**)
             actor.second->update(deltaTime, worldptr);
         
         }
-        // DO PROJECTILE THINGS
-//        for (Projectile& a: projectiles){
-//            if (!a.render) continue;
-//            for (int i = 0; i < 50 * deltaTime / 6; i++){
-//                if (sqrt(pow(a.pos.x - a.end.x, 2) + pow(a.pos.y - a.end.y, 2)) <= 25) {a.render = false; break;}
-//                a.pos.x += a.vel.x;
-//                a.pos.y += a.vel.y;
-//            }
-//            if (a.render)
-//            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + a.pos.x - width * scale / 2 - Camera.x, height * scale + a.pos.y - height * scale /2 - Camera.y) , 
-//                                                    ImVec2(a.pos.x - width * scale / 2 - Camera.x, a.pos.y - height * scale / 2 - Camera.y), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
-//        }
         scale = .1;
 
 //        for (float i = -3.14/5; i <= 3.14/5; i += .005){
@@ -536,14 +716,7 @@ int main(int, char**)
 //            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
 //        }
 //
-//      draw path
-        if (true) {
-              //ImGui::GetBackgroundDrawList()->AddLine(ImVec2(enemy.path[i].x * -1 - Camera.x, enemy.path[i].y * -1 - Camera.y), ImVec2(enemy.path[i +1].x * -1 - Camera.x, enemy.path[i + 1].y * -1 - Camera.y) , IM_COL32(255, 255, 255, 255), 4);
-        }      
         ImGui::PushFont(font2);
-        string skib = to_string(mag) + "/32";
-        //cout << player.curWeapon.getName() << endl;
-        //cout << player.getIndex() << endl;
         if (player.curWeapon && player.getIndex() > -1)
             ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (player.weaponNames.size() - 1 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (player.weaponNames.size() - 1 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
         for (int i = 0; i < player.weaponNames.size(); i++){
@@ -551,7 +724,6 @@ int main(int, char**)
             
             ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ItemRegistry::getWeapon(player.getWeapInd(player.weaponNames.size() - 1- i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
                                                 ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 128));
-            cout << ItemRegistry::getWeapon(player.getWeapInd(i)).getTextureId() << endl;
         }
 
         if (player.curWeapon && player.curWeapon->getType() == WeaponType::GUN){
@@ -561,6 +733,7 @@ int main(int, char**)
             string ammoText = (player.curWeapon->getName());
             ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(ammoText.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(ammoText.c_str()).y - 140), IM_COL32_WHITE, (ammoText).c_str());
         }
+
        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
                                         ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy1.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
@@ -572,8 +745,6 @@ int main(int, char**)
         if (player.curWeapon && player.curWeapon->time < player.curWeapon->getReloadSpeed()){
             ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * player.curWeapon->time / player.curWeapon->getReloadSpeed(), windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
         }
-           // ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2(width * scale + characterX - width * scale / 2 - Camera.x, height * scale + characterY - height * scale /2 - Camera.y) , 
-           //                             ImVec2(characterX - width * scale / 2 - Camera.x, characterY - height * scale / 2 - Camera.y) , ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
         player.render(ImGui::GetBackgroundDrawList(), Camera, f, windowWidth, windowHeight);
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
@@ -585,10 +756,7 @@ int main(int, char**)
 
         int flip = 1;
         glm::vec2 rotatedDir;
-        //if (timer < reloadTime)
-        //    rotatedDir = {direction.x * cos(angler) - direction.y * sin(angler), direction.x * sin(angler) + direction.y * cos(angler)};
-        //else
-            rotatedDir = direction;
+        rotatedDir = direction;
 
         float angul = atan(rotatedDir.y/rotatedDir.x);
         float flippy = 1;
@@ -598,7 +766,6 @@ int main(int, char**)
 
         ImageRotated((void*) image_texture1, ImVec2((1500 - Camera.x) * f + windowWidth / 2, (900 - Camera.y) * f + windowHeight / 2), ImVec2(200 * f,f * 200.0f), angle, list); 
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         ImGui::PushFont(font1);
         glm::vec2 dick = {  (player.getPos().x + (xPos - windowWidth / 2) / f ),  (player.getPos().y + (yPos - windowHeight / 2) / f )};
         //cout << dick.x << " " << dick.y << endl;
@@ -705,6 +872,7 @@ world.staticBodies.clear();
         // }
         //cout << enemy.getPos().x << " " << enemy.getPos().y << endl;
         ImGui::GetIO().FontGlobalScale = f;
+        // TODO - FIX THIS
         if (player.prompt) {
             ImGui::PushFont(font2);
             if (E == GLFW_PRESS){
@@ -714,20 +882,19 @@ world.staticBodies.clear();
             ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth / 2 - (ImGui::CalcTextSize(prompt.c_str()).x) / 2, windowHeight * 2 / 3 + ImGui::CalcTextSize(prompt.c_str()).y / 2), IM_COL32_BLACK, (prompt).c_str());
             ImGui::PopFont();
         } 
-        if (player.promptGiver && player.promptGiver->speaking){
-            //cout << player.promptGiver->speaking << endl;
-            // gets random line from dialogue
+
+        if (npc.speaking){
             ImGui::PushFont(font2);
             try{
-            string line;
-            if (!npc.planned.size()) line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
-            else line = npc.planned.front();
-            ImGui::SameLine((windowWidth / 2) - (ImGui::CalcTextSize(line.c_str()).x / 2));
-            ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_BLACK, (line).c_str());
+                string line = "";
+                // gets random line from dialogue
+                if (!npc.planned.size()) line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
+                else line = npc.planned.front();
+                ImGui::SameLine((windowWidth / 2) - (ImGui::CalcTextSize(line.c_str()).x / 2));
+                ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_BLACK, (line).c_str());
             } catch(...){}
             ImGui::PopFont();
         }
-        cout << "Prompt " << player.prompt << endl;
         player.prompt = false;
         player.promptGiver = nullptr;
 
