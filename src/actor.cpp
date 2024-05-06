@@ -4,7 +4,7 @@
  */
 
 #include "actor.h"
-
+#include <iostream>
 #include "player.h"
 
 Actor::Actor(const std::string name, std::shared_ptr<PhysicsBody> body) {
@@ -64,31 +64,33 @@ void World::checkForDanglingActors() {
 
 std::string World::toJSON() {
     rapidjson::Document json;
+    json.SetObject();
 
+
+    std::cout << "\n";
     rapidjson::Value& actors = json["actors"].SetArray();
+    std::cout << "hi\n";
     for (const auto& [_, actor] : this->actors) {
         rapidjson::Value value = actor->toJSONObject();
         actors.PushBack(value, json.GetAllocator());
     }
 
+    std::cout << "hi\n";
     rapidjson::Value& staticBodies = json["staticBodies"].SetArray();
     for (const auto& body : this->staticBodies) {
         rapidjson::Value value = body->toJSONObject();
         staticBodies.PushBack(value, json.GetAllocator());
     }
 
-    rapidjson::Value& rigidBodies = json["rigidBodies"].SetArray();
-    for (const auto& body : this->rigidBodies) {
-        rapidjson::Value value = body->toJSONObject();
-        rigidBodies.PushBack(value, json.GetAllocator());
-    }
 
+    std::cout << "hi\n";
     rapidjson::Value& players = json["players"].SetArray();
     for (const auto& body : this->players) {
         rapidjson::Value value = body->toJSONObject();
         players.PushBack(value, json.GetAllocator());
     }
 
+    std::cout << "hi\n";
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     json.Accept(writer);

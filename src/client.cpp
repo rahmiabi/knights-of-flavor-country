@@ -45,7 +45,6 @@
 #include "client.h"
 using namespace std;
 
-World world;
 /* 
    STOLEN CODEE !!! i dont know how matrices work :c
    */
@@ -267,10 +266,8 @@ int main(int, char**)
   auto start = std::chrono::system_clock::now(); 
   auto end = start;
   float deltaTime = 0;
-  char clear[250] = "";
-  char inputText[250] = "";
+
   float f = 0;
-  string log = "";
   bool hover = false;
   while (!glfwWindowShouldClose(window))
   {
@@ -379,6 +376,13 @@ int main(int, char**)
           ImGui::GetBackgroundDrawList()->AddImage((void*) logo, ImVec2((width4 / -2) * size  + windowWidth / 2, (height4/ -2) * size  + windowHeight / 5), 
               ImVec2((width4 / 2) * size + windowWidth / 2, height4 / 2 * size + windowHeight / 5), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
 
+            string prompt = "Long ago there was a man named Surin.";
+            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth / 2 - (ImGui::CalcTextSize(prompt.c_str()).x) / 2, windowHeight * 2 / 3 + ImGui::CalcTextSize(prompt.c_str()).y / 2), IM_COL32_WHITE, (prompt).c_str());
+
+            if (pressed == true){
+              clientState = State::SINGLEGAME;
+            }
+
         } break;
       case (State::MULTIPLAYER):
         {
@@ -448,74 +452,24 @@ int main(int, char**)
         {
 
         }break;
+      case (State::SINGLEGAME):
+      {
+
+
+
+
+
+
+
+
+
+
+
+
+
+      }break;
     }
 
-
-    /*
-       {
-       static int counter = 0;
-
-       ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-       ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-       ImGui::SliderFloat("float", &f, 0.25f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-       ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-       if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-       counter++;
-       ImGui::SameLine();
-       ImGui::Text("counter = %d", counter);
-
-       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-       ImGui::End();
-       }*/
-
-
-    // Chat Window
-    // TODO - Kiyoshi
-    /*
-       {
-       ImGui::SetNextWindowSize(ImVec2(windowWidth * 0.35, windowHeight * 0.35));
-       ImGui::SetNextWindowPos(ImVec2(10, windowHeight - windowHeight * 0.35 - 30));
-       ImGui::SetNextWindowBgAlpha(0.35f);
-       ImGui::Begin("Chat Window", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-       ImGui::SetCursorPos(ImVec2(5, 0));
-       ImGui::Text(log.c_str());
-
-       int enter = glfwGetKey(window, GLFW_KEY_ENTER);
-       ImGui::SetCursorPos(ImVec2(0, windowHeight * 0.35));
-       ImGui::PushItemWidth(windowWidth * 0.35 - 70);
-       ImGui::InputText("Message", inputText, IM_ARRAYSIZE(inputText));
-       if (enter == GLFW_PRESS){
-       if (pressed){
-       log += string(inputText) + '\n';
-       string inp(inputText);
-       client.write(inp);
-       for (int i = 0; i < 250; i++){
-       inputText[i] = '\0';
-       }
-       }
-       pressed = false;
-       } else pressed = true;
-       if (client.messageBuffer_.size()){
-       log += client.messageBuffer_.front() + '\n';
-       client.messageBuffer_.pop_front();
-       }
-    //log += client.messageBuffer_.front();
-    //client.messageBuffer_.pop_front();
-    ImGui::End();
-    }
-    */
-
-
-    // TODO: uncomment when world object is available
-    // for (auto& actor : world.actors) {
-    //     actor.update(deltaTime);
-    // }
-    //cout << enemy.getPos().x << " " << enemy.getPos().y << endl;
-
-    // Rendering
     ImGui::Render();
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -532,7 +486,6 @@ int main(int, char**)
     client->read = false;
     client->receiveThread.join();
   }
-  cout << "hi" << endl;
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();

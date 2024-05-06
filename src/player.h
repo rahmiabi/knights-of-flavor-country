@@ -68,7 +68,9 @@ public:
         if (glm::length(velocity) && world->checkCollisions(world->staticBodies, this->getRect())){
         	*this += glm::vec2(-1 * velocity.x / 3 * delta, 0);
         }
-
+        if (curWeapon){
+            curWeapon->update(delta);
+        }
         *this += glm::vec2(0, velocity.y / 3 * delta);
         if (glm::length(velocity) && world->checkCollisions(world->staticBodies, this->getRect())){
         	*this += glm::vec2(0, -1 * velocity.y / 3 * delta);

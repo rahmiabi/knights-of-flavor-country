@@ -14,7 +14,6 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include "body.h"
-#define RAPIDJSON_HAS_STDSTRING 1
 #include "../lib/rapidjson/include/rapidjson/document.h"
 #include <mutex>
 #include <chrono>
@@ -113,8 +112,6 @@ class M1ChipEnemy;
 struct World{
     // Static Bodies, aka things that wont move (walls and stuff like that)
     std::vector<std::shared_ptr<PhysicsBody>> staticBodies; 
-    // Rigid Bodies, aka things that might move (players)
-    std::vector<std::shared_ptr<PhysicsBody>> rigidBodies; 
     // Hitboxes for Players
     std::vector<std::shared_ptr<Player>> players;
     // Hitboxes for Enemies

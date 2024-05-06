@@ -1002,6 +1002,8 @@ int main(int, char**)
         player.prompt = false;
         player.promptGiver = nullptr;
 
+        //`cout << world.toJSON() << endl;
+
         // Rendering
         ImGui::Render();
         int display_w, display_h;
