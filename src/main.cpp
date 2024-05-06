@@ -1100,7 +1100,7 @@ int main(int, char**)
         // spawn enemies uh oh the misery
         {
             static float gay = 0;
-            if (gay < 60000){
+            if (gay > 60000){
               gay += deltaTime;
               goto skibid;
             }
