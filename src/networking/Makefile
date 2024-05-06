@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -pthread -O3 -g
 LIBS = -lncurses
-
+# -L/mingw64/lib/libboost_system -lws2_32 -lwsock32
 all: client server
 
 client: client.cpp

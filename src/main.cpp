@@ -57,25 +57,25 @@ STOLEN CODEE !!! i dont know how matrices work :c
 */
 void thing(){
 	ifstream ins2("assets/mapfile/map3.csv");
-      string test;
-       getline(ins2,test);
-       
-       while (ins2) {
-       getline(ins2,test);
-       istringstream iss(test);
-       string type;
-       string tempp;
-       getline(iss,type,',');
-       getline(iss,tempp,',');
-       if(tempp== "") break;
-       int tempx = stoi(tempp);
-       getline(iss,tempp,',');
-       int tempy= stoi(tempp);
-       getline(iss,tempp,',');
-       int sizex = stoi(tempp);
-       getline(iss,tempp,',');
-       int sizey = stoi(tempp);
-       world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{tempx, tempy}, glm::vec2{sizex, sizey})));
+    string test;
+    getline(ins2,test);
+    
+    while (ins2) {
+    getline(ins2,test);
+    istringstream iss(test);
+    string type;
+    string tempp;
+    getline(iss,type,',');
+    getline(iss,tempp,',');
+    if(tempp== "") break;
+    int tempx = stoi(tempp);
+    getline(iss,tempp,',');
+    int tempy= stoi(tempp);
+    getline(iss,tempp,',');
+    int sizex = stoi(tempp);
+    getline(iss,tempp,',');
+    int sizey = stoi(tempp);
+    world.staticBodies.push_back(shared_ptr<PhysicsBody>(new Rect(glm::vec2{tempx, tempy}, glm::vec2{sizex, sizey})));
 }
 }
 static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) 
@@ -144,6 +144,7 @@ struct Image{
        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
        glGenerateMipmap(GL_TEXTURE_2D);
     }
+    ~Image(){delete pixels;}
 };
 
 struct Stratagem {
@@ -260,20 +261,20 @@ int main(int, char**)
     images[0].pixels = pixels;
 
     int width1, height1, channels1;
-    unsigned char* pixels1 = stbi_load("./assets/images/run.png", &width1, &height1, &channels1, 4);
+    unsigned char* pixels1 = stbi_load("./assets/images/cusor.png", &width1, &height1, &channels1, 4);
     images[1].width = width1;
     images[1].height = height1;
     images[1].pixels = pixels1;
     
     int width2, height2, channels2;
-    unsigned char* pixels2 = stbi_load("./assets/images/edge.png", &width2, &height2, &channels2, 4);
+    unsigned char* pixels2 = stbi_load("./assets/images/undertale.png", &width2, &height2, &channels2, 4);
     images[2].width = width2;
     images[2].height = height2;
     images[2].pixels = pixels2;
     glfwSetWindowIcon(window, 1, images);
 
     int width3, height3, channels3;
-    unsigned char* pixels3 = stbi_load("./assets/images/image.png", &width3, &height3, &channels3, 4);
+    unsigned char* pixels3 = stbi_load("./assets/images/image3.png", &width3, &height3, &channels3, 4);
     images[3].width = width3;
     images[3].height = height3;
     images[3].pixels = pixels3;
@@ -304,40 +305,14 @@ int main(int, char**)
     glBindTexture(GL_TEXTURE_2D, map);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width3, height3, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels3);
     glGenerateMipmap(GL_TEXTURE_2D);
+  boost::asio::io_context io_context;
+  tcp::resolver resolver(io_context);
+  auto endpoints = resolver.resolve("localhost", "6969");
+  string what= "whatdasigma";
+    ChatClient client = ChatClient(io_context, endpoints, what);
+    client.startChat();
 
-    for (int i =0; i < 7; i++){
-       shared_ptr<Image> image = shared_ptr<Image>(new Image);
-       image->pixels = stbi_load(("./assets/images/weapons/im" + to_string(i) + ".jpg").c_str(), &image->width, &image->height, &image->channels, 4);
-       images[3 + i].width = image->width;
-       images[3 + i].height = image->height;
-       images[3 + i].pixels = image->pixels;
-       glGenTextures(1, &image->texture);
 
-        glBindTexture(GL_TEXTURE_2D, image->texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        ims.push_back(image);
-    }
-
-    Image back("./assets/images/arrows/b.png", 10, images);
-    Image down("./assets/images/arrows/d.png", 11, images);
-    Image downBack("./assets/images/arrows/db.png", 12, images);
-    Image downForward("./assets/images/arrows/df.png", 13, images);
-    Image forward("./assets/images/arrows/f.png", 14, images);
-    Image up("./assets/images/arrows/u.png", 15, images);
-    Image upBack("./assets/images/arrows/ub.png", 16, images);
-    Image upForward("./assets/images/arrows/uf.png", 17, images);
-
-    unordered_map<int, Image*> arrowMap = {
-        {1, &up},
-        {2, &forward},
-        {3, &down},
-        {4, &back},
-        {5, &upForward},
-        {6, &downForward},
-        {7, &downBack},
-        {8, &upBack}
-    };
 
     // Setup filtering parameters for display
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -361,6 +336,7 @@ int main(int, char**)
     world.players.push_back(shared_ptr<Player>(&player));
 
     Npc npc("john", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
+
     // TODO MATTHEW - DIALOGUE
     npc.planned.push_back("Crazy? I was crazy once.");
     npc.planned.push_back("They locked me in a room.");
@@ -373,15 +349,43 @@ int main(int, char**)
     world.addActor(shared_ptr<Actor>(&npc));
     world.addActor(shared_ptr<Actor>(&player));
 
-    M1ChipEnemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
-    M1ChipEnemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000, 1000), glm::vec2(width * .1, height * .1))));
-    M1ChipEnemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000, 500), glm::vec2(width * .1, height * .1))));
-    M1ChipEnemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000, -1000), glm::vec2(width * .1, height * .1))));
+    for (int i =0; i < 7; i++){
+       shared_ptr<Image> image = shared_ptr<Image>(new Image);
+       image->pixels = stbi_load(("./assets/images/weapons/im" + to_string(i) + ".jpg").c_str(), &image->width, &image->height, &image->channels, 4);
+       images[3 + i].width = image->width;
+       images[3 + i].height = image->height;
+       images[3 + i].pixels = image->pixels;
+       glGenTextures(1, &image->texture);
 
+        glBindTexture(GL_TEXTURE_2D, image->texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        ims.push_back(image);
+    }
 
-    player.addWeapon("Edge Blade");
+    Image back("./assets/images/arrows/b.png", 10, images);
+    Image down("./assets/images/arrows/d.png", 11, images);
+    Image downBack("./assets/images/arrows/db.png", 12, images);
+    Image downForward("./assets/images/arrows/df.png", 13, images);
+    Image forward("./assets/images/arrows/f.png", 14, images);
+    Image up("./assets/images/arrows/u.png", 15, images);
+    Image upBack("./assets/images/arrows/ub.png", 16, images);
+    Image upForward("./assets/images/arrows/uf.png", 17, images);
+    Image undertale("./assets/images/undertale.jpg", 18, images);
+    Image imageMap("./assets/images/undertale.jpg", 18, images);
+
+    unordered_map<int, Image*> arrowMap = {
+        {1, &up},
+        {2, &forward},
+        {3, &down},
+        {4, &back},
+        {5, &upForward},
+        {6, &downForward},
+        {7, &downBack},
+        {8, &upBack}
+    };
     //player.addWeapon("Edge Blade");
-    //player.addWeapon("Sniper");
+    player.addWeapon("Sniper");
     //player.addWeapon("Z-Zip");
 
     char clear[250] = "";
@@ -389,26 +393,36 @@ int main(int, char**)
     string log = "";
     bool pressed = true;
     float xSize = 1.0, ySize = 1.0;
-    //t1.detach();
-    //thread t3(&Enemy::update, &enemy2, worldptr);
-    //thread t4(&Enemy::update, &enemy3, worldptr);
-    //t3.detach();
-    //t4.detach();
     float skibid = 50;
 
     Stratagem stratagem(6);
     thing();
 
     jthread t1(&World::update, &world);
-    //jthread t2(&World::physics, &world);
     while (!glfwWindowShouldClose(window))
-    {
-        //enemy.update(worldptr);
-        //ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-        end = start;
-        start = std::chrono::system_clock::now(); 
+    {        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+        glfwPollEvents();
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        bool hover = false;
+        static bool win = false;
+        static bool lose = false;
         int windowWidth, windowHeight;
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
+        double xPos, yPos;
+        glfwGetCursorPos(window, &xPos, &yPos);
+        double scale = 0.1;
+    float cursorScale = windowHeight * windowWidth / (1280.0f * 720.0f);
+
+    if (!win && !lose){
+        if (world.deaths > 50) {win = true;}
+        if (player.getHp() < 0) {lose= true;}
+
+        end = start;
+        start = std::chrono::system_clock::now(); 
         deltaTime = std::chrono::duration<double, std::milli>(start - end).count();
 
         if (scrollBuffer.size()){
@@ -417,23 +431,14 @@ int main(int, char**)
             skibid = max(1.0f, skibid);
             scrollBuffer.pop_back();
         }
-        f = (jujutsu(skibid) * 2.5 + 0.001);
+        f = (jujutsu(skibid) * 2.5 + 1);
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
         // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-        glfwPollEvents();
 
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
 
-        double xPos, yPos;
-        glfwGetCursorPos(window, &xPos, &yPos);
-        double scale = 0.1;
         //ImGui::GetForegroundDrawList()->AddImage((void*) image_texture1, ImVec2(width *// scale + xPos - width * scale /2, height * scale + yPos - height * scale /2) , 
 //                                        ImVec2(0 + xPos - width * scale / 2, 0 + yPos -// height * scale/ 2), ImVec2(1,1) , ImVec2(0, 0) , IM_COL32(255, 255, 255, 255));
 
@@ -795,14 +800,6 @@ int main(int, char**)
         }
         scale = .1;
 
-//        for (float i = -3.14/5; i <= 3.14/5; i += .005){
-//            glm::vec2 rotatedDir = {direction.x * cos(i) - direction.y * sin(i), direction.x * sin(i) + direction.y * cos(i)};
-//            glm::vec2 ray = {0, 0};
-//            glm::vec2 initial(characterX, characterY);
-//            raycast(rotatedDir, ray, initial, space, 250);
-//            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(initial.x - Camera.x, initial.y + i - Camera.y), ImVec2(initial.x + ray.x - Camera.x, initial.y + ray.y + i - Camera.y) , IM_COL32(200, 200, 200, 10), 25);
-//        }
-//
         ImGui::PushFont(font2);
         if (player.curWeapon && player.getIndex() > -1)
             ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(windowWidth - 110 - 10 - (110 + 10) * (player.weaponNames.size() - 1 - player.getIndex()), windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * (player.weaponNames.size() - 1 - player.getIndex()), windowHeight - 25), IM_COL32(255, 255, 255, 100));
@@ -826,6 +823,7 @@ int main(int, char**)
         if (player.curWeapon && player.curWeapon->time < player.curWeapon->getReloadSpeed()){
             ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * player.curWeapon->time / player.curWeapon->getReloadSpeed(), windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
         }
+        ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, 25 / 2), ImVec2(windowWidth * player.getHp() / 200.0f * .8, 25 / 2) , IM_COL32(194, 47, 47, 255), 25);
         player.render(ImGui::GetBackgroundDrawList(), Camera, f, windowWidth, windowHeight);
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         // if (show_demo_window)
@@ -928,6 +926,7 @@ int main(int, char**)
                 if (pressed){
                     log += string(inputText) + '\n';
                     string inp(inputText);
+                    client.write(inp);
 
                     for (int i = 0; i < 250; i++){
                         inputText[i] = '\0';
@@ -936,8 +935,10 @@ int main(int, char**)
                 pressed = false;
             } else pressed = true;
 
-              //log += client.messageBuffer_.front();
-              //client.messageBuffer_.pop_front();
+            if (client.messageBuffer_.size()){
+              log += client.messageBuffer_.front();
+              client.messageBuffer_.pop_front();
+            }
             ImGui::End();
         }
         ImGui::PopFont();
@@ -949,7 +950,7 @@ int main(int, char**)
             static float spawnRate = 10000;
         if (timer >= spawnRate){
           for (auto& player: world.players){
-            for (int j = 0; j < 10; j++){
+            for (int j = 0; j < 5; j++){
                  static int i = 0;
                  glm::vec2 direction = {1, 1};
                  direction = glm::normalize(direction);
@@ -977,7 +978,7 @@ int main(int, char**)
         //cout << enemy.getPos().x << " " << enemy.getPos().y << endl;
         ImGui::GetIO().FontGlobalScale = f;
         // TODO - FIX THIS
-        if (player.prompt) {
+        if (player.promptGiver && player.prompt) {
             ImGui::PushFont(font2);
             if (E == GLFW_PRESS){
                 player.promptGiver->speaking = true;
@@ -987,7 +988,7 @@ int main(int, char**)
             ImGui::PopFont();
         } 
 
-        if (npc.speaking){
+        if (player.promptGiver && player.promptGiver->speaking){
             ImGui::PushFont(font2);
             try{
                 string line = "";
@@ -1001,9 +1002,17 @@ int main(int, char**)
         }
         player.prompt = false;
         player.promptGiver = nullptr;
-
-        cout << world.toJSON() << endl;
-        cout << "test" << endl;
+} else if (win){
+            ImGui::PushFont(font2);
+string ammoText = "you win :)";
+            ImGui::PopFont();
+ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth/2 - ImGui::CalcTextSize(ammoText.c_str()).x /2, windowHeight/2 - ImGui::CalcTextSize(ammoText.c_str()).y /2), IM_COL32_WHITE, (ammoText).c_str());
+} else if (lose){
+            ImGui::PushFont(font2);
+string ammoText = "you lose :(";
+ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth/2 - ImGui::CalcTextSize(ammoText.c_str()).x /2, windowHeight/2 - ImGui::CalcTextSize(ammoText.c_str()).y /2), IM_COL32_WHITE, (ammoText).c_str());
+            ImGui::PopFont();
+}
 
         // Rendering
         ImGui::Render();
@@ -1019,7 +1028,6 @@ int main(int, char**)
 
         // Make sure this is commented out in the final build
         //ActorManager::checkForDanglingActors();
-        usleep(10);
     }
     world.stop = true;
     t1.join();

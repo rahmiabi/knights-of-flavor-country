@@ -114,6 +114,7 @@ struct World{
     std::unordered_map<std::string, std::shared_ptr<Actor>> actors;
     bool stop = false;
     std::mutex muntex;
+    int deaths = 0;
     
     /**
      * Create a new Actor.
@@ -148,6 +149,17 @@ struct World{
       return false;
     } 
 
+    void addDeaths(){
+      muntex.lock();
+      deaths++;
+      muntex.unlock();
+    }
+
+    int getDeaths(){
+      muntex.lock();
+      return deaths;
+      muntex.unlock();
+    }
     void update(){
       float delta;
       float timer = 0;

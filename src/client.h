@@ -47,6 +47,7 @@ public:
 							istream is(receiveBuffer);
 							string message;
 							getline(is, message);
+							std::cout << message << endl;
 							addMessageToBuffer(message);
 							}
 						});

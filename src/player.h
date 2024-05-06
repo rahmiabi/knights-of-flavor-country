@@ -20,7 +20,7 @@ public:
     Weapon* curWeapon = nullptr;
     Inventory inventory; 
     bool prompt = false;
-    Npc* promptGiver;
+    Npc* promptGiver = nullptr;
     glm::vec2 velocity{0,0};
     std::mutex velMuntx;
 
@@ -33,6 +33,13 @@ public:
         texture = newTexture;
         speed = 1;
         hp = 200;
+    }
+
+    void decHp(int x){
+        hp -= x;
+    }
+    int getHp(){
+        return hp;
     }
 
     std::string getWeapInd(int index){
@@ -64,6 +71,18 @@ public:
     }
 
     void physics(float delta, const std::shared_ptr<World>& world) override {
+   for (auto& a: world->actors){
+      static float attackTimer = 2000;
+      if (a.second->getName()[0] != 'e' ||a.second->dead) continue;
+      if (glm::length(a.second->getPos() - this->getPos()) <= 170){
+      attackTimer += delta;
+      if (attackTimer > 2000){
+        this->decHp(10);
+        attackTimer = 0;
+        break;
+      }
+      } else attackTimer = 0;
+    }
         *this += glm::vec2(velocity.x / 3 * delta, 0);
         if (glm::length(velocity) && world->checkCollisions(world->staticBodies, this->getRect())){
         	*this += glm::vec2(-1 * velocity.x / 3 * delta, 0);

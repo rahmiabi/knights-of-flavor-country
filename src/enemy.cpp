@@ -156,6 +156,7 @@ void Enemy::physics(float delta, const std::shared_ptr<World>& world) {
     if (hp < 0){
       muntx.lock();
       dead = true;
+      world->addDeaths();
       //world->removeActor(name);
       //world->removeEnemy(std::shared_ptr<Enemy>(this));
       //delete this;
