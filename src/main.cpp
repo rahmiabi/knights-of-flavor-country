@@ -1031,6 +1031,7 @@ ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth/2 - ImGui::CalcTextSi
     }
     world.stop = true;
     t1.join();
+    client.read = false;
     //t2.join();
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
