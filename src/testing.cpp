@@ -1,5 +1,5 @@
 //BENSON MADE THESE TESTS 🎉🥳
-
+//NOTE: some files have glm error or other #include errors since aaron and julian were on vs code
 #include <bits/chrono.h>
 #include <chrono>
 #include <gtest/gtest.h>
@@ -83,14 +83,38 @@ TEST(inventory, InventoryTests) {
 	EXPECT_EQ(temp.getName(), "sword");
 }
 
-TEST(attack_traits, AttackTests) {
-	AttackTraits t1;
-	t1.setSpeed(10);
-	t1.setDefense(20);
-	t1.setHp(90);
-	EXPECT_EQ(t1.getSpeed(), 10);
-	EXPECT_EQ(t1.getDefense(), 20);
-	EXPECT_EQ(t1.getHp(), 90);
+TEST(npc, NPCTests) {
+	std::shared_ptr<PhysicsBody> body = make_shared<PhysicsBody>();
+	Npc menc("irl npc", body);
+	EXPECT_EQ(npc.getName(), "irl npc");
+	EXPECT_EQ(t1.getBody(), body);
+	EXPECT_FALSE(npc.isSpeaking());	
+}
+
+TEST(player, PlayerTests) {
+	glm::vec2 pos(0,0);
+	glm::vec2 size(1, 1);
+	auto texture = static_cast<uint>(123);
+	Player finn(pos, size, texture);
+	finn.weaponNames["jake"] = 0;
+	EXPECT_EQ(finn.getScale(), 0.5);
+	EXPECT_EQ(finn.getTexture(), texture);	
+	EXPECT_EQ(finn.getWeaponInd(0), "jake");
+	EXPECT_EQ(finn.getWeaponInd(1), "");
+	//since king julian asked: JSON tests
+	rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator> aloe;
+	rapidjson::Value obj = finn.toJSONObject(aloe);
+	rapidjson::Document doc;
+	doc.SetObject();
+	rapidjson::Document::AllocatorType &aloe = doc.GetAllocator();
+	doc.AddMember("scale", 0.75, aloe);
+	doc.AddMember("texture", 456, aloe);
+	finn.fromJSON(doc);
+	EXPECT_EQ(finn.getScale(), 0.75);
+	EXPECT_EQ(finn.getTexture(), 456);
+	EXPECT_TRUE(obj.HasMember("scale"));
+	EXPECT_TRUE(obj.HasMember("texture"));
+
 }
 
 int main(int argc, char** argv) {
@@ -105,6 +129,3 @@ int main(int argc, char** argv) {
 		cout << duration.count() << endl;
 	}
 }
-
-//NEED TO:
-//test jsons?
