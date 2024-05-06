@@ -397,7 +397,7 @@ int main(int, char**)
 
     Stratagem stratagem(6);
     thing();
-
+    bool puzzleCompleted = false;
     jthread t1(&World::update, &world);
     while (!glfwWindowShouldClose(window))
     {        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
@@ -567,6 +567,7 @@ int main(int, char**)
                         stratagemState = false;
                         position = 0;
                         puzzle = 0;
+                        puzzleCompleted = true;
                     }
 
                     for (int i = 0; i < stratagem.arrows.size(); i++){
@@ -630,6 +631,7 @@ int main(int, char**)
                         position = 0;
                         puzzle = 0;
                         reset = true;
+                        puzzleCompleted = true;
                     }
 
                     ImGui::PopStyleColor();
@@ -675,6 +677,7 @@ int main(int, char**)
                     }
 
                     if (connected.size() == 4){
+                        puzzleCompleted = true;
                         reset = true;
                         stratagemState = false;
                         puzzle = 0;
@@ -751,9 +754,10 @@ int main(int, char**)
         static float yChange = -2384;//map1 = 1790.518 //map2 = 10 //map3 = -2385 //map4 = 391
           ImGui::GetBackgroundDrawList()->AddImage((void*) map, ImVec2((width3 * mapScale / -2  - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / -2 - Camera.y - yChange) * f + windowHeight / 2),
                                                 ImVec2((width3 * mapScale / 2 - Camera.x - xChange) * f + windowWidth / 2, (height3 * mapScale / 2 - Camera.y - yChange) * f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+
         for (const shared_ptr<PhysicsBody>& x: world.staticBodies){
-            ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((x->start().x - Camera.x) * f + windowWidth / 2, (x->start().y - Camera.y) * f + windowHeight / 2),
-                                                ImVec2((x->end().x - Camera.x) * f + windowWidth / 2, (x->end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
+            ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2((x->start().x - Camera.x) * f + windowWidth / 2, (x->start().y - Camera.y) * f + windowHeight / 2),
+                                                ImVec2((x->end().x - Camera.x) * f + windowWidth / 2, (x->end().y - Camera.y) *f + windowHeight / 2), IM_COL32(255, 255, 255, 255));
         }
 
 
@@ -785,9 +789,29 @@ int main(int, char**)
             numby++;
             time = 0;
             }
+
+
         }
             time += deltaTime;
         }
+        if (puzzleCompleted){
+            for (int i = 0; i < 36; i++){
+            glm::vec2 initial = player.getPos();
+            float angle = (3.14 * 2.0) * (i / 36.0);
+            glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
+            cout << angle << endl;
+            glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
+	          if(dir.x && dir.y)
+              normalize(dir);
+            dir = glm::vec2{dir.x * 10, dir.y * 10};
+
+            shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.getPos(), glm::vec2{10, 10})), dir, 100));
+        
+            world.addActor(proj);
+            numby++;
+
+            }
+            puzzleCompleted = false;}
         scale = .05;
 
         for (auto& actor: world.actors){
@@ -950,7 +974,7 @@ int main(int, char**)
             static float spawnRate = 10000;
         if (timer >= spawnRate){
           for (auto& player: world.players){
-            for (int j = 0; j < 5; j++){
+            for (int j = 0; j < 10; j++){
                  static int i = 0;
                  glm::vec2 direction = {1, 1};
                  direction = glm::normalize(direction);
@@ -1005,8 +1029,8 @@ int main(int, char**)
 } else if (win){
             ImGui::PushFont(font2);
 string ammoText = "you win :)";
-            ImGui::PopFont();
 ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth/2 - ImGui::CalcTextSize(ammoText.c_str()).x /2, windowHeight/2 - ImGui::CalcTextSize(ammoText.c_str()).y /2), IM_COL32_WHITE, (ammoText).c_str());
+            ImGui::PopFont();
 } else if (lose){
             ImGui::PushFont(font2);
 string ammoText = "you lose :(";

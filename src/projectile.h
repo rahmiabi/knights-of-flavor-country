@@ -10,6 +10,7 @@ class Projectile : public Actor {
     Projectile(const std::string& name, std::shared_ptr<PhysicsBody> body, glm::vec2 vel, int dmg) : Actor(name, body){velocity = vel; damage = dmg;}
 
 void physics(float delta, const std::shared_ptr<World>& world) override {
+  if (dead) return;
     // TODO MOVE ON PATH
     bool collided = false;
     *this += glm::vec2(velocity.x / 3* delta, 0);
@@ -29,7 +30,7 @@ void physics(float delta, const std::shared_ptr<World>& world) override {
         }
     }
     if (collided) {
-        world->actors.erase(this->name);
+      dead = true;
     }
 }
 };
