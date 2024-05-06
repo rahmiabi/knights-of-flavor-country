@@ -384,7 +384,7 @@ int main(int, char**)
     world.addActor(shared_ptr<Actor>(&npc4));
     world.addActor(shared_ptr<Actor>(&player));
 
-    for (int i =0; i < 7; i++){
+    for (int i =0; i < 8; i++){
        shared_ptr<Image> image = shared_ptr<Image>(new Image);
        image->pixels = stbi_load(("./assets/images/weapons/im" + to_string(i) + ".jpg").c_str(), &image->width, &image->height, &image->channels, 4);
        images[3 + i].width = image->width;
