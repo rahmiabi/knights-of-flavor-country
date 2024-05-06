@@ -88,8 +88,8 @@ public:
         velMuntx.unlock();
     }
 
-    rapidjson::Value toJSONObject() {
-        rapidjson::Value value = Actor::toJSONObject();
+    rapidjson::Value toJSONObject(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator) {
+        rapidjson::Value value = Actor::toJSONObject(allocator);
         value["scale"].SetDouble(this->scale);
         value["texture"].SetUint(this->texture);
         return value;

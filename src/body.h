@@ -41,13 +41,12 @@ class PhysicsBody {
 
         rapidjson::Value startVecJson;
         startVecJson.SetObject();
-
-        rapidjson::Value startVecJson;
         startVecJson.AddMember("x", this->startVec.x, allocator);
         startVecJson.AddMember("y", this->startVec.y, allocator);
         value.AddMember("startVec", startVecJson, allocator);
 
         rapidjson::Value sizeVecJson;
+        sizeVecJson.SetObject();
         sizeVecJson.AddMember("x", this->sizeVec.x, allocator);
         sizeVecJson.AddMember("y", this->sizeVec.y, allocator);
         value.AddMember("sizeVec", sizeVecJson, allocator);

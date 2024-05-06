@@ -95,7 +95,7 @@ std::string World::toJSON() {
     rapidjson::Value players;
     players.SetArray();
     for (const auto& body : this->players) {
-        rapidjson::Value value = body->toJSONObject();
+        rapidjson::Value value = body->toJSONObject(json.GetAllocator());
         players.PushBack(value, json.GetAllocator());
     }
     json.AddMember("players", players, json.GetAllocator());
