@@ -90,18 +90,10 @@ public:
       muntx.unlock();
     }
     virtual void render(ImDrawList* list, glm::vec2 Camera, float scale, float windowWidth, float windowHeight){}
-    /**
-     * {
-     *  "name": "...",
-     *  "pos": {
-     *    "x": 0.0,
-     *    "y": 0.0
-     *  }
-     * }
-     */
-    std::string toJSON();
 
-    rapidjson::Value toJSONObject();
+    std::string toJSON(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator);
+
+    rapidjson::Value toJSONObject(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator);
     void fromJSON(const rapidjson::Value& value);
 };
 
