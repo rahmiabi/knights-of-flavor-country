@@ -71,3 +71,12 @@
 - Puzzles
 
 ## 5/5/24
+- Integrating everything
+- Map Textures
+- Character Textures
+- Weapon Textures
+- Assigning threads
+- UML diagram
+- README
+- Final Report
+- Packets
