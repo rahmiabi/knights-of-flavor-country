@@ -7,6 +7,7 @@
 #include <cstdlib>
 //#include "body.h"
 #include "csv_file.h"
+#include "actor.h"
 #include "inventory.h"
 #include "location.h"
 //#include "npc.h"
@@ -34,8 +35,8 @@ TEST(attack_traits, AttackTests) {
 TEST(actor, ActorTests) {
 	std::shared_ptr<PhysicsBody> body = std::make_shared<PhysicsBody>();
 	Actor a("bobby lee", body);
-	glm::vec2 expected(10.0f, 20.0f);
-	const PhysicsBody &bodyRef = actor.getRect();
+	glm::vec2 expected(10.0f, 20.0f); //random coordinates to check
+	const PhysicsBody &bodyRef = a.getRect(); //to test if the body get works
 	EXPECT_EQ(a.getName(), "bobby lee");
 	EXPECT_EQ(a.getBody(), body);
 	EXPECT_EQ(a.size(), expected);
@@ -43,21 +44,24 @@ TEST(actor, ActorTests) {
 	EXPECT_EQ(a.getPos(), expected);
 }
 
-TEST(attack_traits, AttackTests) {
-	AttackTraits t1;
-	t1.setSpeed(10);
-	t1.setDefense(20);
-	t1.setHp(90);
-	EXPECT_EQ(t1.getSpeed(), 10);
-	EXPECT_EQ(t1.getDefense(), 20);
-	EXPECT_EQ(t1.getHp(), 90);
+TEST(csv, CSVTests) {
+	CsvIndexMap indexMap = {{"Column1", 0}, {"Column2", 1}, {"Column3", 2}}; //makes a csv kinda
+	vector<string> tokens = {"v1", "v2", "v3"}; //value for each spot
+	CsvEntry entry(std::move(tokens), indexMap); //sets each value
+	EXPECT_TRUE(entry.hasColumn("Column1")); //checks if the column exists
+	EXPECT_EQ(entry.getValueAtColumn("Column1"), "v1"); //checks column 1's value
 }
 
+class Bo : public Item {
+	public:
+	Bo(const string &name, const string &description) : Item(name, description) {}
+};
+
 TEST(item, ItemTests) {
-	item cool("bo staff", "big stick");
-	EXPECT_EQ(t1.getName(), "bo staff");
-	EXPECT_EQ(t1.getDescription(), "big stick");
-	EXPECT_EQ(t1.getMaxAmount(), 256);
+	Bo cool("bo staff", "big stick");
+	EXPECT_EQ(cool.getName(), "bo staff");
+	EXPECT_EQ(cool.getDescription(), "big stick");
+	EXPECT_EQ(cool.getMaxAmount(), 256);
 }
 
 TEST(attack_traits, AttackTests) {
