@@ -43,6 +43,13 @@
 > - INV Slot 2 - 2
 > - INV Slot 3 - 3
 > - Stratagem - Q
+> # Weapons
+> LR-11 Explorer
+> Surface Strike Rifle
+> Z-Zip
+> Sniper
+> Shotgun
+> Flame Thrower
 
 # Member Report:
 **Rahmi Abi-Rached, Project Manager**
