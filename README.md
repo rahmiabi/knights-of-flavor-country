@@ -20,7 +20,14 @@
 
 > [!IMPORTANT]
 > # Background
-> Lore go here
+> For over half of the 22nd century, Malustan and Azurion have been in a constant state of conflict.
+> A conflict sparked from a differing of ideals.
+> Azurion a bastion for freedom and open systems battles with Malustan who believes in a closed system.
+> Due to its belief of openness Azurion works with Malustan to creat the Treaty of Pearis and in 2160 it is signed.
+> However, some do not agree with the terms of the treaty.
+> Suddenly in 2162 as tensions appear to be easing, Lautenous, a Kernelian diplomat, is killed at the border between Malustan and Azurion.
+> Neither side claims the kill but blames the other.
+> Count Volodymr of Malustan is then removed from power and war erupts yet again...
 
 >[!TIP]
 > # Controls

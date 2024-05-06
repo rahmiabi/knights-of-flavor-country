@@ -23,17 +23,25 @@ In order to stop Malustan's advances further into the city, Azurion deploys all 
 Leading the defense is General Mackerelli, known for his vast list of victories in the previous fight against the closed country of Malustan.
 General Mackerlli makes the call to send in Task Force Redmond, a group made up of the most elite Edge Operators. 
 Each carries their own blade passed down from generation to generation.
-Task Force Redmond now holds the frontline in the streets of Azurion City and attempts to take back as much as it can.
+Task Force Redmond now holds the frontline in the streets of Azurion City and attempts to take back as much as it can...
 
 
 //map2//
 Due to the efforts of Task Force Redmond and The Edge Operators, Malustan forces are driven out of Azurion City.
 Azurion is now on the offensive and is now pushing Malustan back to the countryside.
-Task Force Redmond is now tasked with assisting the push.
+Due to its open nature, Azurion's countryside is the world's leader in grain production.
+In order to keep up with this demand, the countryside stretches as far as the eye can see.
+Now in this infinite field of wheat, Task Force Redmond is tasked with assisting the push against the Malustan oppressors...
+
 
 //map3//
+After the successful defenses of Azurion against Malustan forces, Azurion is now able to launch counterattacks.
 In order to break the stalemate between the two countries, Azurion has started launching covert attacks behind enemy lines.
-Task Force Redmond is now tasked with taking out a factory that has been producing arms for Malustan.
+Task Force Redmond now finds itself in the barren wastelands of Malustan.
+More specifically the factory region is characterized by its vast fields of rubble.
+The constant conflict has left barely any factories intake.
+Task Force Redmond now finds themselves at one of those few factories...
+
 
 
 //map4 final boss//
