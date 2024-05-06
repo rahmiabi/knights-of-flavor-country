@@ -4,7 +4,9 @@
 **A Nightmare Studios Production**
 
 - [BRIDGES](https://bridges-cs.herokuapp.com/assignments/5/gugu)
+- [SOUNDTRACK](https://youtube.com/playlist?list=PLBGOlNcRLoTe2uPvM16W5e8UmZvgi7lSF&si=KpxzXojwQHEs__oc)
 - [FINAL REPORT](https://docs.google.com/document/d/14hk3kF-KI3cDMsnP8Oeztgp7Ecbf-U4KPghMPuHUC2M/edit?usp=sharing)
+
 
 > [!NOTE]
 > **The nightmare team of CSCI41 made up of:**
