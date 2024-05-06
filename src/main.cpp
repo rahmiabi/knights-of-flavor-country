@@ -339,23 +339,23 @@ int main(int, char**)
 
     Npc npc2("General Mackerelli", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, 200), glm::vec2(width * .1, height * .1))));
     
-        Npc npc3("Kernei", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, -200), glm::vec2(width * .1, height * .1))));
+      Npc npc3("Kernei", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, -200), glm::vec2(width * .1, height * .1))));
 
     // TODO MATTHEW - DIALOGUE
-    npc.planned.push_back("Crazy? I was crazy once.");
-    npc.planned.push_back("They locked me in a room.");
-    npc.planned.push_back("A rubber room.");
-    npc.planned.push_back("A rubber room with rats.");
-    npc.planned.push_back("And rats make me crazy.");
-    npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
+   npc.planned.push_back("Crazy? I was crazy once.");
+   npc.planned.push_back("They locked me in a room.");
+   npc.planned.push_back("A rubber room.");
+   npc.planned.push_back("A rubber room with rats.");
+   npc.planned.push_back("And rats make me crazy.");
+   npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
 
-    npc2.planned.push_back("General Mackerelli: THEY WOULDN'T EXPECT AN ATTACK LIKE THIS");
-    npc2.planned.push_back("General Mackerelli: TIME TO FREE THE FACTORIES BROTHERs");
-    npc2.planned.push_back("General Mackerelli: I MIGHT NOT BE ABLE TO SEE, BUT FREEDOM WILL BE MY LIGHT FORWARD");
-    npc2.planned.push_back("General Mackerelli: GET IN THERE SOLDIERS");
-    npc2.dialogue.push_back("General Mackerelli: LAY YOUR LIVES FOR OUR OPEN SYSTEM");
-    npc2.dialogue.push_back("General Mackerelli: LAY YOUR LIVES OUR OPEN SYSTEM");
-    npc2.dialogue.push_back("General Mackerelli: PUSH THEM FOR FREEDOM ");
+   npc2.planned.push_back("General Mackerelli: THEY WOULDN'T EXPECT AN ATTACK LIKE THIS");
+   npc2.planned.push_back("General Mackerelli: TIME TO FREE THE FACTORIES BROTHERs");
+   npc2.planned.push_back("General Mackerelli: I MIGHT NOT BE ABLE TO SEE, BUT FREEDOM WILL BE MY LIGHT FORWARD");
+   npc2.planned.push_back("General Mackerelli: GET IN THERE SOLDIERS");
+   npc2.dialogue.push_back("General Mackerelli: LAY YOUR LIVES FOR OUR OPEN SYSTEM");
+   npc2.dialogue.push_back("General Mackerelli: LAY YOUR LIVES OUR OPEN SYSTEM");
+   npc2.dialogue.push_back("General Mackerelli: PUSH THEM FOR FREEDOM ");
     
 	npc3.planned.push_back("Kernie: Need any new gear?");
 	npc3.planned.push_back("Kernie: I got it...");
@@ -1098,8 +1098,8 @@ int main(int, char**)
             try{
                 string line = "";
                 // gets random line from dialogue
-                if (!npc.planned.size()) line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
-                else line = npc.planned.front();
+                if (!player.promptGiver->planned.size()) line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
+                else line = player.promptGiver->planned.front();
                 ImGui::SameLine((windowWidth / 2) - (ImGui::CalcTextSize(line.c_str()).x / 2));
                 ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_WHITE, (line).c_str());
             } catch(...){}
