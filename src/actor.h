@@ -26,6 +26,7 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h> // Will drag system OpenGL headers
+#include <algorithm>
 #include <cstdio>
 #include "../lib/rapidjson/include/rapidjson/document.h"
 #include "../lib/rapidjson/include/rapidjson/writer.h"
@@ -44,6 +45,7 @@ protected:
     std::mutex muntx;
 
 public:
+    bool dead = false;
     Actor() = default;
     Actor(std::string name, std::shared_ptr<PhysicsBody> body);
     virtual ~Actor() = default;
@@ -131,7 +133,6 @@ struct World{
      * @example auto enemy = Actor::create<M1ChipEnemy>(x, y);
      */
 
-    void removeActor(const std::string& name);
     
     /**
      * Check for any Actors that should have been deleted that haven't been.
@@ -219,7 +220,21 @@ struct World{
       actors.emplace(actor->getName(), actor);
       muntex.unlock();
     }
-
+    void removeActor(std::string name){
+      muntex.lock();
+      actors.erase(name);
+      muntex.unlock();
+    }
+    void removeEnemy(std::shared_ptr<Enemy> enemy){
+      muntex.lock();
+      enemies.erase(find(enemies.begin(), enemies.end(), enemy));
+      muntex.unlock();
+    }
+    void addEnemy(std::shared_ptr<Enemy> actor){
+      muntex.lock();
+      enemies.push_back(actor);
+      muntex.unlock();
+    }
     std::string toJSON();
     void fromJSON(const rapidjson::Value& json);
 };

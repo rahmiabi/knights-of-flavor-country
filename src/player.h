@@ -28,7 +28,7 @@ public:
     Player() = default;
     ~Player() = default;
 
-    Player(glm::vec2 position, glm::vec2 size, auto& newTexture){
+    Player(glm::vec2 position, glm::vec2 size, auto& newTexture) : Actor(), AttackTraits()  {
         body = std::shared_ptr<PhysicsBody>(new Rect(position, glm::vec2(size.x * scale, size.y * scale)));
         texture = newTexture;
         speed = 1;

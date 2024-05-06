@@ -71,6 +71,7 @@ std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBod
 }
 
 void Enemy::update(float delta, const std::shared_ptr<World>& world){
+    if (dead) return;
     pathRefresh = 2500;
     static bool init = true;
     static float pathTimer;
@@ -131,6 +132,8 @@ void Enemy::update(float delta, const std::shared_ptr<World>& world){
 void Enemy::physics(float delta, const std::shared_ptr<World>& world) {
     // TODO MOVE ON PATH
     // this code moves the goon
+
+    if (dead) return;
     if (path.size() > 1){
       glm::vec2 bruh = path[path.size() - 1] - path[path.size() - 2]; 
       if (bruh.x || bruh.y)
@@ -150,6 +153,19 @@ void Enemy::physics(float delta, const std::shared_ptr<World>& world) {
     if (glm::length(direction) && world->checkCollisions(world->staticBodies, *body)){
       *this += glm::vec2(0, -1 * direction.y / 3* delta);
     }
+    if (hp < 0){
+      muntx.lock();
+      dead = true;
+      //world->removeActor(name);
+      //world->removeEnemy(std::shared_ptr<Enemy>(this));
+      //delete this;
+      muntx.unlock();
+    } 
+}
+void Enemy::decHp(int i){
+  muntx.lock();
+    hp-=i;
+  muntx.unlock();
 }
 /////////////////////////////////////////////////////////
 ////                    M1ChipEnemy

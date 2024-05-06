@@ -17,11 +17,13 @@ Weapon Weapon::fromCsvEntry(const CsvEntry& entry) {
     ASSERT_COLUMN(entry, "type");
     ASSERT_COLUMN(entry, "accuracy");
     ASSERT_COLUMN(entry, "textureID");
+    ASSERT_COLUMN(entry, "dmg");
 
     Weapon weapon;
     weapon.name = entry["name"];
     weapon.description = entry["description"];
     weapon.ammo = entry.getU32("ammo");
+    weapon.damage = entry.getU32("dmg");
     weapon.maxAmmo = weapon.ammo;
     weapon.reloadSpeed = entry.getU32("reloadSpeed");
     weapon.fireRate = 60000.0f /entry.getU32("fireRate");

@@ -5,8 +5,9 @@
 class Projectile : public Actor {
     public:
     glm::vec2 velocity;
+    int damage;
 
-    Projectile(const std::string& name, std::shared_ptr<PhysicsBody> body, glm::vec2 vel) : Actor(name, body){velocity = vel;}
+    Projectile(const std::string& name, std::shared_ptr<PhysicsBody> body, glm::vec2 vel, int dmg) : Actor(name, body){velocity = vel; damage = dmg;}
 
 void physics(float delta, const std::shared_ptr<World>& world) override {
     // TODO MOVE ON PATH
@@ -20,8 +21,14 @@ void physics(float delta, const std::shared_ptr<World>& world) override {
     if (glm::length(velocity) && world->checkCollisions(world->staticBodies, *body)){
         collided = true;
     }
+    for (auto& x: world->enemies){
+        if (!x->dead && x->getBody().isColliding(this->getBody())){
+            x->decHp(damage);
+            collided = true;
+            break;
+        }
+    }
     if (collided) {
-
         world->actors.erase(this->name);
     }
 }

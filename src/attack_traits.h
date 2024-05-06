@@ -17,6 +17,7 @@ protected:
     int32_t hp;
 
 public:
+    AttackTraits() = default;
     int32_t getSpeed() const {
         return this->speed;
     }

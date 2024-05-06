@@ -15,6 +15,7 @@ private:
     uint32_t reloadSpeed;
     uint32_t ammo;
     uint32_t maxAmmo;
+    uint32_t damage;
     uint32_t size;
     WeaponType type;
     uint32_t accuracy;
@@ -45,6 +46,9 @@ public:
 
     inline int getAmmo() const {
         return this->ammo;
+    }
+    inline int getDamage() const {
+        return this->damage;
     }
 
     inline int getMaxAmmo() const {

@@ -15,7 +15,7 @@
 /**
  * Base class for all enemies
  */
-class Enemy : public Npc, AttackTraits {
+class Enemy : public Npc, public AttackTraits{
 private:
     glm::vec2 direction{0,0};
 protected:
@@ -23,20 +23,23 @@ protected:
     float pathRefresh;
 public:
     std::vector<glm::vec2> path = {glm::vec2{0,0}, glm::vec2{0,0}};
-    Enemy(const std::string& name, std::shared_ptr<PhysicsBody> body) : Npc(name, body){}
+    Enemy(const std::string& name, std::shared_ptr<PhysicsBody> body) : Npc(name, body), AttackTraits(){}
     virtual ~Enemy() = default;
 
     void physics(float delta, const std::shared_ptr<World>& world) override;
     void update(float delta, const std::shared_ptr<World>& world) override;
 
     std::vector<glm::vec2> aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size);
+    void decHp(int i);
 };
 
 class M1ChipEnemy final : public Enemy {
 private:
-
 public:
-    M1ChipEnemy(const std::string& name, std::shared_ptr<PhysicsBody> body) : Enemy(name, body){}
+    M1ChipEnemy(const std::string& name, std::shared_ptr<PhysicsBody> body) : Enemy(name, body){
+        dead = false;
+        hp = 50;
+    }
     //void update(float delta, const std::shared_ptr<World>& world) override;
 };
 

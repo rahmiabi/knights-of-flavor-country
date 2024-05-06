@@ -383,10 +383,6 @@ int main(int, char**)
     //player.addWeapon("Edge Blade");
     //player.addWeapon("Sniper");
     //player.addWeapon("Z-Zip");
-    world.actors.emplace(enemy.getName(), std::shared_ptr<Actor>(&enemy));
-    world.actors.emplace(enemy1.getName(), std::shared_ptr<Actor>(&enemy1));
-    world.actors.emplace(enemy2.getName(), std::shared_ptr<Actor>(&enemy2));
-    world.actors.emplace(enemy3.getName(), std::shared_ptr<Actor>(&enemy3));
 
     char clear[250] = "";
     char inputText[250] = "";
@@ -776,7 +772,8 @@ int main(int, char**)
 	        if(dir.x && dir.y)
             normalize(dir);
             dir = glm::vec2{dir.x * 10, dir.y * 10};
-            shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.getPos(), glm::vec2{10, 10})), dir));
+
+            shared_ptr<Actor> proj(new Projectile(to_string(numby), shared_ptr<PhysicsBody>(new Rect(player.getPos(), glm::vec2{10, 10})), dir, player.curWeapon->getDamage()));
         
             world.addActor(proj);
             player.curWeapon->decAmmo();
@@ -789,9 +786,11 @@ int main(int, char**)
         scale = .05;
 
         for (auto& actor: world.actors){
+            if (!actor.second->dead){
             ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((actor.second->getBody().start().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().start().y - Camera.y) * f + windowHeight / 2),
                                                 ImVec2((actor.second->getBody().end().x - Camera.x) * f + windowWidth / 2, (actor.second->getBody().end().y - Camera.y) *f + windowHeight / 2), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
             actor.second->physics(deltaTime, worldptr);                      
+            }
 
         }
         scale = .1;
@@ -810,8 +809,10 @@ int main(int, char**)
         for (int i = 0; i < player.weaponNames.size(); i++){
             ImGui::GetBackgroundDrawList()->AddRect(ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), IM_COL32(255, 255, 255, 255));
             
+            try{
             ImGui::GetBackgroundDrawList()->AddImage((void*) ims.at(ItemRegistry::getWeapon(player.getWeapInd(player.weaponNames.size() - 1- i)).getTextureId())->texture, ImVec2(windowWidth - 110 - 10 - (110 + 10) * i, windowHeight - 110 - 25) , 
                                                 ImVec2(windowWidth - 10 - (110 + 10) * i, windowHeight - 25), ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 128));
+            } catch(...){}
         }
 
         if (player.curWeapon && player.curWeapon->getType() == WeaponType::GUN){
@@ -822,14 +823,6 @@ int main(int, char**)
             ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth - ImGui::CalcTextSize(ammoText.c_str()).x - 10, windowHeight - ImGui::CalcTextSize(ammoText.c_str()).y - 140), IM_COL32_WHITE, (ammoText).c_str());
         }
 
-       ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy1.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy1.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy1.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy2.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy2.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy2.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
-        ImGui::GetBackgroundDrawList()->AddImage((void*) image_texture1, ImVec2((enemy3.getBody().start().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().start().y - Camera.y) * f + windowHeight / 2) , 
-                                        ImVec2((enemy3.getBody().end().x - Camera.x) * f + windowWidth / 2, (enemy3.getBody().end().y - Camera.y) * f + windowHeight / 2) , ImVec2(0,0) , ImVec2(1, 1) , IM_COL32(255, 255, 255, 255));
         if (player.curWeapon && player.curWeapon->time < player.curWeapon->getReloadSpeed()){
             ImGui::GetForegroundDrawList()->AddLine(ImVec2(0, windowHeight - 25 / 2), ImVec2(windowWidth * player.curWeapon->time / player.curWeapon->getReloadSpeed(), windowHeight - 25 / 2) , IM_COL32(200, 200, 200, 100), 25);
         }
@@ -964,7 +957,9 @@ int main(int, char**)
                  glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
                  glm::vec2 ray = {0,0}; 
                  world.raycast(rotatedDir, ray, player->getPos(), world.staticBodies, 5000);
-                 world.addActor(std::shared_ptr<Actor>(new M1ChipEnemy("enemigo" + std::to_string(i), std::shared_ptr<PhysicsBody>(new Rect(glm::vec2(player->getPos().x + ray.x, player->getPos().y + ray.y), glm::vec2(width * .1, height * .1))))));
+                M1ChipEnemy* enmey = new M1ChipEnemy("enemigo" + std::to_string(i), std::shared_ptr<PhysicsBody>(new Rect(glm::vec2(player->getPos().x + ray.x, player->getPos().y + ray.y), glm::vec2(width * .1, height * .1))));
+                 world.addActor(std::shared_ptr<Actor>(enmey));
+                 world.addEnemy(std::shared_ptr<Enemy>(enmey));
                  i++;
             }
             }
