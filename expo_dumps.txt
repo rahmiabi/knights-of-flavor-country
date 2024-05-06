@@ -1,13 +1,30 @@
 //NOT FINAL LMAO//
-//Im going to sort these by level later//
+//I'm going to sort these by level later//
+
+//Plays on launch//
 In 2140 the Treaty of Pearis is signed between neighboring countries Malustan and Azurion, paving a way toward peace for the region.
 Many are happy with the treaty, but some deeply oppose it.
 Then in 2042 as tensions appeared to be easing, Lautenous, a Kernelian diplomat, is killed at the border between Malustan and Azurion.
 Neither side claims the kill but blames the other.
+Count Volodymr of Malustan is then removed from power and war erupts yet again.
 
-Count Volodymr of Malustan is removed from power and war erupted yet again.
-
-
+//map1//
 Malustan strikes first hitting Azurion City.
-In order to stop Malustan's advances further into the city,
-the Azurion 
+In order to stop Malustan's advances further into the city, Azurion deploys Task Force Redmond.
+
+//map2//
+Due to the efforts of Task Force Redmond and The Edge Operators, Malustan forces are driven out of Azurion City.
+Azurion is now on the offensive and is now pushing Malustan back to the countryside.
+Task Force Redmond is now tasked with assisting the push.
+
+//map3//
+In order to break the stalemate between the two countries, Azurion has started launching covert attacks behind enemy lines.
+Task Force Redmond is now tasked with taking out a factory that has been producing arms for Malustan.
+
+
+//map4 final boss//
+After pushing through the production zones of Malustan, Task Force Redmond ends up in the capital.
+However, there does not appear to be anyone guarding it...
+and it seems...
+that you are...
+in for a bad time...
