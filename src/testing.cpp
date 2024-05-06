@@ -1,4 +1,5 @@
 //BENSON MADE THESE TESTS 🎉🥳
+//I also made the logos and did the textures for map 1
 //NOTE: some files have glm error or other #include errors since aaron and julian were on vs code
 #include <bits/chrono.h>
 #include <chrono>
