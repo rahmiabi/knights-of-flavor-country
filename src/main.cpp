@@ -487,7 +487,7 @@ int main(int, char**)
                 if (Q == GLFW_PRESS){
                     if (justPressed){
                         stratagemState = true;
-                        if (!puzzle) puzzle = rand() % 3 + 1; 
+                        if (!puzzle) puzzle = rand() % 4 + 1; 
                     }
                     justPressed = false;
                 } else {
@@ -712,10 +712,10 @@ int main(int, char**)
                         ImGui::GetWindowDrawList()->AddLine(ImVec2(windowWidth *(1/2.0f - 3/8.0f) + curSize.x * .1 + 50, windowHeight * (1/2.0f - 3/8.0f)  + (curSize.y * 0.1 + curSize.y * 0.2 * i ) + 50), ImVec2(direction.x, direction.y), IM_COL32(255 * leftPos.at(i).second.x, 255 * leftPos.at(i).second.y,255 * leftPos.at(i).second.z,255 * leftPos.at(i).second.w), 3);
                         }
 
+                        ImGui::PopStyleColor();
                     }
 
                     for (int i = 0; i < 4; i++){
-                        ImGui::PopStyleColor();
                         ImGui::PushStyleColor(ImGuiCol_Button, leftPos.at(i).second); // Set window background to red
                         ImGui::SetCursorPos(ImVec2(curSize.x * .1, curSize.y * 0.1 + curSize.y * 0.2 * i));
                         ImGui::Button(("##START" + to_string(i)).c_str(), ImVec2(100, 100));
@@ -731,6 +731,67 @@ int main(int, char**)
 
                     ImGui::PopStyleColor();
                     ImGui::End();
+                    // FIZZBUZZ
+                } else if (puzzle == 4){
+                  static int num;
+                  static bool reset = true;
+                  static int count = 0;
+                  string answer;
+                  string input = "";
+
+                   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
+                    ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
+                    ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
+                    ImGui::Begin("Fizzbuzz", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                    ImVec2 curSize = ImGui::GetWindowSize();
+
+                  if (num % 3 == 0 && num % 5 == 0){
+                    answer = "Fizzbuzz";
+                  }
+                  else if (num % 3 == 0){
+                    answer = "Fizz";
+                  } else if (num % 5 == 0){
+                    answer = "Buzz";
+                  }
+                  
+                  if (reset){
+                    num = rand() & 100 + 1;
+                    count = 0;
+                    reset = false;
+                  }
+                  
+                  ImGui::SetCursorPos(ImVec2(curSize.x * .1, curSize.y * .6));
+                  if (ImGui::Button((to_string(num)).c_str(), ImVec2(100, 100))){
+                    input = to_string(num);
+                  }
+                  ImGui::SetCursorPos(ImVec2(curSize.x * .3, curSize.y * .6));
+                  if (ImGui::Button((string("Fizz")).c_str(), ImVec2(100, 100))){
+                    input = "Fizz";
+                  }
+                  ImGui::SetCursorPos(ImVec2(curSize.x * .6, curSize.y * .6));
+                  if (ImGui::Button((string("Buzz")).c_str(), ImVec2(100, 100))){
+                    input = "Buzz";
+                  }
+                  ImGui::SetCursorPos(ImVec2(curSize.x * .9, curSize.y * .6));
+                  if (ImGui::Button((string("Fizzbuzz")).c_str(), ImVec2(100, 100))){
+                    input = "Fizzbuzz"; 
+                  }
+
+                  if (input == answer){
+                    count++;
+                    num = rand() & 100 + 1;
+                  } else if (input != ""){
+                    count--;
+                  }
+
+                  if (count > 3){
+                    reset = true;
+                    puzzleCompleted = true;
+                    puzzle = 0;
+                  }
+                    ImGui::PopStyleColor();
+                    ImGui::End();
+
                 }
         } 
     }
@@ -1008,7 +1069,7 @@ int main(int, char**)
                 player.promptGiver->speaking = true;
             }
             string prompt = "Press [E] to interact";
-            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth / 2 - (ImGui::CalcTextSize(prompt.c_str()).x) / 2, windowHeight * 2 / 3 + ImGui::CalcTextSize(prompt.c_str()).y / 2), IM_COL32_BLACK, (prompt).c_str());
+            ImGui::GetForegroundDrawList()->AddText(ImVec2(windowWidth / 2 - (ImGui::CalcTextSize(prompt.c_str()).x) / 2, windowHeight * 2 / 3 + ImGui::CalcTextSize(prompt.c_str()).y / 2), IM_COL32_WHITE, (prompt).c_str());
             ImGui::PopFont();
         } 
 
@@ -1020,7 +1081,7 @@ int main(int, char**)
                 if (!npc.planned.size()) line = player.promptGiver->dialogue.at((int)(((rand() % 100 + 1) / 100.0f) * (player.promptGiver->dialogue.size() - 1)));
                 else line = npc.planned.front();
                 ImGui::SameLine((windowWidth / 2) - (ImGui::CalcTextSize(line.c_str()).x / 2));
-                ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_BLACK, (line).c_str());
+                ImGui::GetForegroundDrawList()->AddText(ImVec2((player.promptGiver->getPos().x - (ImGui::CalcTextSize(line.c_str()).x) / 2/ f- Camera.x) * f + windowWidth / 2, (player.promptGiver->getPos().y - player.promptGiver->size().y - 10 - Camera.y)*f+ windowHeight / 2 ), IM_COL32_WHITE, (line).c_str());
             } catch(...){}
             ImGui::PopFont();
         }
