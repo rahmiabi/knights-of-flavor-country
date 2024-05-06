@@ -1,6 +1,6 @@
 name,description,fireRate,reloadSpeed,ammo,size,dmg,accuracy,type,textureID,spares
-Edge Blade,A weapon forged in the flames of the Old Traf City as it burned to ash that is passed down from Edge Operative to Edge Operative,250,0,0,200,65,0,MELEE,0,0
-Polearm,tbd - straight stab,200,0,0,100,70,0,MELEE,1,
+Edge Blade,A weapon forged in the flames of the Old Traf City as it burned to ash that is passed down from Edge Operative to Edge Operative,250,0,0,200,65,0,GUN,0,0
+Polearm,tbd - straight stab,200,0,0,100,70,0,GUN,1,
 LR-11 Explorer,A slow-firing and high-damage weapon built for Special Forces,300,3000,15,100,55,80,GUN,2,3
 Surface Strike Rifle,Medium pace firing with medium damage; standard issue for Azurion Forces,600,2000,30,100,30,50,GUN,3,5
 Z-Zip,Used by Azurion Forces deep in enemy lines due to its fast firing being perfect for close combat,1100,1500,30,100,18,20,GUN,4,5
@@ -8,4 +8,4 @@ Z-Zip,Used by Azurion Forces deep in enemy lines due to its fast firing being pe
 Sniper,tbd - bold action,100,2000,5,100,100,100,GUN,6,4
 Shotgun,tbd - reload speed is determined by remaing ammo (reloads a single shell at a time so spares are single shells),200,2000,8,100,60,20,GUN,6,48
 Flame Thrower,tbd - aoe consistent no reload (active for a set number of seconds,1000,0,15000,100,10,10,GUN,8,2
-insta, insta win, 100000000, 0, 100000000000000000, 100000000, 100,100,9,10000
+insta,	insta win,	100000,	0,	10000,	100,	100,	100,	GUN, 1, 100
