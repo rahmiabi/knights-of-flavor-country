@@ -507,7 +507,7 @@ int main(int, char**)
                 if (Q == GLFW_PRESS){
                     if (justPressed){
                         stratagemState = true;
-                        if (!puzzle) puzzle = rand() % 4 + 1; 
+                        if (!puzzle) puzzle = rand() % 5 + 1; 
                     }
                     justPressed = false;
                 } else {
@@ -759,11 +759,11 @@ int main(int, char**)
                   string answer;
                   string input = "";
 
-                   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
-                    ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
-                    ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
-                    ImGui::Begin("Fizzbuzz", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-                    ImVec2 curSize = ImGui::GetWindowSize();
+                  ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
+                  ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
+                  ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
+                  ImGui::Begin("Fizzbuzz", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                  ImVec2 curSize = ImGui::GetWindowSize();
 
                   if (num % 3 == 0 && num % 5 == 0){
                     answer = "Fizzbuzz";
@@ -780,6 +780,8 @@ int main(int, char**)
                     reset = false;
                   }
                   
+                  ImGui::SameLine((curSize.x / 2) - (ImGui::CalcTextSize(to_string(num).c_str()).x / 2));
+                  ImGui::Text(to_string(num).c_str(), ImVec2(0, curSize.y * .4), IM_COL32_WHITE);
                   ImGui::SetCursorPos(ImVec2(curSize.x * .1, curSize.y * .6));
                   if (ImGui::Button((to_string(num)).c_str(), ImVec2(100, 100))){
                     input = to_string(num);
@@ -802,6 +804,7 @@ int main(int, char**)
                     num = rand() & 100 + 1;
                   } else if (input != ""){
                     count--;
+                    num = rand() & 100 + 1;
                   }
 
                   if (count > 3){
@@ -812,6 +815,57 @@ int main(int, char**)
                     ImGui::PopStyleColor();
                     ImGui::End();
 
+                } else if (puzzle == 5){
+                  static string captcha;
+                  static bool reset = true;
+                  static char inputText[11];
+
+                  ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.75f)); // Set window background to red
+                  ImGui::SetNextWindowSize(ImVec2(windowWidth * 3 / 4.0f, windowHeight * 3 / 4.0f));
+                  ImGui::SetNextWindowPos(ImVec2(windowWidth *(1/2.0f - 3/8.0f) , windowHeight * (1/2.0f - 3/8.0f)));
+                  ImGui::Begin("Captcha", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings  );   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+                  ImVec2 curSize = ImGui::GetWindowSize();
+
+
+                  if (reset){
+                    for (int i = 0; i < 10; i++){
+                      char x = rand() % 93 + 33;
+                      while (x == 'q'){
+                        x = rand() % 93+33;
+                      }
+                      captcha += (char)(rand() % 93 + 33);
+                    }
+
+                    for (int i = 0; i < 250; i++){
+                        inputText[i] = '\0';
+                     }
+                    reset = false;
+                  }
+            ImGui::SetCursorPos(ImVec2(curSize.x / 2, curSize.y * 0.3f));
+                  ImGui::SameLine((curSize.x / 2) - (ImGui::CalcTextSize(captcha.c_str()).x / 2));
+                  ImGui::Text(captcha.c_str(), ImVec2(0,curSize.y * .4), IM_COL32_WHITE);
+            int enter = glfwGetKey(window, GLFW_KEY_ENTER);
+            ImGui::SetCursorPos(ImVec2(curSize.x * 0.2f,  curSize.y * 0.6f));
+            ImGui::InputText("Enter Captcha", inputText, IM_ARRAYSIZE(inputText));
+            if (enter == GLFW_PRESS){
+                if (pressed){
+                    string inp(inputText);
+
+                    if (inp == captcha){
+                      reset = 1;
+                      puzzle = 0;
+                    puzzleCompleted = true;
+                    }
+
+                    for (int i = 0; i < 250; i++){
+                        inputText[i] = '\0';
+                     }
+                }
+                 pressed = false;
+              } else pressed = true;
+
+                  ImGui::PopStyleColor();
+                  ImGui::End();
                 }
         } 
     }
@@ -880,7 +934,6 @@ int main(int, char**)
             glm::vec2 initial = player.getPos();
             float angle = (3.14 * 2.0) * (i / 36.0);
             glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
-            cout << angle << endl;
             glm::vec2 dir = {rotatedDir.x * 100.0 , rotatedDir.y * 100.0};
 	          if(dir.x && dir.y)
               normalize(dir);
