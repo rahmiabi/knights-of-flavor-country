@@ -64,3 +64,19 @@
 - Matthew made his biggest contributions outside of the field of coding. He developed all of the game's lore, some dialogue, the maps, weapon and character ideas, boss fights, puzzles, etc. He did a great job, as the game has an amazing storyline full of ups and downs, interesting characters and dialogue, and cool weapons.
 
 > Overall, everyone did a great job of doing what they were responsible for, and no one held the group back from success. The group's hardwork put together a great game that we hope everyone enjoys.
+
+# Building the Project
+- Use MSYS2 Please
+- Dependencies:
+```
+pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-glfw make gcc git mingw-w64-x86_64-boost mingw-w64-x86_64-glew
+```
+- Compiling the server:
+```
+cd ./Networking/
+g++ server.cpp -L/mingw64/lib/libboost_system -lws2_32 -lwsock32
+```
+- Compiling the game:
+```
+make
+```
