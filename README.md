@@ -6,31 +6,34 @@
 - [BRIDGES](https://bridges-cs.herokuapp.com/assignments/5/gugu)
 - [FINAL REPORT](https://docs.google.com/document/d/14hk3kF-KI3cDMsnP8Oeztgp7Ecbf-U4KPghMPuHUC2M/edit?usp=sharing)
 
-**The nightmare team of CSCI41 made up of:**
-  - Scrum Lord/Project Manager: Rahmi Abi-Rached
-  - JJK Curse Lord: Julian Laxamana
-  - Spiderman/Thread Lord: Jack Jackson
-  - DJ Bridges: Zaniel Silverio
-  - Inheritor of Suffering: Aaron Snell
-  - Socketroth: Kiyoshi Yang
-  - Taste Tester/GTester: Benson Karki
-  - ISAD: Nathan Yang
-  - Story/art: Matthew Mazone
+> [!NOTE]
+> **The nightmare team of CSCI41 made up of:**
+> - Scrum Lord/Project Manager: Rahmi Abi-Rached
+> - JJK Curse Lord: Julian Laxamana
+> - Spiderman/Thread Lord: Jack Jackson
+> - DJ Bridges: Zaniel Silverio
+> - Inheritor of Suffering: Aaron Snell
+> - Socketroth: Kiyoshi Yang
+> - Taste Tester/GTester: Benson Karki
+> - ISAD: Nathan Yang
+> - Story/art: Matthew Mazone
 
-# Background
+> [!IMPORTANT]
+> # Background
+> Lore go here
 
-# Controls
-
-- Forward - W
-- Left - A
-- Backward - S
-- Right - D
-- Aim - Mouse
-- Attack - LMB
-- INV Slot 1 - 1
-- INV Slot 2 - 2
-- INV Slot 3 - 3
-- Stratagem - Q
+>[!TIP]
+> # Controls
+> - Forward - W
+> - Left - A
+> - Backward - S
+> - Right - D
+> - Aim - Mouse
+> - Attack - LMB
+> - INV Slot 1 - 1
+> - INV Slot 2 - 2
+> - INV Slot 3 - 3
+> - Stratagem - Q
 
 # Member Report:
 **Rahmi Abi-Rached, Project Manager**
