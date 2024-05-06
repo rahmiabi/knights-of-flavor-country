@@ -58,7 +58,7 @@ RAPIDJSON_DIAG_OFF(effc++)
 #if RAPIDJSON_USE_MEMBERSMAP
 #include <map> // std::multimap
 #endif
-
+#include <cstdio>
 RAPIDJSON_NAMESPACE_BEGIN
 
 // Forward declaration.
@@ -1228,6 +1228,7 @@ public:
         if (member != MemberEnd())
             return member->value;
         else {
+            printf("no member: %s", name.GetString());
             RAPIDJSON_ASSERT(false);    // see above note
 
 #if RAPIDJSON_HAS_CXX11

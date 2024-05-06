@@ -84,13 +84,13 @@ std::string World::toJSON() {
     }
     json.AddMember("staticBodies", staticBodies, json.GetAllocator());
 
-    rapidjson::Value rigidBodies;
-    rigidBodies.SetArray();
-    for (const auto& body : this->rigidBodies) {
-        rapidjson::Value value = body->toJSONObject(json.GetAllocator());
-        rigidBodies.PushBack(value, json.GetAllocator());
-    }
-    json.AddMember("rigidBodies", rigidBodies, json.GetAllocator());
+    // rapidjson::Value rigidBodies;
+    // rigidBodies.SetArray();
+    // for (const auto& body : this->rigidBodies) {
+    //     rapidjson::Value value = body->toJSONObject(json.GetAllocator());
+    //     rigidBodies.PushBack(value, json.GetAllocator());
+    // }
+    // json.AddMember("rigidBodies", rigidBodies, json.GetAllocator());
 
     rapidjson::Value players;
     players.SetArray();
@@ -124,12 +124,12 @@ void World::fromJSON(const rapidjson::Value& json) {
         //this->staticBodies.push_back(actor);
     }
     
-    const rapidjson::Value& rigidBodies = json["rigidBodies"].GetArray();
-    for (rapidjson::Value::ConstValueIterator iter = rigidBodies.Begin(); iter != staticBodies.End(); iter++) {
-        //auto actor = std::make_shared<PhysicsBody>();
-        //actor->fromJSONObject(*iter);
-        //this->rigidBodies.push_back(actor);
-    }
+    // const rapidjson::Value& rigidBodies = json["rigidBodies"].GetArray();
+    // for (rapidjson::Value::ConstValueIterator iter = rigidBodies.Begin(); iter != staticBodies.End(); iter++) {
+    //     //auto actor = std::make_shared<PhysicsBody>();
+    //     //actor->fromJSONObject(*iter);
+    //     //this->rigidBodies.push_back(actor);
+    // }
     
     const rapidjson::Value& players = json["players"].GetArray();
     for (rapidjson::Value::ConstValueIterator iter = players.Begin(); iter != staticBodies.End(); iter++) {
