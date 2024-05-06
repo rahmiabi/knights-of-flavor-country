@@ -2,7 +2,9 @@
 
 # Edging to freedom one day at a time...
 **A Nightmare Studios Production**
-> Bridges Link: https://bridges-cs.herokuapp.com/assignments/5/gugu
+
+- [BRIDGES](https://bridges-cs.herokuapp.com/assignments/5/gugu)
+- [FINAL REPORT](https://docs.google.com/document/d/14hk3kF-KI3cDMsnP8Oeztgp7Ecbf-U4KPghMPuHUC2M/edit?usp=sharing)
 
 **The nightmare team of CSCI41 made up of:**
   - Scrum Lord/Project Manager: Rahmi Abi-Rached
