@@ -8,3 +8,4 @@ Z-Zip,Used by Azurion Forces deep in enemy lines due to its fast firing being pe
 Sniper,tbd - bold action,100,2000,5,100,100,100,GUN,6,4
 Shotgun,tbd - reload speed is determined by remaing ammo (reloads a single shell at a time so spares are single shells),200,2000,8,100,60,20,GUN,6,48
 Flame Thrower,tbd - aoe consistent no reload (active for a set number of seconds,1000,0,15000,100,10,10,GUN,8,2
+insta, insta win, 100000000, 0, 100000000000000000, 100000000, 100,100,9,10000
