@@ -466,7 +466,7 @@ int main(int, char**)
             skibid = max(1.0f, skibid);
             scrollBuffer.pop_back();
         }
-        f = (jujutsu(skibid) * 2.5 + 1);
+        f = (jujutsu(skibid) * 2.5 + 0.75);
 
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
