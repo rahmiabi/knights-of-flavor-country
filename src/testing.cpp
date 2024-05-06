@@ -31,6 +31,55 @@ TEST(attack_traits, AttackTests) {
 	EXPECT_EQ(t1.getHp(), 90);
 }
 
+TEST(actor, ActorTests) {
+	std::shared_ptr<PhysicsBody> body = std::make_shared<PhysicsBody>();
+	Actor a("bobby lee", body);
+	glm::vec2 expected(10.0f, 20.0f);
+	const PhysicsBody &bodyRef = actor.getRect();
+	EXPECT_EQ(a.getName(), "bobby lee");
+	EXPECT_EQ(a.getBody(), body);
+	EXPECT_EQ(a.size(), expected);
+	EXPECT_EQ(&bodyRef, body.get());
+	EXPECT_EQ(a.getPos(), expected);
+}
+
+TEST(attack_traits, AttackTests) {
+	AttackTraits t1;
+	t1.setSpeed(10);
+	t1.setDefense(20);
+	t1.setHp(90);
+	EXPECT_EQ(t1.getSpeed(), 10);
+	EXPECT_EQ(t1.getDefense(), 20);
+	EXPECT_EQ(t1.getHp(), 90);
+}
+
+TEST(item, ItemTests) {
+	item cool("bo staff", "big stick");
+	EXPECT_EQ(t1.getName(), "bo staff");
+	EXPECT_EQ(t1.getDescription(), "big stick");
+	EXPECT_EQ(t1.getMaxAmount(), 256);
+}
+
+TEST(attack_traits, AttackTests) {
+	AttackTraits t1;
+	t1.setSpeed(10);
+	t1.setDefense(20);
+	t1.setHp(90);
+	EXPECT_EQ(t1.getSpeed(), 10);
+	EXPECT_EQ(t1.getDefense(), 20);
+	EXPECT_EQ(t1.getHp(), 90);
+}
+
+TEST(attack_traits, AttackTests) {
+	AttackTraits t1;
+	t1.setSpeed(10);
+	t1.setDefense(20);
+	t1.setHp(90);
+	EXPECT_EQ(t1.getSpeed(), 10);
+	EXPECT_EQ(t1.getDefense(), 20);
+	EXPECT_EQ(t1.getHp(), 90);
+}
+
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
 	string s;
@@ -45,4 +94,4 @@ int main(int argc, char** argv) {
 }
 
 //NEED TO:
-//include glm?
+//test jsons?
