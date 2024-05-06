@@ -340,13 +340,14 @@ int main(int, char**)
     Npc npc2("General Mackerelli", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, 200), glm::vec2(width * .1, height * .1))));
     
       Npc npc3("Kernei", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, -200), glm::vec2(width * .1, height * .1))));
+      Npc npc4("Expo", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-300,0), glm::vec2(width * .1, height * .1))));
 
     // TODO MATTHEW - DIALOGUE
-   npc.planned.push_back("Crazy? I was crazy once.");
-   npc.planned.push_back("They locked me in a room.");
-   npc.planned.push_back("A rubber room.");
-   npc.planned.push_back("A rubber room with rats.");
-   npc.planned.push_back("And rats make me crazy.");
+   npc.planned.push_back("Crazied soldier: Crazy? I was crazy once.");
+   npc.planned.push_back("Crazied soldier: They locked me in a room.");
+   npc.planned.push_back("Crazied soldier: A rubber room.");
+   npc.planned.push_back("Crazied soldier: A rubber room with rats.");
+   npc.planned.push_back("Crazied soldier: And rats make me crazy.");
    npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
 
    npc2.planned.push_back("General Mackerelli: THEY WOULDN'T EXPECT AN ATTACK LIKE THIS");
@@ -363,10 +364,24 @@ int main(int, char**)
 	npc3.planned.push_back("Kernie: Might want to bring close range weaponry... or don't...");
 	npc3.planned.push_back("Kernie: I would drop those long range weapons...  no point in bringing them here...");
 	npc3.planned.push_back("Kernie: I've got to head back after this... but good luck Edge Operator...");
+	
+	npc4.planned.push_back("Expo Dump: After the successful defenses of Azurion against Malustan...");
+	npc4.planned.push_back("Expo Dump: Azurion is now able to launch counterattacks.");
+	npc4.planned.push_back("Expo Dump: In order to break the stalemate between the two countries...");
+	npc4.planned.push_back("Expo Dump: Azurion has started launching covert attacks...");
+	npc4.planned.push_back("Expo Dump: deep behind enemy lines.");
+	npc4.planned.push_back("Expo Dump: Task Force Redmond now finds itself...");
+	npc4.planned.push_back("Expo Dump: in the barren wastelands of Malustan.");
+	npc4.planned.push_back("Expo Dump: More specifically the factory region,...");
+	npc4.planned.push_back("Expo Dump: it's characterized by its vast fields of rubble.");
+	npc4.planned.push_back("Expo Dump: The constant conflict has left barely any factories intact");
+	npc4.planned.push_back("Expo Dump: Task Force Redmond now finds themselves...");
+	npc4.planned.push_back("Expo Dump: at one of those few factories.");
 
     world.addActor(shared_ptr<Actor>(&npc));
     world.addActor(shared_ptr<Actor>(&npc2));
     world.addActor(shared_ptr<Actor>(&npc3));
+    world.addActor(shared_ptr<Actor>(&npc4));
     world.addActor(shared_ptr<Actor>(&player));
 
     for (int i =0; i < 7; i++){
