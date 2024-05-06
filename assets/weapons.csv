@@ -1,6 +1,6 @@
 name,description,fireRate,reloadSpeed,ammo,size,dmg,accuracy,type,textureID,spares
 Edge Blade,A weapon forged in the flames of the Old Traf City as it burned to ash that is passed down from Edge Operative to Edge Operative,250,0,0,200,65,0,GUN,0,0
-Polearm,tbd - straight stab,200,0,0,100,70,0,GUN,1,
+Polearm,tbd - straight stab,200,0,0,100,70,0,GUN,1,0
 LR-11 Explorer,A slow-firing and high-damage weapon built for Special Forces,300,3000,15,100,55,80,GUN,2,3
 Surface Strike Rifle,Medium pace firing with medium damage; standard issue for Azurion Forces,600,2000,30,100,30,50,GUN,3,5
 Z-Zip,Used by Azurion Forces deep in enemy lines due to its fast firing being perfect for close combat,1100,1500,30,100,18,20,GUN,4,5
