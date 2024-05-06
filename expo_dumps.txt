@@ -1,16 +1,30 @@
 //NOT FINAL LMAO//
+//NEED MORE//
 //I'm going to sort these by level later//
 
 //Plays on launch//
-In 2140 the Treaty of Pearis is signed between neighboring countries Malustan and Azurion, paving a way toward peace for the region.
+For over half of the 22nd century, Malustan and Azurion have been in a constant state of conflict.
+A conflict sparked from a differing of ideals.
+One believes in the true and correct ideas of freedom and open trade.
+The other has the impure thoughts of closed systems.
+The better and free one is Azurion, a bastion for freedom.
+The neighboring and poor country of Malustan is a closed country with disastrous authoritarian rule.
+Malustan, due to its closed nature, has been unable to advance in the same ways Azurion has.
+However, Azurion believes in second chances and has granted a chance for and end to the war.
+In 2160 the Treaty of Pearis is signed between neighboring countries Malustan and Azurion, paving a way toward peace for the region.
 Many are happy with the treaty, but some deeply oppose it.
-Then in 2042 as tensions appeared to be easing, Lautenous, a Kernelian diplomat, is killed at the border between Malustan and Azurion.
+Then in 2162 as tensions appeared to be easing, Lautenous, a Kernelian diplomat, is killed at the border between Malustan and Azurion.
 Neither side claims the kill but blames the other.
 Count Volodymr of Malustan is then removed from power and war erupts yet again.
 
 //map1//
-Malustan strikes first hitting Azurion City.
-In order to stop Malustan's advances further into the city, Azurion deploys Task Force Redmond.
+Malustan strikes first hitting Azurion City, a futuristic city built on our beloved principles of open trade and freedom.
+In order to stop Malustan's advances further into the city, Azurion deploys all forces to the city and evacuates all citizens to neighboring cities.
+Leading the defense is General Mackerelli, known for his vast list of victories in the previous fight against the closed country of Malustan.
+General Mackerlli makes the call to send in Task Force Redmond, a group made up of the most elite Edge Operators. 
+Each carries their own blade passed down from generation to generation.
+Task Force Redmond now holds the frontline in the streets of Azurion City and attempts to take back as much as it can.
+
 
 //map2//
 Due to the efforts of Task Force Redmond and The Edge Operators, Malustan forces are driven out of Azurion City.
@@ -28,3 +42,11 @@ However, there does not appear to be anyone guarding it...
 and it seems...
 that you are...
 in for a bad time...
+
+//end
+Thought to have been a friend of Azurion, it is revealed that Kernie was a threat to Freedom.
+In order to advance his own personal goals he sacrificed everything we find dear on the alter of somethingf idk
+
+
+
+
