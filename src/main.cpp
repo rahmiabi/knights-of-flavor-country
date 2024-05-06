@@ -337,16 +337,36 @@ int main(int, char**)
 
     Npc npc("john", shared_ptr<PhysicsBody>(new Rect(glm::vec2(500, 0), glm::vec2(width * .1, height * .1))));
 
+    Npc npc2("General Mackerelli", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, 200), glm::vec2(width * .1, height * .1))));
+    
+        Npc npc3("Kernei", shared_ptr<PhysicsBody>(new Rect(glm::vec2(0, -200), glm::vec2(width * .1, height * .1))));
+
     // TODO MATTHEW - DIALOGUE
     npc.planned.push_back("Crazy? I was crazy once.");
     npc.planned.push_back("They locked me in a room.");
     npc.planned.push_back("A rubber room.");
     npc.planned.push_back("A rubber room with rats.");
     npc.planned.push_back("And rats make me crazy.");
-
     npc.dialogue.push_back("i love noelle silva and mai sakurajima!");
 
+    npc2.planned.push_back("General Mackerelli: THEY WOULDN'T EXPECT AN ATTACK LIKE THIS");
+    npc2.planned.push_back("General Mackerelli: TIME TO FREE THE FACTORIES BROTHERs");
+    npc2.planned.push_back("General Mackerelli: I MIGHT NOT BE ABLE TO SEE, BUT FREEDOM WILL BE MY LIGHT FORWARD");
+    npc2.planned.push_back("General Mackerelli: GET IN THERE SOLDIERS");
+    npc2.dialogue.push_back("General Mackerelli: LAY YOUR LIVES FOR OUR OPEN SYSTEM");
+    npc2.dialogue.push_back("General Mackerelli: LAY YOUR LIVES OUR OPEN SYSTEM");
+    npc2.dialogue.push_back("General Mackerelli: PUSH THEM FOR FREEDOM ");
+    
+	npc3.planned.push_back("Kernie: Need any new gear?");
+	npc3.planned.push_back("Kernie: I got it...");
+	npc3.planned.push_back("Kernie: The factories here are very cramped...");
+	npc3.planned.push_back("Kernie: Might want to bring close range weaponry... or don't...");
+	npc3.planned.push_back("Kernie: I would drop those long range weapons...  no point in bringing them here...");
+	npc3.planned.push_back("Kernie: I've got to head back after this... but good luck Edge Operator...");
+
     world.addActor(shared_ptr<Actor>(&npc));
+    world.addActor(shared_ptr<Actor>(&npc2));
+    world.addActor(shared_ptr<Actor>(&npc3));
     world.addActor(shared_ptr<Actor>(&player));
 
     for (int i =0; i < 7; i++){
