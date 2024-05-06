@@ -106,6 +106,7 @@ public:
 class Player; 
 class Enemy; 
 class Npc; 
+class M1ChipEnemy;
 // ZA WARUDO, im sorry
 struct World{
     // Static Bodies, aka things that wont move (walls and stuff like that)
@@ -118,7 +119,6 @@ struct World{
     std::vector<std::shared_ptr<Enemy>> enemies;
     // Hitboxes for NPCS
     std::vector<std::shared_ptr<Npc>> npcs;
-
     // ActorManager
     std::unordered_map<std::string, std::shared_ptr<Actor>> actors;
     bool stop = false;
@@ -160,10 +160,12 @@ struct World{
 
     void update(){
       float delta;
+      float timer = 0;
       std::shared_ptr<World> ptr(this);
       auto start = std::chrono::system_clock::now(); 
       auto end = start;
       while(!stop){
+
         start = std::chrono::system_clock::now(); 
         delta = std::chrono::duration<float, std::milli>(start - end).count();
         end = start;
@@ -194,7 +196,7 @@ struct World{
     }
     void raycast(const glm::vec2& direction, glm::vec2& ray, const glm::vec2& initialPos, const std::vector<std::shared_ptr<PhysicsBody>>& space, int maxMag){
       while (true){
-        if (this->checkCollisions(space, initialPos + ray, glm::vec2{0,0})) {
+        if (this->checkCollisions(space, initialPos + ray, glm::vec2{50,50})) {
             return;
         }
         if (glm::length(ray) > maxMag) return;

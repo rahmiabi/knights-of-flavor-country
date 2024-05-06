@@ -36,11 +36,11 @@
 #define GLM_SWIZZLE_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include <algorithm>
+#include "player.h"
+#include "enemy.h"
 #include "vecmath.h"
 #include "actor.h"
-#include "player.h"
 #include "npc.h"
-#include "enemy.h"
 #include "body.h"
 #include "projectile.h"
 #include "client.h"
@@ -56,7 +56,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 STOLEN CODEE !!! i dont know how matrices work :c
 */
 void thing(){
-	ifstream ins2("assets/mapfile/map2.csv");
+	ifstream ins2("assets/mapfile/map3.csv");
       string test;
        getline(ins2,test);
        
@@ -374,9 +374,9 @@ int main(int, char**)
     world.addActor(shared_ptr<Actor>(&player));
 
     M1ChipEnemy enemy("enemy", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-100, 0), glm::vec2(width * .1, height * .1))));
-    M1ChipEnemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 1000), glm::vec2(width * .1, height * .1))));
-    M1ChipEnemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, 500), glm::vec2(width * .1, height * .1))));
-    M1ChipEnemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(-1000, -1000), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy1("enemy1", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000, 1000), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy2("enemy2", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000, 500), glm::vec2(width * .1, height * .1))));
+    M1ChipEnemy enemy3("enemy3", shared_ptr<PhysicsBody>(new Rect(glm::vec2(1000, -1000), glm::vec2(width * .1, height * .1))));
 
 
     player.addWeapon("Edge Blade");
@@ -948,6 +948,29 @@ int main(int, char**)
             ImGui::End();
         }
         ImGui::PopFont();
+
+        // spawn enemies uh oh the misery
+        {
+            static float timer = 0;
+            timer+= deltaTime;
+            static float spawnRate = 10000;
+        if (timer >= spawnRate){
+          for (auto& player: world.players){
+            for (int j = 0; j < 10; j++){
+                 static int i = 0;
+                 glm::vec2 direction = {1, 1};
+                 direction = glm::normalize(direction);
+                 float angle = 3.14 * 2 * (rand() % 100 / 100.0f);
+                 glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
+                 glm::vec2 ray = {0,0}; 
+                 world.raycast(rotatedDir, ray, player->getPos(), world.staticBodies, 5000);
+                 world.addActor(std::shared_ptr<Actor>(new M1ChipEnemy("enemigo" + std::to_string(i), std::shared_ptr<PhysicsBody>(new Rect(glm::vec2(player->getPos().x + ray.x, player->getPos().y + ray.y), glm::vec2(width * .1, height * .1))))));
+                 i++;
+            }
+            }
+          timer = 0;
+          }
+        }
 
         if (F == GLFW_PRESS){
             //cout << "rectangle," << dick.x << ", " << dick.y << ", " << xSize << ", " << ySize << endl;

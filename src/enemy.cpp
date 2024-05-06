@@ -8,7 +8,7 @@
 #include <stdexcept>
 std::vector<glm::vec2> Enemy::aStar(const std::vector<std::shared_ptr<PhysicsBody>>& space, const glm::vec2& pos, const glm::vec2& finalPos, const float& step, const glm::vec2& size){
   std::vector<glm::vec2> path;
-  if (World::checkCollisions(space, finalPos, size)) return {pos};
+  if (World::checkCollisions(space, finalPos, size)) throw "e";
   struct Node {
     glm::vec2 position;
     float gCost, hCost, fCost;
@@ -88,10 +88,11 @@ void Enemy::update(float delta, const std::shared_ptr<World>& world){
       }
     }
 
-
     glm::vec2 direction = {rand() % 100 / 100.0f * 3, rand() % 100 / 100.0f * 3};
     float angle = 3.14 * 2 * (rand() % 100 / 100.0f);
     glm::vec2 rotatedDir = {direction.x * cos(angle) - direction.y * sin(angle), direction.x * sin(angle) + direction.y * cos(angle)};
+
+
 
     if (init) {
       pathTimer = pathRefresh;
