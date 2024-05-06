@@ -1030,20 +1030,9 @@ int main(int, char**)
             static int counter = 0;
             static char weaponN[50] = "";
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Weapons");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text."); 
-            ImGui::Text("x:%f, y:%f", dick.x, dick.y);       // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
 
-            //ImGui::SliderFloat("float", &f, 0.25f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("scale", &mapScale, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("xch", &xChange, 0.0f, 10 * width3);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("ych", &yChange, 0.0f, 10 * height3);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("xSize", &xSize, 0.0f, 5000.0f); 
-            ImGui::SliderFloat("ySize", &ySize, 0.0f, 5000.0f); 
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             ImGui::InputText("WeaponName", weaponN, IM_ARRAYSIZE(inputText));
 
@@ -1061,14 +1050,6 @@ int main(int, char**)
                 }
             }
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                {
-       // usleep(1);
-       //         world.muntex.lock();
-       //         world.staticBodies.clear();
-       //         world.muntex.unlock();
-       //         thing();
-                }
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
 
@@ -1118,6 +1099,11 @@ int main(int, char**)
 
         // spawn enemies uh oh the misery
         {
+            static float gay = 0;
+            if (gay < 60000){
+              gay += deltaTime;
+              goto skibid;
+            }
             static float timer = 0;
             timer+= deltaTime;
             static float spawnRate = 10000;
@@ -1140,6 +1126,7 @@ int main(int, char**)
           timer = 0;
           }
         }
+skibid:
 
         if (F == GLFW_PRESS){
             //cout << "rectangle," << dick.x << ", " << dick.y << ", " << xSize << ", " << ySize << endl;
