@@ -21,6 +21,17 @@
 
 # Controls
 
+- Forward - W
+- Left - A
+- Backward - S
+- Right - D
+- Aim - Mouse
+- Attack - LMB
+- INV Slot 1 - 1
+- INV Slot 2 - 2
+- INV Slot 3 - 3
+- Stratagem - Q
+
 # Member Report:
 **Rahmi Abi-Rached, Project Manager**
 - Rahmi's job was to oversee the production of the game, as well as write this readme, make an update log, and produce a final report. He (I) did his best to help as he could, though he often times found himself confused with some of the stuff going on. However, he did make an awesome Mencarelli deepfake.
