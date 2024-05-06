@@ -453,7 +453,7 @@ int main(int, char**)
     float cursorScale = windowHeight * windowWidth / (1280.0f * 720.0f);
 
     if (!win && !lose){
-        if (world.deaths > 50) {win = true;}
+        if (world.deaths > 100) {win = true;}
         if (player.getHp() < 0) {lose= true;}
 
         end = start;
