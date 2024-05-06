@@ -49,6 +49,7 @@ TEST(csv, CSVTests) {
 	vector<string> tokens = {"v1", "v2", "v3"}; //value for each spot
 	CsvEntry entry(std::move(tokens), indexMap); //sets each value
 	EXPECT_TRUE(entry.hasColumn("Column1")); //checks if the column exists
+	EXPECT_FALSE(entry.hasColumn("Column2345")); //checks if the column doesnt exist
 	EXPECT_EQ(entry.getValueAtColumn("Column1"), "v1"); //checks column 1's value
 }
 
@@ -64,14 +65,22 @@ TEST(item, ItemTests) {
 	EXPECT_EQ(cool.getMaxAmount(), 256);
 }
 
-TEST(attack_traits, AttackTests) {
-	AttackTraits t1;
-	t1.setSpeed(10);
-	t1.setDefense(20);
-	t1.setHp(90);
-	EXPECT_EQ(t1.getSpeed(), 10);
-	EXPECT_EQ(t1.getDefense(), 20);
-	EXPECT_EQ(t1.getHp(), 90);
+TEST(inventory, InventoryTests) {
+	Inventory inven;
+	inven.addAbility("keyboard slam");
+	inven.addAbility("hey kerney");
+	inven.removeAbility("hey kerney");
+	inven.addWeapon("fart gun");
+	Weapon sword;
+	inven.weapons["sword"] = sword;
+	Weapon &temp = inven.getWeapon("sword");
+	Ability &abil = inven.getAbility("keyboard slam");
+	EXPECT_TRUE(inven.hasAbility("keyboard slam"));
+	EXPECT_FALSE(inven.hasAbility("knaw"));
+	EXPECT_EQ(abil.getName(), "keyboard slam");
+	EXPECT_FALSE(inven.hasAbility("hey kerney"));
+	EXPECT_TRUE(inven.hasWeapon("fart gun"));
+	EXPECT_EQ(temp.getName(), "sword");
 }
 
 TEST(attack_traits, AttackTests) {
