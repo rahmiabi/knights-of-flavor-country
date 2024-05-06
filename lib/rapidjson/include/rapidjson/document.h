@@ -1228,7 +1228,7 @@ public:
         if (member != MemberEnd())
             return member->value;
         else {
-            printf("no member: %s", name.GetString());
+            printf("no member: %s-------------------------------\n", name.GetString());
             RAPIDJSON_ASSERT(false);    // see above note
 
 #if RAPIDJSON_HAS_CXX11

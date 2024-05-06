@@ -90,8 +90,8 @@ public:
 
     rapidjson::Value toJSONObject(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator) {
         rapidjson::Value value = Actor::toJSONObject(allocator);
-        value["scale"].SetDouble(this->scale);
-        value["texture"].SetUint(this->texture);
+        value.AddMember("scale", this->scale, allocator);
+        value.AddMember("texture", this->texture, allocator);
         return value;
     }
 
