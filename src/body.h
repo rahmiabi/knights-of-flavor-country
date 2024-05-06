@@ -35,19 +35,24 @@ class PhysicsBody {
         startVec.y += other.y;
     }
 
-    rapidjson::Value toJSONObject() {
+    rapidjson::Value toJSONObject(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator) {
         rapidjson::Value value;
         value.SetObject();
 
-        auto& startVecJson = value["startVec"].SetObject();
-        startVecJson["x"].SetFloat(this->startVec.x);
-        startVecJson["y"].SetFloat(this->startVec.y);
+        rapidjson::Value startVecJson;
+        startVecJson.SetObject();
 
-        auto& sizeVecJson = value["sizeVec"].SetObject();
-        sizeVecJson["x"].SetFloat(this->startVec.x);
-        sizeVecJson["y"].SetFloat(this->startVec.y);
+        rapidjson::Value startVecJson;
+        startVecJson.AddMember("x", this->startVec.x, allocator);
+        startVecJson.AddMember("y", this->startVec.y, allocator);
+        value.AddMember("startVec", startVecJson, allocator);
 
-        value["shape"].SetInt(static_cast<int32_t>(this->getShape()));
+        rapidjson::Value sizeVecJson;
+        sizeVecJson.AddMember("x", this->sizeVec.x, allocator);
+        sizeVecJson.AddMember("y", this->sizeVec.y, allocator);
+        value.AddMember("sizeVec", sizeVecJson, allocator);
+
+        value.AddMember("shape", static_cast<int32_t>(this->getShape()), allocator);
 
         return value;
     }

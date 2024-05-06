@@ -19,8 +19,8 @@ void Actor::physics(float delta, const std::shared_ptr<World>& world ){
     return;
 }
 
-std::string Actor::toJSON() {
-    rapidjson::Value json = this->toJSONObject();
+std::string Actor::toJSON(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator) {
+    rapidjson::Value json = this->toJSONObject(allocator);
 
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -29,16 +29,18 @@ std::string Actor::toJSON() {
     return buffer.GetString();
 }
 
-rapidjson::Value Actor::toJSONObject() {
+rapidjson::Value Actor::toJSONObject(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator) {
     rapidjson::Value json;
     json.SetObject();
-    json["name"].SetString(this->name.c_str(), this->name.size());
+    json.AddMember(rapidjson::Value("name"), rapidjson::Value(this->name.c_str(), this->name.size()), allocator);
     
-    rapidjson::Value& pos = json["pos"].SetObject();
-    pos["x"].SetFloat(this->body->pos().x);
-    pos["y"].SetFloat(this->body->pos().y);
+    rapidjson::Value pos;
+    pos.SetObject();
+    pos.AddMember("x", this->body->pos().x, allocator);
+    pos.AddMember("y", this->body->pos().y, allocator);
+    json.AddMember("pos", pos, allocator);
 
-    json["physicsBody"] = this->body->toJSONObject();
+    json.AddMember("physicsBody", this->body->toJSONObject(allocator), allocator);
 
     return json;
 }
@@ -66,29 +68,37 @@ std::string World::toJSON() {
     rapidjson::Document json;
     json.SetObject();
 
-
-    std::cout << "\n";
-    rapidjson::Value& actors = json["actors"].SetArray();
-    std::cout << "hi\n";
+    rapidjson::Value actors;
+    actors.SetArray();
     for (const auto& [_, actor] : this->actors) {
-        rapidjson::Value value = actor->toJSONObject();
+        rapidjson::Value value = actor->toJSONObject(json.GetAllocator());
         actors.PushBack(value, json.GetAllocator());
     }
+    json.AddMember("actors", actors, json.GetAllocator());
 
-    std::cout << "hi\n";
-    rapidjson::Value& staticBodies = json["staticBodies"].SetArray();
+    rapidjson::Value staticBodies;
+    staticBodies.SetArray();
     for (const auto& body : this->staticBodies) {
-        rapidjson::Value value = body->toJSONObject();
+        rapidjson::Value value = body->toJSONObject(json.GetAllocator());
         staticBodies.PushBack(value, json.GetAllocator());
     }
+    json.AddMember("staticBodies", staticBodies, json.GetAllocator());
 
+    rapidjson::Value rigidBodies;
+    rigidBodies.SetArray();
+    for (const auto& body : this->rigidBodies) {
+        rapidjson::Value value = body->toJSONObject(json.GetAllocator());
+        rigidBodies.PushBack(value, json.GetAllocator());
+    }
+    json.AddMember("rigidBodies", rigidBodies, json.GetAllocator());
 
-    std::cout << "hi\n";
-    rapidjson::Value& players = json["players"].SetArray();
+    rapidjson::Value players;
+    players.SetArray();
     for (const auto& body : this->players) {
         rapidjson::Value value = body->toJSONObject();
         players.PushBack(value, json.GetAllocator());
     }
+    json.AddMember("players", players, json.GetAllocator());
 
     std::cout << "hi\n";
     rapidjson::StringBuffer buffer;

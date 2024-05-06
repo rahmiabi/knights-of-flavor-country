@@ -10,12 +10,14 @@ std::string PacketIn::serialize() {
     rapidjson::Document json;
     json.SetObject();
 
-    json["key"].SetInt(this->key);
+    json.AddMember("key", this->key, json.GetAllocator());
 
-    auto& messagesJson = json["messages"].SetArray();
+    rapidjson::Value messagesJson;
+    messagesJson.SetArray();
     for (auto& message : this->messages) {
         messagesJson.PushBack(rapidjson::Value(message.c_str(), message.size()), json.GetAllocator());
     }
+    json.AddMember("messages", messagesJson, json.GetAllocator());
 
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -45,7 +47,8 @@ static void serializeVec2(rapidjson::Value& parent, glm::vec2 pos) {
 std::string PacketOut::serialize() {
     rapidjson::Document json;
 
-    auto& players = json["players"].SetArray();
+    rapidjson::Value players;
+    players.SetArray();
     for (const auto& [name, pos] : this->players) {
         rapidjson::Value player;
         player.SetObject();
@@ -54,8 +57,10 @@ std::string PacketOut::serialize() {
         serializeVec2(posJson, pos);
         players.PushBack(player, json.GetAllocator());
     }
+    json.AddMember("players", players, json.GetAllocator());
 
-    auto& enemies = json["enemies"].SetArray();
+    rapidjson::Value enemies;
+    enemies.SetArray();
     for (const auto& [name, pos] : this->enemies) {
         rapidjson::Value player;
         player.SetObject();
@@ -64,8 +69,10 @@ std::string PacketOut::serialize() {
         serializeVec2(posJson, pos);
         players.PushBack(player, json.GetAllocator());
     }
+    json.AddMember("enemies", enemies, json.GetAllocator());
 
-    auto& npcs = json["npcs"].SetArray();
+    rapidjson::Value npcs;
+    npcs.SetArray();
     for (const auto& [name, pos] : this->npcs) {
         rapidjson::Value player;
         player.SetObject();
@@ -74,8 +81,10 @@ std::string PacketOut::serialize() {
         serializeVec2(posJson, pos);
         players.PushBack(player, json.GetAllocator());
     }
+    json.AddMember("npcs", npcs, json.GetAllocator());
 
-    auto& staticBodies = json["staticBodies"].SetArray();
+    rapidjson::Value staticBodies;
+    staticBodies.SetArray();
     for (const auto& [name, pos] : this->staticBodies) {
         rapidjson::Value player;
         player.SetObject();
@@ -84,8 +93,10 @@ std::string PacketOut::serialize() {
         serializeVec2(posJson, pos);
         staticBodies.PushBack(player, json.GetAllocator());
     }
+    json.AddMember("staticBodies", staticBodies, json.GetAllocator());
 
-    auto& rigidBodies = json["rigidBodies"].SetArray();
+    rapidjson::Value rigidBodies;
+    rigidBodies.SetArray();
     for (const auto& [name, pos] : this->rigidBodies) {
         rapidjson::Value player;
         player.SetObject();
@@ -94,11 +105,14 @@ std::string PacketOut::serialize() {
         serializeVec2(posJson, pos);
         rigidBodies.PushBack(player, json.GetAllocator());
     }
+    json.AddMember("rigidBodies", rigidBodies, json.GetAllocator());
 
-    auto& messagesJson = json["messages"].SetArray();
+    rapidjson::Value messagesJson;
+    messagesJson.SetArray();
     for (auto& message : this->messages) {
         messagesJson.PushBack(rapidjson::Value(message.c_str(), message.size()), json.GetAllocator());
     }
+    json.AddMember("messages", messagesJson, json.GetAllocator());
 
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
